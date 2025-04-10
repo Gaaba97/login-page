@@ -22,40 +22,44 @@
       align-items: center;
       justify-content: center;
     }
+
     .login-box {
       position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-  width: 300px;
-  text-align: center;
-}
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      width: 300px;
+      text-align: center;
+    }
 
     .login-box h2 {
-  margin-bottom: 20px;
-  color: #ffffff;
-  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
-}
+      margin-bottom: 20px;
+      color: #ffffff;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+    }
 
-    .login-box input {
+    .login-box input,
+    .login-box button {
       width: 100%;
+      box-sizing: border-box;
       padding: 10px;
       margin: 8px 0;
-      border: 1px solid #ccc;
       border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .login-box input {
+      border: 1px solid #ccc;
     }
 
     .login-box button {
-      width: 100%;
-      padding: 10px;
       background-color: #0056b3;
       border: none;
-      border-radius: 8px;
       color: white;
       font-weight: bold;
       cursor: pointer;
