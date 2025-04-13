@@ -78,9 +78,9 @@
   <!-- Caixa de login -->
   <div class="login-box">
     <h2>Login</h2>
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Senha">
-<button id="loginBtn">Entrar</button>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Senha">
+    <button id="loginBtn">Entrar</button>
   </div>
 
   <!-- Script do efeito Matrix Rain -->
@@ -129,5 +129,38 @@
       drops = Array.from({ length: columns }).fill(1);
     });
   </script>
+
+  <!-- Firebase Login Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+      authDomain: "login-site-9cbbd.firebaseapp.com",
+      projectId: "login-site-9cbbd",
+      storageBucket: "login-site-9cbbd.appspot.com",
+      messagingSenderId: "703993528666",
+      appId: "1:703993528666:web:1e7a02cb5b611e24c97363"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          console.log("Logado:", userCredential.user);
+          window.location.href = "dashboard.html";
+        })
+        .catch((error) => {
+          alert("Erro ao fazer login: " + error.message);
+        });
+    });
+  </script>
 </body>
 </html>
+
