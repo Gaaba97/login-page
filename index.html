@@ -157,7 +157,7 @@
       ctx.fillStyle = isDarkTheme ? '#0F0' : '#0F0'; // Letras verdes para ambos os temas
       ctx.font = `${fontSize}px monospace`;
 
-      // Efeito Rain no tema claro: uma gota começa em um ponto aleatório
+      // Efeito Rain no tema escuro
       if (isDarkTheme) {
         drops.forEach((y, x) => {
           const text = letters.charAt(Math.floor(Math.random() * letters.length));
@@ -170,11 +170,11 @@
           drops[x]++;
         });
       } else {
-        // No tema claro, uma gota de cada vez
-        const randomColumn = Math.floor(Math.random() * width);
-        const randomY = Math.floor(Math.random() * height);
+        // No tema claro, uma gota por vez começa aleatoriamente
+        const randomColumn = Math.floor(Math.random() * width / fontSize);
+        const randomY = Math.floor(Math.random() * height / fontSize);
         const text = letters.charAt(Math.floor(Math.random() * letters.length));
-        ctx.fillText(text, randomColumn, randomY);
+        ctx.fillText(text, randomColumn * fontSize, randomY * fontSize);
       }
     }
 
