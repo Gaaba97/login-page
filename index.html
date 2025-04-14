@@ -262,5 +262,35 @@
   });
 </script>
 
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+    authDomain: "login-site-9cbbd.firebaseapp.com",
+    projectId: "login-site-9cbbd",
+    storageBucket: "login-site-9cbbd.firebasestorage.app",
+    messagingSenderId: "703993528666",
+    appId: "1:703993528666:web:1e7a02cb5b611e24c97363"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const loginBtn = document.getElementById('loginBtn');
+  loginBtn.addEventListener('click', async () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      window.location.href = "dashboard.html"; // redireciona após login
+    } catch (error) {
+      alert("Erro ao fazer login: " + error.message);
+    }
+  });
+</script>
+
 </body>
 </html>
