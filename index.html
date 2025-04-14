@@ -39,7 +39,15 @@
 
     .login-box h2 {
       margin-bottom: 20px;
+      transition: color 0.5s ease;
+    }
+
+    body.light .login-box h2 {
       color: #000;
+    }
+
+    body.dark .login-box h2 {
+      color: #fff;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
     }
 
@@ -63,20 +71,19 @@
       color: white;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 10px;
     }
 
     .login-box button:hover {
       background-color: #003d80;
     }
 
-    /* Botão de alternância de tema estilo bolinha */
     .theme-toggle-container {
       position: absolute;
       top: 10px;
       right: 10px;
       display: flex;
       align-items: center;
+      gap: 10px;
     }
 
     .theme-toggle {
@@ -86,7 +93,15 @@
       background-color: #ccc;
       position: relative;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+
+    .theme-toggle.active {
+      background-color: #4caf50;
     }
 
     .theme-toggle::before {
@@ -101,137 +116,136 @@
       transition: transform 0.3s ease;
     }
 
-    .theme-toggle.active {
-      background-color: #4caf50;
-    }
-
     .theme-toggle.active::before {
       transform: translateX(25px);
     }
 
-  </style>
-</head>
-<body>
-
-  <!-- Canvas com o efeito Matrix -->
-  <canvas id="matrixCanvas"></canvas>
-
-  <!-- Caixa de login -->
-  <div class="login-box">
-    <h2>Login</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Senha">
-    <button id="loginBtn">Entrar</button>
-  </div>
-
-  <!-- Botão de alternância de tema -->
-  <div class="theme-toggle-container">
-    <div class="theme-toggle" id="themeToggle"></div>
-  </div>
-
-  <!-- Script do efeito Matrix Rain -->
-  <script>
-    const canvas = document.getElementById('matrixCanvas');
-    const ctx = canvas.getContext('2d');
-
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-
-    canvas.width = width;
-    canvas.height = height;
-
-    const letters = 'アァイィウヴエカガキクグケゲコサザシスセソタチツテトナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤユヨラリルレロワンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$¥#';
-    const fontSize = 16;
-    let columns = Math.floor(width / fontSize);
-    let drops = Array.from({ length: columns }).fill(1);
-
-    // Variável de controle do tema (começa como claro)
-    let isDarkTheme = false;
-
-    // Função para desenhar no canvas (lógica do Matrix Rain)
-    function draw() {
-      // Limpar o fundo com a cor dependendo do tema
-      ctx.fillStyle = isDarkTheme ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 1)';
-      ctx.fillRect(0, 0, width, height);
-
-      ctx.fillStyle = isDarkTheme ? '#0F0' : '#0F0'; // Letras verdes para ambos os temas
-      ctx.font = `${fontSize}px monospace`;
-
-      // Desenhando a coluna de código
-      if (isDarkTheme) {
-        drops.forEach((y, x) => {
-          const text = letters.charAt(Math.floor(Math.random() * letters.length));
-          ctx.fillText(text, x * fontSize, y * fontSize);
-
-          if (y * fontSize > height && Math.random() > 0.975) {
-            drops[x] = 0;
-          }
-
-          drops[x]++;
-        });
-      } else {
-        // Uma única coluna aleatória no tema claro
-        const randomColumn = Math.floor(Math.random() * columns);
-        const text = letters.charAt(Math.floor(Math.random() * letters.length));
-        ctx.fillText(text, randomColumn * fontSize, drops[randomColumn] * fontSize);
-
-        if (drops[randomColumn] * fontSize > height && Math.random() > 0.975) {
-          drops[randomColumn] = 0;
-        }
-        drops[randomColumn]++;
-      }
+    .theme-icon {
+      width: 20px;
+      height: 20px;
+      background-size: contain;
+      background-repeat: no-repeat;
     }
 
-    setInterval(draw, 66); // 66ms para a animação ficar mais lenta no tema claro
+    body.light .theme-icon {
+      background-image: url('data:image/svg+xml;base64,...'); /* ícone de sol */
+    }
 
-    window.addEventListener('resize', () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-      columns = Math.floor(width / fontSize);
-      drops = Array.from({ length: columns }).fill(1);
-    });
+    body.dark .theme-icon {
+      background-image: url('data:image/svg+xml;base64,...'); /* ícone de lua */
+    }
+  </style>
+</head>
+<body class="light">
 
-    // Alternando o tema quando o botão for clicado
-    document.getElementById('themeToggle').addEventListener('click', () => {
-      isDarkTheme = !isDarkTheme; // Troca de tema
-      document.body.style.backgroundColor = isDarkTheme ? '#121212' : '#ffffff';
-      document.body.style.color = isDarkTheme ? '#fff' : '#000';
-      document.getElementById('themeToggle').classList.toggle('active');
-    });
-  </script>
+<canvas id="matrixCanvas"></canvas>
 
-  <!-- Firebase Login Script -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+<div class="login-box">
+  <h2>Login</h2>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Senha">
+  <button id="loginBtn">Entrar</button>
+</div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
-      authDomain: "login-site-9cbbd.firebaseapp.com",
-      projectId: "login-site-9cbbd",
-      storageBucket: "login-site-9cbbd.appspot.com",
-      messagingSenderId: "703993528666",
-      appId: "1:703993528666:web:1e7a02cb5b611e24c97363"
-    };
+<div class="theme-toggle-container">
+  <div class="theme-toggle" id="themeToggle"></div>
+  <div class="theme-icon" id="themeIcon"></div>
+</div>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+<script>
+  const canvas = document.getElementById('matrixCanvas');
+  const ctx = canvas.getContext('2d');
+  let width = window.innerWidth;
+  let height = window.innerHeight;
+  canvas.width = width;
+  canvas.height = height;
 
-    document.getElementById("loginBtn").addEventListener("click", () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+  const letters = 'アァイィウヴエカガキクグケゲコサザシスセソタチツテトナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤユヨラリルレロワンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$¥#';
+  const fontSize = 16;
+  let columns = Math.floor(width / fontSize);
+  let drops = Array(columns).fill(1);
 
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          console.log("Logado:", userCredential.user);
-          window.location.href = "dashboard.html";
-        })
-        .catch((error) => {
-          alert("Erro ao fazer login: " + error.message);
-        });
-    });
-  </script>
+  let currentColumn = -1;
+  let currentDrop = 0;
+  let previousColumns = [];
+
+  let isDarkTheme = false;
+  let intervalId;
+  let drawIntervalTime = 100; // padrão para o modo claro
+
+  function draw() {
+    if (isDarkTheme) {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = '#0F0';
+      ctx.font = fontSize + 'px monospace';
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    } else {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = '#003300';
+      ctx.font = fontSize + 'px monospace';
+
+      if (currentColumn === -1 || currentDrop * fontSize > height) {
+        if (currentColumn !== -1) {
+          previousColumns.push({ column: currentColumn, drop: currentDrop });
+        }
+        currentColumn = Math.floor(Math.random() * columns);
+        currentDrop = 0;
+      }
+
+      const text = letters.charAt(Math.floor(Math.random() * letters.length));
+      ctx.fillText(text, currentColumn * fontSize, currentDrop * fontSize);
+      currentDrop++;
+
+      previousColumns = previousColumns.filter(c => c.drop * fontSize < height);
+      for (const c of previousColumns) {
+        const trailText = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(trailText, c.column * fontSize, c.drop * fontSize);
+        c.drop++;
+      }
+    }
+  }
+
+  function startDrawingLoop() {
+    clearInterval(intervalId);
+    intervalId = setInterval(draw, drawIntervalTime);
+  }
+
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+
+  themeToggle.addEventListener('click', () => {
+    isDarkTheme = !isDarkTheme;
+    document.body.className = isDarkTheme ? 'dark' : 'light';
+    themeToggle.classList.toggle('active', isDarkTheme);
+    drawIntervalTime = isDarkTheme ? 50 : 100; // modo escuro mais rápido, modo claro mais lento
+    startDrawingLoop();
+  });
+
+  window.addEventListener('resize', () => {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    columns = Math.floor(width / fontSize);
+    drops = Array(columns).fill(1);
+    previousColumns = [];
+    currentColumn = -1;
+    currentDrop = 0;
+  });
+
+  // Inicializa o loop de desenho com base no tema inicial
+  drawIntervalTime = isDarkTheme ? 50 : 100;
+  startDrawingLoop();
+</script>
+
 </body>
 </html>
