@@ -157,7 +157,7 @@
       ctx.fillStyle = isDarkTheme ? '#0F0' : '#0F0'; // Letras verdes para ambos os temas
       ctx.font = `${fontSize}px monospace`;
 
-      // Desenhando a coluna de código (lógica diferente para o tema claro)
+      // Desenhando a coluna de código
       if (isDarkTheme) {
         drops.forEach((y, x) => {
           const text = letters.charAt(Math.floor(Math.random() * letters.length));
@@ -170,18 +170,16 @@
           drops[x]++;
         });
       } else {
-        // Só uma coluna de código no tema claro, que desce lentamente
+        // Uma única coluna aleatória no tema claro
         const randomColumn = Math.floor(Math.random() * columns);
         const text = letters.charAt(Math.floor(Math.random() * letters.length));
         ctx.fillText(text, randomColumn * fontSize, drops[randomColumn] * fontSize);
-        drops[randomColumn]++;
 
         if (drops[randomColumn] * fontSize > height && Math.random() > 0.975) {
           drops[randomColumn] = 0;
         }
+        drops[randomColumn]++;
       }
-
-
     }
 
     setInterval(draw, 66); // 66ms para a animação ficar mais lenta no tema claro
