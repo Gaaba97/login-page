@@ -32,7 +32,8 @@
       padding: 40px;
       border-radius: 12px;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-      width: 300px;
+      width: 90%;
+      max-width: 320px;
       text-align: center;
       z-index: 1;
     }
@@ -83,7 +84,14 @@
       right: 10px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      padding: 5px 10px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(5px);
+      border-radius: 10px;
+      font-size: 14px;
+      z-index: 2;
+      max-width: 90vw;
     }
 
     .theme-toggle {
@@ -120,19 +128,31 @@
       transform: translateX(25px);
     }
 
+    .theme-label {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+    }
+
     .theme-icon {
-      width: 20px;
-      height: 20px;
-      background-size: contain;
-      background-repeat: no-repeat;
+      font-size: 20px;
+      margin-right: 5px;
     }
 
-    body.light .theme-icon {
-      background-image: url('data:image/svg+xml;base64,...'); /* ícone de sol */
-    }
+    @media (max-width: 480px) {
+      .theme-toggle-container {
+        font-size: 12px;
+        gap: 5px;
+        padding: 4px 8px;
+      }
 
-    body.dark .theme-icon {
-      background-image: url('data:image/svg+xml;base64,...'); /* ícone de lua */
+      .theme-icon {
+        font-size: 16px;
+      }
+
+      .login-box {
+        padding: 30px 20px;
+      }
     }
   </style>
 </head>
@@ -148,8 +168,11 @@
 </div>
 
 <div class="theme-toggle-container">
+  <div class="theme-label">
+    <span class="theme-icon" id="themeIcon">⚪️</span>
+    <span id="themeLabel">Mundo Real</span>
+  </div>
   <div class="theme-toggle" id="themeToggle"></div>
-  <div class="theme-icon" id="themeIcon"></div>
 </div>
 
 <script>
@@ -170,8 +193,6 @@
   let previousColumns = [];
 
   let isDarkTheme = false;
-  let intervalId;
-  let drawIntervalTime = 100; // padrão para o modo claro
 
   function draw() {
     if (isDarkTheme) {
@@ -214,20 +235,18 @@
     }
   }
 
-  function startDrawingLoop() {
-    clearInterval(intervalId);
-    intervalId = setInterval(draw, drawIntervalTime);
-  }
+  setInterval(draw, 50);
 
   const themeToggle = document.getElementById('themeToggle');
   const themeIcon = document.getElementById('themeIcon');
+  const themeLabel = document.getElementById('themeLabel');
 
   themeToggle.addEventListener('click', () => {
     isDarkTheme = !isDarkTheme;
     document.body.className = isDarkTheme ? 'dark' : 'light';
     themeToggle.classList.toggle('active', isDarkTheme);
-    drawIntervalTime = isDarkTheme ? 50 : 100; // modo escuro mais rápido, modo claro mais lento
-    startDrawingLoop();
+    themeIcon.textContent = isDarkTheme ? '🕶️' : '⚪️';
+    themeLabel.textContent = isDarkTheme ? 'Tema Escuro' : 'Tema Claro';
   });
 
   window.addEventListener('resize', () => {
@@ -241,11 +260,9 @@
     currentColumn = -1;
     currentDrop = 0;
   });
-
-  // Inicializa o loop de desenho com base no tema inicial
-  drawIntervalTime = isDarkTheme ? 50 : 100;
-  startDrawingLoop();
 </script>
 
 </body>
 </html>
+
+
