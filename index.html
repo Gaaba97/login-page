@@ -211,7 +211,10 @@
   let currentDrop = 0;
   let previousColumns = [];
 
-  let isDarkTheme = false;
+  // Verifica se há um tema salvo
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  let isDarkTheme = savedTheme === 'dark';
+  document.body.className = savedTheme;
 
   function draw() {
     if (isDarkTheme) {
@@ -266,6 +269,9 @@
     themeToggle.classList.toggle('active', isDarkTheme);
     themeIcon.textContent = isDarkTheme ? '🕶️' : '⚪️';
     themeLabel.textContent = isDarkTheme ? 'Tema Escuro' : 'Tema Claro';
+
+    // Salva o tema no localStorage
+    localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
   });
 
   window.addEventListener('resize', () => {
