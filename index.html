@@ -139,21 +139,40 @@
       margin-right: 5px;
     }
 
-    @media (max-width: 480px) {
-      .theme-toggle-container {
-        font-size: 12px;
-        gap: 5px;
-        padding: 4px 8px;
-      }
+@media (max-width: 480px) {
+  .theme-toggle-container {
+    font-size: 13px;
+    gap: 8px;
+    padding: 8px 12px;
+  }
 
-      .theme-icon {
-        font-size: 16px;
-      }
+  .theme-toggle {
+    width: 60px;
+    height: 30px;
+  }
 
-      .login-box {
-        padding: 30px 20px;
-      }
-    }
+  .theme-toggle::before {
+    width: 26px;
+    height: 26px;
+    top: 2px;
+    left: 2px;
+  }
+
+  .theme-toggle.active::before {
+    transform: translateX(30px);
+  }
+
+  .theme-icon {
+    font-size: 18px;
+  }
+
+  .login-box {
+    padding: 40px 25px;
+    width: 95%;
+    max-width: 360px;
+  }
+}
+
   </style>
 </head>
 <body class="light">
