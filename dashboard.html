@@ -4,18 +4,36 @@
   <meta charset="UTF-8">
   <title>Dashboard - Redpill</title>
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    body.light {
+      background-color: #fff;
+      color: #000;
+    }
+
+    body.dark {
       background-color: #000;
       color: #0f0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px;
     }
 
     h1 {
+      margin-top: 60px;
       text-shadow: 0 0 10px #0f0;
     }
 
@@ -27,6 +45,12 @@
       border: 1px solid #0f0;
       margin-top: 20px;
       box-shadow: 0 0 10px #0f0;
+    }
+
+    body.light .content {
+      background-color: rgba(0, 0, 0, 0.05);
+      border-color: #000;
+      box-shadow: 0 0 10px #000;
     }
 
     button {
@@ -43,45 +67,213 @@
     button:hover {
       background-color: #0c0;
     }
+
+    .theme-toggle-container {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 10px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(5px);
+      border-radius: 10px;
+      font-size: 14px;
+      z-index: 2;
+    }
+
+    .theme-toggle {
+      width: 50px;
+      height: 25px;
+      border-radius: 50px;
+      background-color: #ccc;
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+
+    .theme-toggle.active {
+      background-color: #4caf50;
+    }
+
+    .theme-toggle::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 21px;
+      height: 21px;
+      border-radius: 50%;
+      background-color: white;
+      transition: transform 0.3s ease;
+    }
+
+    .theme-toggle.active::before {
+      transform: translateX(25px);
+    }
+
+    .theme-label {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+    }
+
+    .theme-icon {
+      font-size: 20px;
+      margin-right: 5px;
+    }
   </style>
 </head>
 <body>
-  <h1>Bem-vindo ao Dashboard</h1>
-  <div class="content">
-    <p>Esta é a área restrita. Aqui você poderá colocar informações do fundo de investimento, relatórios, gráficos, etc.</p>
-    <p>Você está logado. 👁️‍🗨️</p>
-    <button id="logoutBtn">Sair</button>
+
+<canvas id="matrixCanvas"></canvas>
+
+<h1>Bem-vindo ao Dashboard</h1>
+<div class="content">
+  <p>Esta é a área restrita. Aqui você poderá colocar informações do fundo de investimento, relatórios, gráficos, etc.</p>
+  <p>Você está logado. 👁️‍🗨️</p>
+  <button id="logoutBtn">Sair</button>
+</div>
+
+<div class="theme-toggle-container">
+  <div class="theme-label">
+    <span class="theme-icon" id="themeIcon">⚪️</span>
+    <span id="themeLabel">Tema Claro</span>
   </div>
+  <div class="theme-toggle" id="themeToggle"></div>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
-      authDomain: "login-site-9cbbd.firebaseapp.com",
-      projectId: "login-site-9cbbd",
-      storageBucket: "login-site-9cbbd.appspot.com",
-      messagingSenderId: "703993528666",
-      appId: "1:703993528666:web:1e7a02cb5b611e24c97363"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+    authDomain: "login-site-9cbbd.firebaseapp.com",
+    projectId: "login-site-9cbbd",
+    storageBucket: "login-site-9cbbd.appspot.com",
+    messagingSenderId: "703993528666",
+    appId: "1:703993528666:web:1e7a02cb5b611e24c97363"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-    // Verifica se está logado
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "index.html"; // redireciona para login
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "index.html";
+    }
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    signOut(auth).then(() => {
+      window.location.href = "index.html";
+    });
+  });
+</script>
+
+<script>
+  // Tema e animação Matrix
+  const canvas = document.getElementById('matrixCanvas');
+  const ctx = canvas.getContext('2d');
+  let width = window.innerWidth;
+  let height = window.innerHeight;
+  canvas.width = width;
+  canvas.height = height;
+
+  const letters = 'アァイィウヴエカガキクグケゲコサザシスセソタチツテトナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤユヨラリルレロワンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$¥#';
+  const fontSize = 16;
+  let columns = Math.floor(width / fontSize);
+  let drops = Array(columns).fill(1);
+  let currentColumn = -1;
+  let currentDrop = 0;
+  let previousColumns = [];
+  let isDarkTheme = localStorage.getItem('theme') === 'dark';
+
+  document.body.className = isDarkTheme ? 'dark' : 'light';
+
+  function draw() {
+    if (isDarkTheme) {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = '#0F0';
+    } else {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = '#003300';
+    }
+
+    ctx.font = fontSize + 'px monospace';
+
+    if (!isDarkTheme) {
+      if (currentColumn === -1 || currentDrop * fontSize > height) {
+        if (currentColumn !== -1) {
+          previousColumns.push({ column: currentColumn, drop: currentDrop });
+        }
+        currentColumn = Math.floor(Math.random() * columns);
+        currentDrop = 0;
       }
-    });
 
-    // Logout
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      signOut(auth).then(() => {
-        window.location.href = "index.html";
-      });
-    });
-  </script>
+      const text = letters.charAt(Math.floor(Math.random() * letters.length));
+      ctx.fillText(text, currentColumn * fontSize, currentDrop * fontSize);
+      currentDrop++;
+
+      previousColumns = previousColumns.filter(c => c.drop * fontSize < height);
+      for (const c of previousColumns) {
+        const trailText = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(trailText, c.column * fontSize, c.drop * fontSize);
+        c.drop++;
+      }
+    } else {
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+  }
+
+  setInterval(draw, 50);
+
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+  const themeLabel = document.getElementById('themeLabel');
+
+  function updateThemeDisplay() {
+    document.body.className = isDarkTheme ? 'dark' : 'light';
+    themeToggle.classList.toggle('active', isDarkTheme);
+    themeIcon.textContent = isDarkTheme ? '🕶️' : '⚪️';
+    themeLabel.textContent = isDarkTheme ? 'Tema Escuro' : 'Tema Claro';
+    localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+  }
+
+  themeToggle.addEventListener('click', () => {
+    isDarkTheme = !isDarkTheme;
+    updateThemeDisplay();
+  });
+
+  window.addEventListener('resize', () => {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    columns = Math.floor(width / fontSize);
+    drops = Array(columns).fill(1);
+    previousColumns = [];
+    currentColumn = -1;
+    currentDrop = 0;
+  });
+
+  updateThemeDisplay(); // Inicializa com o tema salvo
+</script>
+
 </body>
 </html>
