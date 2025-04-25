@@ -178,7 +178,6 @@
 </script>
 
 <script>
-  // Tema e animação Matrix
   const canvas = document.getElementById('matrixCanvas');
   const ctx = canvas.getContext('2d');
   let width = window.innerWidth;
@@ -198,19 +197,28 @@
   document.body.className = isDarkTheme ? 'dark' : 'light';
 
   function draw() {
-    if (isDarkTheme) {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-      ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = '#0F0';
-    } else {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-      ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = '#003300';
-    }
-
     ctx.font = fontSize + 'px monospace';
 
-    if (!isDarkTheme) {
+    if (isDarkTheme) {
+      // Fundo escuro - Uma gota por vez
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = '#0F0';
+
+      if (currentColumn === -1 || currentDrop * fontSize > height) {
+        currentColumn = Math.floor(Math.random() * columns);
+        currentDrop = 0;
+      }
+
+      const text = letters.charAt(Math.floor(Math.random() * letters.length));
+      ctx.fillText(text, currentColumn * fontSize, currentDrop * fontSize);
+      currentDrop++;
+    } else {
+      // Fundo claro - chuva lenta com pouco rastro
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = '#003300';
+
       if (currentColumn === -1 || currentDrop * fontSize > height) {
         if (currentColumn !== -1) {
           previousColumns.push({ column: currentColumn, drop: currentDrop });
@@ -229,19 +237,11 @@
         ctx.fillText(trailText, c.column * fontSize, c.drop * fontSize);
         c.drop++;
       }
-    } else {
-      for (let i = 0; i < drops.length; i++) {
-        const text = letters.charAt(Math.floor(Math.random() * letters.length));
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-        if (drops[i] * fontSize > height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
-      }
     }
   }
 
-  setInterval(draw, 50);
+  let animationSpeed = 100; // mais lento para ambos os temas
+  let drawInterval = setInterval(draw, animationSpeed);
 
   const themeToggle = document.getElementById('themeToggle');
   const themeIcon = document.getElementById('themeIcon');
@@ -253,6 +253,20 @@
     themeIcon.textContent = isDarkTheme ? '🕶️' : '⚪️';
     themeLabel.textContent = isDarkTheme ? 'Tema Escuro' : 'Tema Claro';
     localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+
+    // reiniciar animação com novo comportamento
+    clearInterval(drawInterval);
+    drawInterval = setInterval(draw, animationSpeed);
+    // resetar estado
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    columns = Math.floor(width / fontSize);
+    drops = Array(columns).fill(1);
+    previousColumns = [];
+    currentColumn = -1;
+    currentDrop = 0;
   }
 
   themeToggle.addEventListener('click', () => {
@@ -274,6 +288,7 @@
 
   updateThemeDisplay(); // Inicializa com o tema salvo
 </script>
+
 
 </body>
 </html>
