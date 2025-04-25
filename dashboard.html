@@ -231,12 +231,21 @@
       ctx.fillText(text, currentColumn * fontSize, currentDrop * fontSize);
       currentDrop++;
 
-      previousColumns = previousColumns.filter(c => c.drop * fontSize < height);
-      for (const c of previousColumns) {
-        const trailText = letters.charAt(Math.floor(Math.random() * letters.length));
-        ctx.fillText(trailText, c.column * fontSize, c.drop * fontSize);
-        c.drop++;
-      }
+     // Caudas suaves e curtas
+previousColumns = previousColumns.filter(c => c.drop * fontSize < height);
+for (const c of previousColumns) {
+  for (let i = 0; i < 3; i++) { // Apenas 3 caracteres por cauda
+    const y = (c.drop - i) * fontSize;
+    if (y < 0) continue;
+
+    const trailText = letters.charAt(Math.floor(Math.random() * letters.length));
+    ctx.globalAlpha = 1 - i * 0.33; // Transparência gradual
+    ctx.fillText(trailText, c.column * fontSize, y);
+  }
+  c.drop++;
+}
+ctx.globalAlpha = 1.0; // Resetar opacidade
+
     }
   }
 
