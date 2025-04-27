@@ -10,7 +10,7 @@
       height: 100%;
       overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      transition: background-color 0.5s ease, color 0.5s ease;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     canvas {
@@ -22,52 +22,69 @@
       height: 100vh;
     }
 
-    /* Barra de Navegação */
-    nav {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      color: #0f0;
+    /* Navbar */
+    .navbar {
       display: flex;
-      justify-content: center;
-      gap: 30px;
-      padding: 15px 0;
-      z-index: 10;
-      backdrop-filter: blur(5px);
+      justify-content: space-between;
+      align-items: center;
+      background-color: rgba(0,0,0,0.8);
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 3;
+      color: white;
     }
 
-    nav a {
-      color: #0f0;
+    .navbar .welcome {
+      font-weight: bold;
+    }
+
+    .navbar .links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .navbar a {
+      color: white;
       text-decoration: none;
       font-weight: bold;
-      font-size: 16px;
       transition: color 0.3s;
     }
 
-    nav a:hover {
-      color: #fff;
+    .navbar a:hover {
+      color: #0f0;
     }
 
-    /* Área de Conteúdo */
+    /* Conteúdo */
+    h1 {
+      margin-top: 120px;
+      text-align: center;
+    }
+
     .content {
       max-width: 800px;
+      margin: 20px auto;
       background-color: rgba(0, 255, 0, 0.05);
       padding: 20px;
       border-radius: 12px;
       border: 1px solid currentColor;
-      margin: 100px auto 0 auto;
       box-shadow: none;
+      color: inherit;
     }
 
     body.light .content {
       background-color: rgba(0, 0, 0, 0.05);
       border-color: #000;
       box-shadow: 0 0 10px #000;
+      color: #000;
     }
 
-    h1 {
-      text-align: center;
+    body.dark .content {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-color: #fff;
+      color: #fff;
     }
 
     button {
@@ -88,7 +105,7 @@
     /* Tema Toggle */
     .theme-toggle-container {
       position: fixed;
-      top: 10px;
+      bottom: 10px;
       right: 10px;
       display: flex;
       align-items: center;
@@ -98,7 +115,7 @@
       backdrop-filter: blur(5px);
       border-radius: 10px;
       font-size: 14px;
-      z-index: 11;
+      z-index: 2;
     }
 
     .theme-toggle {
@@ -140,30 +157,33 @@
 
 <canvas id="matrixCanvas"></canvas>
 
-<!-- Barra de Navegação -->
-<nav>
-  <a href="#" onclick="showPage('morpheus')">Morpheus</a>
-  <a href="#" onclick="showPage('dados')">Dados do Usuário</a>
-  <a href="#" onclick="showPage('fundamentacao')">Fundamentação Teórica</a>
-</nav>
+<!-- Navbar -->
+<div class="navbar">
+  <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
+  <div class="links">
+    <a href="#">Morpheus</a>
+    <a href="#">Dados do Usuário</a>
+    <a href="#">Fundamentação Teórica</a>
+  </div>
+</div>
+
+<h1>Bem-vindo ao Dashboard</h1>
+
+<div class="content">
+  <p>Esta é a área restrita. Aqui você poderá colocar informações do fundo de investimento, relatórios, gráficos, etc.</p>
+  <p>Você está logado. 👁️‍🗨️</p>
+  <button id="logoutBtn">Sair</button>
+</div>
 
 <!-- Botão de Tema -->
 <div class="theme-toggle-container">
   <div class="theme-label">
-    <span id="themeIcon">⚪️</span>
+    <span class="theme-icon" id="themeIcon">⚪️</span>
     <span id="themeLabel">Tema Claro</span>
   </div>
   <div class="theme-toggle" id="themeToggle"></div>
 </div>
 
-<!-- Área de Conteúdo -->
-<div class="content" id="contentArea">
-  <h1>Morpheus</h1>
-  <p>Bem-vindo ao Dashboard Morpheus.</p>
-  <button id="logoutBtn">Sair</button>
-</div>
-
-<!-- Firebase Auth -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
@@ -181,7 +201,10 @@
   const auth = getAuth(app);
 
   onAuthStateChanged(auth, (user) => {
-    if (!user) {
+    if (user) {
+      const welcomeElement = document.getElementById('welcomeUser');
+      welcomeElement.textContent = `Bem-vindo(a), ${user.displayName || 'Usuário'}`;
+    } else {
       window.location.href = "index.html";
     }
   });
@@ -193,7 +216,6 @@
   });
 </script>
 
-<!-- Script de Animação e Tema -->
 <script>
   const canvas = document.getElementById('matrixCanvas');
   const ctx = canvas.getContext('2d');
@@ -211,11 +233,13 @@
   let previousColumns = [];
   let isDarkTheme = localStorage.getItem('theme') === 'dark';
 
+  document.body.className = isDarkTheme ? 'dark' : 'light';
+
   function draw() {
     ctx.font = fontSize + 'px monospace';
 
     if (isDarkTheme) {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillStyle = '#000';
       ctx.fillRect(0, 0, width, height);
       ctx.fillStyle = '#0F0';
 
@@ -228,7 +252,7 @@
       ctx.fillText(text, currentColumn * fontSize, currentDrop * fontSize);
       currentDrop++;
     } else {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.fillStyle = '#fff';
       ctx.fillRect(0, 0, width, height);
       ctx.fillStyle = '#003300';
 
@@ -249,6 +273,7 @@
         for (let i = 0; i < 3; i++) {
           const y = (c.drop - i) * fontSize;
           if (y < 0) continue;
+
           const trailText = letters.charAt(Math.floor(Math.random() * letters.length));
           ctx.globalAlpha = 1 - i * 0.33;
           ctx.fillText(trailText, c.column * fontSize, y);
@@ -259,8 +284,7 @@
     }
   }
 
-  let animationSpeed = 350;
-  let drawInterval = setInterval(draw, animationSpeed);
+  let drawInterval = setInterval(draw, 80);
 
   const themeToggle = document.getElementById('themeToggle');
   const themeIcon = document.getElementById('themeIcon');
@@ -272,9 +296,8 @@
     themeIcon.textContent = isDarkTheme ? '🕶️' : '⚪️';
     themeLabel.textContent = isDarkTheme ? 'Tema Escuro' : 'Tema Claro';
     localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
-
     clearInterval(drawInterval);
-    drawInterval = setInterval(draw, animationSpeed);
+    drawInterval = setInterval(draw, 80);
     width = window.innerWidth;
     height = window.innerHeight;
     canvas.width = width;
@@ -304,37 +327,6 @@
   });
 
   updateThemeDisplay();
-
-  // Trocar páginas
-  function showPage(page) {
-    const content = document.getElementById('contentArea');
-    if (page === 'morpheus') {
-      content.innerHTML = `
-        <h1>Morpheus</h1>
-        <p>Bem-vindo ao Dashboard Morpheus.</p>
-        <button id="logoutBtn">Sair</button>
-      `;
-    } else if (page === 'dados') {
-      content.innerHTML = `
-        <h1>Dados do Usuário</h1>
-        <p>Informações detalhadas sobre o usuário logado serão exibidas aqui.</p>
-      `;
-    } else if (page === 'fundamentacao') {
-      content.innerHTML = `
-        <h1>Fundamentação Teórica</h1>
-        <p>Aqui será colocado o conteúdo teórico, relatórios e explicações do fundo de investimento.</p>
-      `;
-    }
-
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        signOut(auth).then(() => {
-          window.location.href = "index.html";
-        });
-      });
-    }
-  }
 </script>
 
 </body>
