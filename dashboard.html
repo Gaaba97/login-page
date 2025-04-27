@@ -27,7 +27,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: rgba(0,0,0,0.8);
+      background-color: rgba(0, 0, 0, 0.8);
       padding: 10px 20px;
       position: fixed;
       width: 100%;
@@ -61,6 +61,7 @@
     h1 {
       margin-top: 120px;
       text-align: center;
+      color: inherit;
     }
 
     .content {
@@ -70,14 +71,12 @@
       padding: 20px;
       border-radius: 12px;
       border: 1px solid currentColor;
-      box-shadow: none;
       color: inherit;
     }
 
     body.light .content {
       background-color: rgba(0, 0, 0, 0.05);
       border-color: #000;
-      box-shadow: 0 0 10px #000;
       color: #000;
     }
 
@@ -228,63 +227,29 @@
   const fontSize = 16;
   let columns = Math.floor(width / fontSize);
   let drops = Array(columns).fill(1);
-  let currentColumn = -1;
-  let currentDrop = 0;
-  let previousColumns = [];
   let isDarkTheme = localStorage.getItem('theme') === 'dark';
 
   document.body.className = isDarkTheme ? 'dark' : 'light';
 
   function draw() {
+    ctx.fillStyle = isDarkTheme ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)';
+    ctx.fillRect(0, 0, width, height);
+    
+    ctx.fillStyle = isDarkTheme ? '#0F0' : '#003300';
     ctx.font = fontSize + 'px monospace';
 
-    if (isDarkTheme) {
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = '#0F0';
-
-      if (currentColumn === -1 || currentDrop * fontSize > height) {
-        currentColumn = Math.floor(Math.random() * columns);
-        currentDrop = 0;
-      }
-
+    for (let i = 0; i < drops.length; i++) {
       const text = letters.charAt(Math.floor(Math.random() * letters.length));
-      ctx.fillText(text, currentColumn * fontSize, currentDrop * fontSize);
-      currentDrop++;
-    } else {
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = '#003300';
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-      if (currentColumn === -1 || currentDrop * fontSize > height) {
-        if (currentColumn !== -1) {
-          previousColumns.push({ column: currentColumn, drop: currentDrop });
-        }
-        currentColumn = Math.floor(Math.random() * columns);
-        currentDrop = 0;
+      if (drops[i] * fontSize > height && Math.random() > 0.975) {
+        drops[i] = 0;
       }
-
-      const text = letters.charAt(Math.floor(Math.random() * letters.length));
-      ctx.fillText(text, currentColumn * fontSize, currentDrop * fontSize);
-      currentDrop++;
-
-      previousColumns = previousColumns.filter(c => c.drop * fontSize < height);
-      for (const c of previousColumns) {
-        for (let i = 0; i < 3; i++) {
-          const y = (c.drop - i) * fontSize;
-          if (y < 0) continue;
-
-          const trailText = letters.charAt(Math.floor(Math.random() * letters.length));
-          ctx.globalAlpha = 1 - i * 0.33;
-          ctx.fillText(trailText, c.column * fontSize, y);
-        }
-        c.drop++;
-      }
-      ctx.globalAlpha = 1.0;
+      drops[i]++;
     }
   }
 
-  let drawInterval = setInterval(draw, 80);
+  setInterval(draw, 50); // mais fluído
 
   const themeToggle = document.getElementById('themeToggle');
   const themeIcon = document.getElementById('themeIcon');
@@ -296,17 +261,6 @@
     themeIcon.textContent = isDarkTheme ? '🕶️' : '⚪️';
     themeLabel.textContent = isDarkTheme ? 'Tema Escuro' : 'Tema Claro';
     localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
-    clearInterval(drawInterval);
-    drawInterval = setInterval(draw, 80);
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-    columns = Math.floor(width / fontSize);
-    drops = Array(columns).fill(1);
-    previousColumns = [];
-    currentColumn = -1;
-    currentDrop = 0;
   }
 
   themeToggle.addEventListener('click', () => {
@@ -321,9 +275,6 @@
     canvas.height = height;
     columns = Math.floor(width / fontSize);
     drops = Array(columns).fill(1);
-    previousColumns = [];
-    currentColumn = -1;
-    currentDrop = 0;
   });
 
   updateThemeDisplay();
