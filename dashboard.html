@@ -27,7 +27,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap; /* Permite quebra em telas menores */
       background-color: rgba(0, 0, 0, 0.8);
       padding: 10px 20px;
       position: fixed;
@@ -36,30 +35,53 @@
       left: 0;
       z-index: 3;
       color: white;
+      box-sizing: border-box;
     }
 
     .navbar .welcome {
       font-weight: bold;
       white-space: nowrap;
+      font-size: 16px;
     }
 
     .navbar .links {
       display: flex;
-      gap: 10px; /* Reduzido para caber melhor */
-      flex-wrap: wrap; /* Quebra se faltar espaço */
-      justify-content: center;
+      gap: 20px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      white-space: nowrap;
     }
 
     .navbar a {
       color: white;
       text-decoration: none;
       font-weight: bold;
+      white-space: nowrap;
+      font-size: 16px;
       transition: color 0.3s;
-      white-space: nowrap; /* Evita quebra esquisita */
     }
 
     .navbar a:hover {
       color: #0f0;
+    }
+
+    /* Responsivo para telas pequenas */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 8px 15px;
+      }
+
+      .navbar .welcome {
+        font-size: 14px;
+      }
+
+      .navbar .links {
+        gap: 10px;
+      }
+
+      .navbar a {
+        font-size: 14px;
+      }
     }
 
     h1 {
@@ -252,7 +274,7 @@
     }
   }
 
-  setInterval(draw, 300); // Velocidade da chuva mantida lenta
+  setInterval(draw, 300);
 
   const themeToggle = document.getElementById('themeToggle');
   const themeIcon = document.getElementById('themeIcon');
@@ -265,7 +287,6 @@
     themeLabel.textContent = isDarkTheme ? 'Tema Escuro' : 'Tema Claro';
     localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
 
-    // Atualiza o fundo do canvas instantaneamente ao trocar o tema
     ctx.fillStyle = isDarkTheme ? 'black' : 'white';
     ctx.fillRect(0, 0, width, height);
   }
