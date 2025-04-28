@@ -27,6 +27,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap; /* Permite quebra em telas menores */
       background-color: rgba(0, 0, 0, 0.8);
       padding: 10px 20px;
       position: fixed;
@@ -39,11 +40,14 @@
 
     .navbar .welcome {
       font-weight: bold;
+      white-space: nowrap;
     }
 
     .navbar .links {
       display: flex;
-      gap: 20px;
+      gap: 10px; /* Reduzido para caber melhor */
+      flex-wrap: wrap; /* Quebra se faltar espaço */
+      justify-content: center;
     }
 
     .navbar a {
@@ -51,6 +55,7 @@
       text-decoration: none;
       font-weight: bold;
       transition: color 0.3s;
+      white-space: nowrap; /* Evita quebra esquisita */
     }
 
     .navbar a:hover {
@@ -247,7 +252,7 @@
     }
   }
 
-  setInterval(draw, 300); // Atualiza só uma gota
+  setInterval(draw, 300); // Velocidade da chuva mantida lenta
 
   const themeToggle = document.getElementById('themeToggle');
   const themeIcon = document.getElementById('themeIcon');
@@ -259,6 +264,10 @@
     themeIcon.textContent = isDarkTheme ? '🕶️' : '⚪️';
     themeLabel.textContent = isDarkTheme ? 'Tema Escuro' : 'Tema Claro';
     localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+
+    // Atualiza o fundo do canvas instantaneamente ao trocar o tema
+    ctx.fillStyle = isDarkTheme ? 'black' : 'white';
+    ctx.fillRect(0, 0, width, height);
   }
 
   themeToggle.addEventListener('click', () => {
