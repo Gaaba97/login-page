@@ -22,6 +22,7 @@
       height: 100vh;
     }
 
+    /* Navbar */
     .navbar {
       display: flex;
       justify-content: space-between;
@@ -64,6 +65,7 @@
       color: #0f0;
     }
 
+    /* Responsivo para telas pequenas */
     @media (max-width: 768px) {
       .navbar {
         padding: 8px 15px;
@@ -179,6 +181,7 @@
 
 <canvas id="matrixCanvas"></canvas>
 
+<!-- Navbar -->
 <div class="navbar">
   <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
   <div class="links">
@@ -196,6 +199,7 @@
   <button id="logoutBtn">Sair</button>
 </div>
 
+<!-- Botão de Tema -->
 <div class="theme-toggle-container">
   <div class="theme-label">
     <span class="theme-icon" id="themeIcon">⚪️</span>
@@ -246,31 +250,31 @@
 
   const letters = 'アァイィウヴエカガキクグケゲコサザシスセソタチツテトナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤユヨラリルレロワンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$¥#';
   const fontSize = 16;
-  const columns = Math.floor(width / fontSize);
-  const drops = Array(columns).fill(1);
-
+  let x = Math.random() * width;
+  let y = 0;
   let isDarkTheme = localStorage.getItem('theme') === 'dark';
+
   document.body.className = isDarkTheme ? 'dark' : 'light';
 
   function draw() {
-    ctx.fillStyle = isDarkTheme ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)';
+    ctx.fillStyle = isDarkTheme ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
     ctx.fillRect(0, 0, width, height);
 
     ctx.fillStyle = isDarkTheme ? '#0F0' : '#003300';
     ctx.font = fontSize + 'px monospace';
 
-    for (let i = 0; i < drops.length; i++) {
-      const text = letters.charAt(Math.floor(Math.random() * letters.length));
-      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+    const text = letters.charAt(Math.floor(Math.random() * letters.length));
+    ctx.fillText(text, x, y);
 
-      if (drops[i] * fontSize > height && Math.random() > 0.975) {
-        drops[i] = 0;
-      }
-      drops[i]++;
+    y += fontSize;
+
+    if (y > height) {
+      x = Math.random() * width;
+      y = 0;
     }
   }
 
-  setInterval(draw, 33);
+  setInterval(draw, 300);
 
   const themeToggle = document.getElementById('themeToggle');
   const themeIcon = document.getElementById('themeIcon');
@@ -282,6 +286,9 @@
     themeIcon.textContent = isDarkTheme ? '🕶️' : '⚪️';
     themeLabel.textContent = isDarkTheme ? 'Tema Escuro' : 'Tema Claro';
     localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+
+    ctx.fillStyle = isDarkTheme ? 'black' : 'white';
+    ctx.fillRect(0, 0, width, height);
   }
 
   themeToggle.addEventListener('click', () => {
