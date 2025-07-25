@@ -139,39 +139,44 @@
       margin-right: 5px;
     }
 
-@media (max-width: 480px) {
-  .theme-toggle-container {
-    font-size: 13px;
-    gap: 8px;
-    padding: 8px 12px;
-  }
+    /* MUDANÇA APLICADA AQUI */
+    body.dark #themeLabel {
+      color: white;
+    }
 
-  .theme-toggle {
-    width: 60px;
-    height: 30px;
-  }
+    @media (max-width: 480px) {
+      .theme-toggle-container {
+        font-size: 13px;
+        gap: 8px;
+        padding: 8px 12px;
+      }
 
-  .theme-toggle::before {
-    width: 26px;
-    height: 26px;
-    top: 2px;
-    left: 2px;
-  }
+      .theme-toggle {
+        width: 60px;
+        height: 30px;
+      }
 
-  .theme-toggle.active::before {
-    transform: translateX(30px);
-  }
+      .theme-toggle::before {
+        width: 26px;
+        height: 26px;
+        top: 2px;
+        left: 2px;
+      }
 
-  .theme-icon {
-    font-size: 18px;
-  }
+      .theme-toggle.active::before {
+        transform: translateX(30px);
+      }
 
-  .login-box {
-    padding: 40px 25px;
-    width: 95%;
-    max-width: 360px;
-  }
-}
+      .theme-icon {
+        font-size: 18px;
+      }
+
+      .login-box {
+        padding: 40px 25px;
+        width: 95%;
+        max-width: 360px;
+      }
+    }
 
   </style>
 </head>
@@ -211,7 +216,6 @@
   let currentDrop = 0;
   let previousColumns = [];
 
-  // Verifica se há um tema salvo
   const savedTheme = localStorage.getItem('theme') || 'light';
   let isDarkTheme = savedTheme === 'dark';
   document.body.className = savedTheme;
@@ -270,7 +274,6 @@
     themeIcon.textContent = isDarkTheme ? '🕶️' : '⚪️';
     themeLabel.textContent = isDarkTheme ? 'Tema Escuro' : 'Tema Claro';
 
-    // Salva o tema no localStorage
     localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
   });
 
@@ -310,7 +313,7 @@
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      window.location.href = "dashboard.html"; // redireciona após login
+      window.location.href = "dashboard.html";
     } catch (error) {
       alert("Erro ao fazer login: " + error.message);
     }
