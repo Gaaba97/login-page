@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Morpheus</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <style>
     html, body {
       margin: 0;
@@ -139,7 +140,6 @@
       margin-right: 5px;
     }
 
-    /* MUDANÇA APLICADA AQUI */
     body.dark #themeLabel {
       color: white;
     }
@@ -177,7 +177,6 @@
         max-width: 360px;
       }
     }
-
   </style>
 </head>
 <body class="light">
@@ -273,7 +272,6 @@
     themeToggle.classList.toggle('active', isDarkTheme);
     themeIcon.textContent = isDarkTheme ? '🕶️' : '⚪️';
     themeLabel.textContent = isDarkTheme ? 'Tema Escuro' : 'Tema Claro';
-
     localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
   });
 
