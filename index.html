@@ -144,6 +144,13 @@
       color: white;
     }
 
+    #errorMessage {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+    }
+
     @media (max-width: 480px) {
       .theme-toggle-container {
         font-size: 13px;
@@ -188,6 +195,7 @@
   <input type="email" id="email" placeholder="Email">
   <input type="password" id="password" placeholder="Senha">
   <button id="loginBtn">Entrar</button>
+  <p id="errorMessage"></p> <!-- Mensagem de erro -->
 </div>
 
 <div class="theme-toggle-container">
@@ -305,15 +313,26 @@
   const auth = getAuth(app);
 
   const loginBtn = document.getElementById('loginBtn');
+  const errorMessage = document.getElementById('errorMessage');
+
   loginBtn.addEventListener('click', async () => {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
+    errorMessage.style.display = 'none';
+    errorMessage.textContent = '';
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
       window.location.href = "dashboard.html";
     } catch (error) {
-      alert("Erro ao fazer login: " + error.message);
+      let msg = "Erro ao fazer login.";
+      if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
+        msg = "Email ou senha incorretos.";
+      } else if (error.code === "auth/invalid-email") {
+        msg = "Email inválido.";
+      }
+      errorMessage.textContent = msg;
+      errorMessage.style.display = 'block';
     }
   });
 </script>
