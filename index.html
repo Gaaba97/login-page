@@ -11,8 +11,7 @@
       height: 100%;
       overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: white;
-      color: black;
+      transition: background-color 0.5s ease, color 0.5s ease;
     }
 
     canvas {
@@ -20,6 +19,8 @@
       top: 0;
       left: 0;
       z-index: -1;
+      width: 100vw;
+      height: 100vh;
     }
 
     .login-box {
@@ -40,7 +41,16 @@
 
     .login-box h2 {
       margin-bottom: 20px;
-      color: black;
+      transition: color 0.5s ease;
+    }
+
+    body.light .login-box h2 {
+      color: #000;
+    }
+
+    body.dark .login-box h2 {
+      color: #fff;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
     }
 
     .login-box input,
@@ -69,6 +79,71 @@
       background-color: #003d80;
     }
 
+    .theme-toggle-container {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 10px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(5px);
+      border-radius: 10px;
+      font-size: 14px;
+      z-index: 2;
+      max-width: 90vw;
+    }
+
+    .theme-toggle {
+      width: 50px;
+      height: 25px;
+      border-radius: 50px;
+      background-color: #ccc;
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+
+    .theme-toggle.active {
+      background-color: #4caf50;
+    }
+
+    .theme-toggle::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 21px;
+      height: 21px;
+      border-radius: 50%;
+      background-color: white;
+      transition: transform 0.3s ease;
+    }
+
+    .theme-toggle.active::before {
+      transform: translateX(25px);
+    }
+
+    .theme-label {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+    }
+
+    .theme-icon {
+      font-size: 20px;
+      margin-right: 5px;
+    }
+
+    body.dark #themeLabel {
+      color: white;
+    }
+
     #errorMessage {
       color: red;
       font-size: 14px;
@@ -77,6 +152,32 @@
     }
 
     @media (max-width: 480px) {
+      .theme-toggle-container {
+        font-size: 13px;
+        gap: 8px;
+        padding: 8px 12px;
+      }
+
+      .theme-toggle {
+        width: 60px;
+        height: 30px;
+      }
+
+      .theme-toggle::before {
+        width: 26px;
+        height: 26px;
+        top: 2px;
+        left: 2px;
+      }
+
+      .theme-toggle.active::before {
+        transform: translateX(30px);
+      }
+
+      .theme-icon {
+        font-size: 18px;
+      }
+
       .login-box {
         padding: 40px 25px;
         width: 95%;
@@ -85,7 +186,7 @@
     }
   </style>
 </head>
-<body>
+<body class="light">
 
 <canvas id="matrixCanvas"></canvas>
 
@@ -94,46 +195,104 @@
   <input type="email" id="email" placeholder="Email">
   <input type="password" id="password" placeholder="Senha">
   <button id="loginBtn">Entrar</button>
-  <p id="errorMessage"></p>
+  <p id="errorMessage"></p> <!-- Mensagem de erro -->
+</div>
+
+<div class="theme-toggle-container">
+  <div class="theme-label">
+    <span class="theme-icon" id="themeIcon">⚪️</span>
+    <span id="themeLabel">Tema Claro</span>
+  </div>
+  <div class="theme-toggle" id="themeToggle"></div>
 </div>
 
 <script>
   const canvas = document.getElementById('matrixCanvas');
   const ctx = canvas.getContext('2d');
-
-  canvas.height = window.innerHeight;
-  canvas.width = window.innerWidth;
+  let width = window.innerWidth;
+  let height = window.innerHeight;
+  canvas.width = width;
+  canvas.height = height;
 
   const letters = 'アァイィウヴエカガキクグケゲコサザシスセソタチツテトナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤユヨラリルレロワンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$¥#';
-  const fontSize = 14;
-  const columns = canvas.width / fontSize;
+  const fontSize = 16;
+  let columns = Math.floor(width / fontSize);
+  let drops = Array(columns).fill(1);
 
-  const drops = Array(Math.floor(columns)).fill(1);
+  let currentColumn = -1;
+  let currentDrop = 0;
+  let previousColumns = [];
+
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  let isDarkTheme = savedTheme === 'dark';
+  document.body.className = savedTheme;
 
   function draw() {
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (isDarkTheme) {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = '#0F0';
+      ctx.font = fontSize + 'px monospace';
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    } else {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = '#003300';
+      ctx.font = fontSize + 'px monospace';
 
-    ctx.fillStyle = '#003300';
-    ctx.font = fontSize + "px monospace";
-
-    for (let i = 0; i < drops.length; i++) {
-      const text = letters[Math.floor(Math.random() * letters.length)];
-      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-        drops[i] = 0;
+      if (currentColumn === -1 || currentDrop * fontSize > height) {
+        if (currentColumn !== -1) {
+          previousColumns.push({ column: currentColumn, drop: currentDrop });
+        }
+        currentColumn = Math.floor(Math.random() * columns);
+        currentDrop = 0;
       }
 
-      drops[i]++;
+      const text = letters.charAt(Math.floor(Math.random() * letters.length));
+      ctx.fillText(text, currentColumn * fontSize, currentDrop * fontSize);
+      currentDrop++;
+
+      previousColumns = previousColumns.filter(c => c.drop * fontSize < height);
+      for (const c of previousColumns) {
+        const trailText = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(trailText, c.column * fontSize, c.drop * fontSize);
+        c.drop++;
+      }
     }
   }
 
-  setInterval(draw, 33);
+  setInterval(draw, 50);
+
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+  const themeLabel = document.getElementById('themeLabel');
+
+  themeToggle.addEventListener('click', () => {
+    isDarkTheme = !isDarkTheme;
+    document.body.className = isDarkTheme ? 'dark' : 'light';
+    themeToggle.classList.toggle('active', isDarkTheme);
+    themeIcon.textContent = isDarkTheme ? '🕶️' : '⚪️';
+    themeLabel.textContent = isDarkTheme ? 'Tema Escuro' : 'Tema Claro';
+    localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+  });
 
   window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    columns = Math.floor(width / fontSize);
+    drops = Array(columns).fill(1);
+    previousColumns = [];
+    currentColumn = -1;
+    currentDrop = 0;
   });
 </script>
 
