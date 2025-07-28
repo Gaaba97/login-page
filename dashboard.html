@@ -227,29 +227,41 @@
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const docRef = doc(db, "usuarios", user.uid);
-        const docSnap = await getDoc(docRef);
+        try {
+          const docRef = doc(db, "usuarios", user.uid);
+          const docSnap = await getDoc(docRef);
 
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          const nome = data.nome || "Usuário";
-          const genero = (data.genero || "masculino").toLowerCase();
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            console.log("Dados do Firestore:", data); // Para depuração
+            const nome = data.nome || "Usuário";
+            const genero = (data.genero || "masculino").toLowerCase();
 
-          const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
-
-          document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
-        } else {
+            const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
+            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+          } else {
+            console.warn("Documento do usuário não encontrado no Firestore.");
+            document.getElementById("welcomeUser").textContent = `Bem-vindo(a), Usuário`;
+          }
+        } catch (error) {
+          console.error("Erro ao buscar dados do Firestore:", error);
           document.getElementById("welcomeUser").textContent = `Bem-vindo(a), Usuário`;
         }
       } else {
+        console.warn("Usuário não autenticado. Redirecionando para index.html.");
         window.location.href = "index.html";
       }
     });
 
     document.getElementById("logoutBtn").addEventListener("click", () => {
-      signOut(auth).then(() => {
-        window.location.href = "index.html";
-      });
+      signOut(auth)
+        .then(() => {
+          console.log("Usuário deslogado com sucesso.");
+          window.location.href = "index.html";
+        })
+        .catch((error) => {
+          console.error("Erro ao deslogar:", error);
+        });
     });
 
     // ====== BUSCAR DADOS DO GOOGLE SHEETS ======
@@ -257,18 +269,23 @@
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
     fetch(sheetURL)
-      .then((response) => response.text())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Erro na resposta da planilha: " + response.status);
+        }
+        return response.text();
+      })
       .then((csvText) => {
         const rows = csvText.trim().split("\n").map((row) => row.split(","));
 
         // Células específicas
-        const morpheusDia = rows[3][2];
-        const morpheusMes = rows[3][3];
-        const ibovDia = rows[4][2];
-        const ibovMes = rows[4][3];
-        const ppDia = rows[5][2];
-        const ppMes = rows[5][3];
-        const cota = rows[8] && rows[8][2] ? rows[8][2] : "";
+        const morpheusDia = rows[3]?.[2] || "...";
+        const morpheusMes = rows[3]?.[3] || "...";
+        const ibovDia = rows[4]?.[2] || "...";
+        const ibovMes = rows[4]?.[3] || "...";
+        const ppDia = rows[5]?.[2] || "...";
+        const ppMes = rows[5]?.[3] || "...";
+        const cota = rows[8]?.[2] || "...";
 
         document.getElementById("morpheusDia").textContent = morpheusDia;
         document.getElementById("morpheusMes").textContent = morpheusMes;
