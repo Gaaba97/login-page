@@ -11,7 +11,8 @@
       height: 100%;
       overflow: hidden;
       font-family: 'DM Sans', sans-serif;
-      transition: background-color 0.3s ease, color 0.3s ease;
+      background-color: white;
+      color: black;
     }
 
     canvas {
@@ -86,29 +87,16 @@
     h1 {
       margin-top: 120px;
       text-align: center;
-      color: inherit;
     }
 
     .content {
       max-width: 800px;
       margin: 20px auto;
-      background-color: rgba(0, 255, 0, 0.05);
+      background-color: rgba(0, 0, 0, 0.05);
       padding: 20px;
       border-radius: 12px;
-      border: 1px solid currentColor;
-      color: inherit;
-    }
-
-    body.light .content {
-      background-color: rgba(0, 0, 0, 0.05);
-      border-color: #000;
+      border: 1px solid #000;
       color: #000;
-    }
-
-    body.dark .content {
-      background-color: rgba(255, 255, 255, 0.05);
-      border-color: #fff;
-      color: #fff;
     }
 
     button {
@@ -124,73 +112,6 @@
 
     button:hover {
       background-color: #0c0;
-    }
-
-    .theme-toggle-container {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 5px 10px;
-      background-color: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(5px);
-      border-radius: 10px;
-      font-size: 14px;
-      z-index: 2;
-    }
-
-    .theme-toggle {
-      width: 50px;
-      height: 25px;
-      border-radius: 50px;
-      background-color: #ccc;
-      position: relative;
-      cursor: pointer;
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .theme-toggle:hover {
-      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-    }
-
-    .theme-toggle.active {
-      background-color: #4caf50;
-    }
-
-    .theme-toggle::before {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 21px;
-      height: 21px;
-      border-radius: 50%;
-      background-color: white;
-      transition: transform 0.3s ease;
-    }
-
-    .theme-toggle.active::before {
-      transform: translateX(25px);
-    }
-
-    .theme-label span#themeLabel {
-      font-weight: bold;
-    }
-
-    body.dark .theme-label span#themeLabel {
-      color: white;
-    }
-
-    body.dark .navbar {
-      background-color: white;
-      color: black;
-    }
-
-    body.dark .navbar a,
-    body.dark .navbar .welcome {
-      color: black;
     }
   </style>
 </head>
@@ -213,14 +134,6 @@
   <p>Esta é a área restrita. Aqui você poderá colocar informações do fundo de investimento, relatórios, gráficos, etc.</p>
   <p>Você está logado. 👁️‍🗨️</p>
   <button id="logoutBtn">Sair</button>
-</div>
-
-<div class="theme-toggle-container">
-  <div class="theme-label">
-    <span class="theme-icon" id="themeIcon">⚪️</span>
-    <span id="themeLabel">Tema Claro</span>
-  </div>
-  <div class="theme-toggle" id="themeToggle"></div>
 </div>
 
 <script type="module">
@@ -265,51 +178,29 @@
 
   const letters = 'アァイィウヴエカガキクグケゲコサザシスセソタチツテトナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤユヨラリルレロワンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$¥#';
   const fontSize = 16;
-  let x = Math.random() * width;
-  let y = 0;
-  let isDarkTheme = localStorage.getItem('theme') === 'dark';
-
-  document.body.className = isDarkTheme ? 'dark' : 'light';
+  const columns = Math.floor(width / fontSize);
+  const drops = Array(columns).fill(0);
 
   function draw() {
-    ctx.fillStyle = isDarkTheme ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
     ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = isDarkTheme ? '#0F0' : '#003300';
+    ctx.fillStyle = '#003300';
     ctx.font = fontSize + 'px monospace';
 
-    const text = letters.charAt(Math.floor(Math.random() * letters.length));
-    ctx.fillText(text, x, y);
+    for (let i = 0; i < drops.length; i++) {
+      const text = letters.charAt(Math.floor(Math.random() * letters.length));
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-    y += fontSize;
+      if (drops[i] * fontSize > height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
 
-    if (y > height) {
-      x = Math.random() * width;
-      y = 0;
+      drops[i]++;
     }
   }
 
-  setInterval(draw, 300);
-
-  const themeToggle = document.getElementById('themeToggle');
-  const themeIcon = document.getElementById('themeIcon');
-  const themeLabel = document.getElementById('themeLabel');
-
-  function updateThemeDisplay() {
-    document.body.className = isDarkTheme ? 'dark' : 'light';
-    themeToggle.classList.toggle('active', isDarkTheme);
-    themeIcon.textContent = isDarkTheme ? '🕶️' : '⚪️';
-    themeLabel.textContent = isDarkTheme ? 'Tema Escuro' : 'Tema Claro';
-    localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
-
-    ctx.fillStyle = isDarkTheme ? 'black' : 'white';
-    ctx.fillRect(0, 0, width, height);
-  }
-
-  themeToggle.addEventListener('click', () => {
-    isDarkTheme = !isDarkTheme;
-    updateThemeDisplay();
-  });
+  setInterval(draw, 50);
 
   window.addEventListener('resize', () => {
     width = window.innerWidth;
@@ -317,8 +208,6 @@
     canvas.width = width;
     canvas.height = height;
   });
-
-  updateThemeDisplay();
 </script>
 
 </body>
