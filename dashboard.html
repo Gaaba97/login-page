@@ -179,7 +179,7 @@
   const letters = 'アァイィウヴエカガキクグケゲコサザシスセソタチツテトナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤユヨラリルレロワンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$¥#';
   const fontSize = 16;
   const columns = Math.floor(width / fontSize);
-  const drops = Array(columns).fill(0);
+  const drops = Array(columns).fill(1);
 
   function draw() {
     ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
