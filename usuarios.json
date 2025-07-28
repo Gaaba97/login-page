@@ -1,0 +1,37 @@
+[
+  {
+    "email": "gabrielssimon7@gmail.com",
+    "nome": "Gabriel",
+    "genero": "masculino"
+  },
+  {
+    "email": "joao.rodriguez@gmail.com",
+    "nome": "João",
+    "genero": "masculino"
+  },
+  {
+    "email": "lucianafdrosa@gmail.com",
+    "nome": "Luciana",
+    "genero": "feminino"
+  },
+  {
+    "email": "luccaritzmann@gmail.com",
+    "nome": "Lucca",
+    "genero": "masculino"
+  },
+  {
+    "email": "bwlucascnaves@gmail.com",
+    "nome": "Lucas",
+    "genero": "masculino"
+  },
+  {
+    "email": "leonildassimon@hotmail.com",
+    "nome": "Leonilda",
+    "genero": "feminino"
+  },
+  {
+    "email": "larassimon@hotmail.com",
+    "nome": "Lara",
+    "genero": "feminino"
+  }
+]
