@@ -126,23 +126,22 @@
       text-align: center;
     }
 
-   button {
-  display: block;
-  margin: 30px auto 0;
-  padding: 12px 24px;
-  background-color: #ccc; /* cinza claro */
-  color: #000;
-  border: none;
-  font-weight: bold;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
+    button {
+      display: block;
+      margin: 30px auto 0;
+      padding: 12px 24px;
+      background-color: #ccc;
+      color: #000;
+      border: none;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
 
-button:hover {
-  background-color: #999; /* cinza médio no hover */
-}
-
+    button:hover {
+      background-color: #999;
+    }
   </style>
 </head>
 <body>
@@ -167,26 +166,26 @@ button:hover {
           <th>Mês</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="rentTable">
         <tr>
           <td>Morpheus</td>
-          <td>0,84%</td>
-          <td>-3,50%</td>
+          <td id="morpheusDia">...</td>
+          <td id="morpheusMes">...</td>
         </tr>
         <tr>
           <td>IBOV</td>
-          <td>-0,21%</td>
-          <td>-4,32%</td>
+          <td id="ibovDia">...</td>
+          <td id="ibovMes">...</td>
         </tr>
         <tr class="highlight">
           <td>p.p. IBOV</td>
-          <td>1,05</td>
-          <td>0,82</td>
+          <td id="ppDia">...</td>
+          <td id="ppMes">...</td>
         </tr>
       </tbody>
     </table>
 
-    <p>Cota: 0,965023</p>
+    <p id="cotaValor">Cota: ...</p>
 
     <button id="logoutBtn">Sair</button>
   </div>
@@ -222,6 +221,35 @@ button:hover {
       window.location.href = "index.html";
     });
   });
+
+  // ====== BUSCAR DADOS DO GOOGLE SHEETS ======
+  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTfMMrxJS9em6AGdlB03Ep7Dbj_MOQQXxkPUlYv2a6yiRI_lxKE_5rcXErXDRu5JHRHv3tEqDpM9FV8/pub?gid=1135997828&single=true&output=csv";
+
+  fetch(sheetURL)
+    .then(response => response.text())
+    .then(csvText => {
+      const rows = csvText.trim().split('\n').map(row => row.split(','));
+
+      // Células específicas
+      const morpheusDia = rows[3][2];
+      const morpheusMes = rows[3][3];
+      const ibovDia = rows[4][2];
+      const ibovMes = rows[4][3];
+      const ppDia = rows[5][2];
+      const ppMes = rows[5][3];
+      const cota = rows[6] && rows[6][3] ? rows[6][3] : "";
+
+      document.getElementById("morpheusDia").textContent = morpheusDia;
+      document.getElementById("morpheusMes").textContent = morpheusMes;
+      document.getElementById("ibovDia").textContent = ibovDia;
+      document.getElementById("ibovMes").textContent = ibovMes;
+      document.getElementById("ppDia").textContent = ppDia;
+      document.getElementById("ppMes").textContent = ppMes;
+      document.getElementById("cotaValor").textContent = `Cota: ${cota}`;
+    })
+    .catch(err => {
+      console.error("Erro ao carregar planilha:", err);
+    });
 </script>
 
 </body>
