@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Morpheus - Área Logada</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap"
+    rel="stylesheet"
+  />
   <style>
-    html, body {
+    html,
+    body {
       margin: 0;
       padding: 0;
       height: 100%;
-      font-family: 'DM Sans', sans-serif;
+      font-family: "DM Sans", sans-serif;
       background-color: white;
       color: black;
       display: flex;
@@ -112,17 +116,18 @@
       color: #fff;
     }
 
-    th, td {
+    th,
+    td {
       padding: 10px 14px;
     }
 
-tr.highlight {
-  background-color: transparent;
-}
+    tr.highlight {
+      background-color: transparent;
+    }
 
-tr.highlight td {
-  opacity: 1;
-}
+    tr.highlight td {
+      opacity: 1;
+    }
 
     p {
       margin-top: 20px;
@@ -149,112 +154,133 @@ tr.highlight td {
   </style>
 </head>
 <body>
-
-<div class="navbar">
-  <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
-  <div class="links">
-    <a href="#">Morpheus</a>
-    <a href="#">Dados do Usuário</a>
-    <a href="#">Fundamentação Teórica</a>
+  <div class="navbar">
+    <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
+    <div class="links">
+      <a href="#">Morpheus</a>
+      <a href="#">Dados do Usuário</a>
+      <a href="#">Fundamentação Teórica</a>
+    </div>
   </div>
-</div>
 
-<div class="main-wrapper">
-  <div class="content">
-    <h2>Rentabilidade</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>&nbsp;</th>
-          <th>25/07/2025</th>
-          <th>Mês</th>
-        </tr>
-      </thead>
-      <tbody id="rentTable">
-        <tr>
-          <td>Morpheus</td>
-          <td id="morpheusDia">...</td>
-          <td id="morpheusMes">...</td>
-        </tr>
-        <tr>
-          <td>IBOV</td>
-          <td id="ibovDia">...</td>
-          <td id="ibovMes">...</td>
-        </tr>
-        <tr class="highlight">
-          <td>p.p. IBOV</td>
-          <td id="ppDia">...</td>
-          <td id="ppMes">...</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="main-wrapper">
+    <div class="content">
+      <h2>Rentabilidade</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>&nbsp;</th>
+            <th>25/07/2025</th>
+            <th>Mês</th>
+          </tr>
+        </thead>
+        <tbody id="rentTable">
+          <tr>
+            <td>Morpheus</td>
+            <td id="morpheusDia">...</td>
+            <td id="morpheusMes">...</td>
+          </tr>
+          <tr>
+            <td>IBOV</td>
+            <td id="ibovDia">...</td>
+            <td id="ibovMes">...</td>
+          </tr>
+          <tr class="highlight">
+            <td>p.p. IBOV</td>
+            <td id="ppDia">...</td>
+            <td id="ppMes">...</td>
+          </tr>
+        </tbody>
+      </table>
 
-    <p id="cotaValor">Cota: ...</p>
+      <p id="cotaValor">Cota: ...</p>
 
-    <button id="logoutBtn">Sair</button>
+      <button id="logoutBtn">Sair</button>
+    </div>
   </div>
-</div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut,
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
-    authDomain: "login-site-9cbbd.firebaseapp.com",
-    projectId: "login-site-9cbbd",
-    storageBucket: "login-site-9cbbd.appspot.com",
-    messagingSenderId: "703993528666",
-    appId: "1:703993528666:web:1e7a02cb5b611e24c97363"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+      authDomain: "login-site-9cbbd.firebaseapp.com",
+      projectId: "login-site-9cbbd",
+      storageBucket: "login-site-9cbbd.appspot.com",
+      messagingSenderId: "703993528666",
+      appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      const welcomeElement = document.getElementById('welcomeUser');
-      welcomeElement.textContent = `Bem-vindo(a), ${user.displayName || 'Usuário'}`;
-    } else {
-      window.location.href = "index.html";
-    }
-  });
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const docRef = doc(db, "usuarios", user.uid);
+        const docSnap = await getDoc(docRef);
 
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    signOut(auth).then(() => {
-      window.location.href = "index.html";
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const nome = data.nome || "Usuário";
+          const genero = (data.genero || "masculino").toLowerCase();
+
+          const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
+
+          document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+        } else {
+          document.getElementById("welcomeUser").textContent = `Bem-vindo(a), Usuário`;
+        }
+      } else {
+        window.location.href = "index.html";
+      }
     });
-  });
 
-  // ====== BUSCAR DADOS DO GOOGLE SHEETS ======
-  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
-
-  fetch(sheetURL)
-    .then(response => response.text())
-    .then(csvText => {
-      const rows = csvText.trim().split('\n').map(row => row.split(','));
-
-      // Células específicas
-      const morpheusDia = rows[3][2];
-      const morpheusMes = rows[3][3];
-      const ibovDia = rows[4][2];
-      const ibovMes = rows[4][3];
-      const ppDia = rows[5][2];
-      const ppMes = rows[5][3];
-      const cota = rows[8] && rows[8][2] ? rows[8][2] : "";
-
-      document.getElementById("morpheusDia").textContent = morpheusDia;
-      document.getElementById("morpheusMes").textContent = morpheusMes;
-      document.getElementById("ibovDia").textContent = ibovDia;
-      document.getElementById("ibovMes").textContent = ibovMes;
-      document.getElementById("ppDia").textContent = ppDia;
-      document.getElementById("ppMes").textContent = ppMes;
-      document.getElementById("cotaValor").textContent = `Cota: ${cota}`;
-    })
-    .catch(err => {
-      console.error("Erro ao carregar planilha:", err);
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
     });
-</script>
 
+    // ====== BUSCAR DADOS DO GOOGLE SHEETS ======
+    const sheetURL =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
+
+    fetch(sheetURL)
+      .then((response) => response.text())
+      .then((csvText) => {
+        const rows = csvText.trim().split("\n").map((row) => row.split(","));
+
+        // Células específicas
+        const morpheusDia = rows[3][2];
+        const morpheusMes = rows[3][3];
+        const ibovDia = rows[4][2];
+        const ibovMes = rows[4][3];
+        const ppDia = rows[5][2];
+        const ppMes = rows[5][3];
+        const cota = rows[8] && rows[8][2] ? rows[8][2] : "";
+
+        document.getElementById("morpheusDia").textContent = morpheusDia;
+        document.getElementById("morpheusMes").textContent = morpheusMes;
+        document.getElementById("ibovDia").textContent = ibovDia;
+        document.getElementById("ibovMes").textContent = ibovMes;
+        document.getElementById("ppDia").textContent = ppDia;
+        document.getElementById("ppMes").textContent = ppMes;
+        document.getElementById("cotaValor").textContent = `Cota: ${cota}`;
+      })
+      .catch((err) => {
+        console.error("Erro ao carregar planilha:", err);
+      });
+  </script>
 </body>
 </html>
