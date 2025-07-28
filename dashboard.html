@@ -5,10 +5,6 @@
   <title>Morpheus - Área Logada</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     html, body {
       margin: 0;
       padding: 0;
@@ -16,18 +12,6 @@
       font-family: 'DM Sans', sans-serif;
       background-color: white;
       color: black;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -1;
-      width: 100vw;
-      height: 100vh;
     }
 
     .navbar {
@@ -42,6 +26,7 @@
       left: 0;
       z-index: 3;
       color: white;
+      box-sizing: border-box;
     }
 
     .navbar .welcome {
@@ -88,27 +73,27 @@
       }
     }
 
+    h2 {
+      margin-top: 120px;
+      text-align: center;
+    }
+
     .content {
-      max-width: 800px;
-      width: 100%;
-      margin-top: 160px;
+      max-width: 1000px;
+      margin: 40px auto;
       background-color: rgba(0, 0, 0, 0.05);
       padding: 30px;
       border-radius: 12px;
       border: 1px solid #000;
       color: #000;
-      text-align: center;
+      box-sizing: border-box;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    th, td {
-      padding: 10px;
       text-align: center;
+      margin-top: 20px;
     }
 
     thead {
@@ -116,13 +101,22 @@
       color: #fff;
     }
 
+    th, td {
+      padding: 12px;
+    }
+
     tr.highlight {
       background-color: #c6efce;
     }
 
+    p {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
     button {
       margin-top: 30px;
-      padding: 10px 20px;
+      padding: 12px 24px;
       background-color: #0f0;
       color: #000;
       border: none;
@@ -137,8 +131,6 @@
   </style>
 </head>
 <body>
-
-<canvas id="matrixCanvas"></canvas>
 
 <div class="navbar">
   <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
@@ -178,7 +170,7 @@
     </tbody>
   </table>
 
-  <p style="margin-top: 20px;"><strong>Cota:</strong> 0,965023</p>
+  <p>Cota: 0,965023</p>
 
   <button id="logoutBtn">Sair</button>
 </div>
@@ -212,48 +204,6 @@
     signOut(auth).then(() => {
       window.location.href = "index.html";
     });
-  });
-</script>
-
-<script>
-  const canvas = document.getElementById('matrixCanvas');
-  const ctx = canvas.getContext('2d');
-  let width = window.innerWidth;
-  let height = window.innerHeight;
-  canvas.width = width;
-  canvas.height = height;
-
-  const letters = 'アァイィウヴエカガキクグケゲコサザシスセソタチツテトナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤユヨラリルレロワンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$¥#';
-  const fontSize = 16;
-  const columns = Math.floor(width / fontSize);
-  const drops = Array(columns).fill(1);
-
-  function draw() {
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-    ctx.fillRect(0, 0, width, height);
-
-    ctx.fillStyle = '#003300';
-    ctx.font = fontSize + 'px monospace';
-
-    for (let i = 0; i < drops.length; i++) {
-      const text = letters.charAt(Math.floor(Math.random() * letters.length));
-      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-      if (drops[i] * fontSize > height && Math.random() > 0.975) {
-        drops[i] = 0;
-      }
-
-      drops[i]++;
-    }
-  }
-
-  setInterval(draw, 50);
-
-  window.addEventListener('resize', () => {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
   });
 </script>
 
