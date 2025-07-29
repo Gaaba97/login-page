@@ -170,7 +170,7 @@
         <thead>
           <tr>
             <th>&nbsp;</th>
-            <th>28/07/2025</th>
+            <th id="dataReferencia">...</th>
             <th>Mês</th>
           </tr>
         </thead>
@@ -286,6 +286,7 @@
         const ppDia = rows[5]?.[2] || "...";
         const ppMes = rows[5]?.[3] || "...";
         const cota = rows[8]?.[2] || "...";
+        const dataReferencia = rows[2]?.[2] || "...";
 
         document.getElementById("morpheusDia").textContent = morpheusDia;
         document.getElementById("morpheusMes").textContent = morpheusMes;
