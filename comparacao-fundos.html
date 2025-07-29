@@ -116,14 +116,15 @@
   </style>
 </head>
 <body>
-  <div class="navbar">
-    <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
-    <div class="links">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="graficos.html">Gráficos</a>
-      <a href="comparacao-fundos.html">Comparação de Fundos</a>
-    </div>
+<div class="navbar">
+  <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
+  <div class="links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="#">Gráficos</a>
+    <a href="comparacao-fundos.html">Comparação de Fundos</a>
+    <a href="#" id="logoutLink">Sair</a>
   </div>
+</div>
 
   <div class="main-wrapper">
     <div class="content">
@@ -131,7 +132,7 @@
       <!-- Aqui você pode inserir seus gráficos ou comparativos futuramente -->
       <p style="text-align: center; font-weight: bold;">(Área reservada para comparação de fundos)</p>
 
-      <button id="logoutBtn">Sair</button>
+      
     </div>
   </div>
 
@@ -184,7 +185,8 @@
       }
     });
 
-    document.getElementById("logoutBtn").addEventListener("click", () => {
+    document.getElementById("logoutLink").addEventListener("click", (e) => {
+  e.preventDefault(); // impede o comportamento padrão do link
       signOut(auth)
         .then(() => {
           window.location.href = "index.html";
