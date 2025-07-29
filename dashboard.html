@@ -171,25 +171,33 @@
       <table>
         <thead>
           <tr>
-            <th>&nbsp;</th>
+            <th>Data</th>
             <th id="dataReferencia">...</th>
-            <th>Mês</th>
           </tr>
         </thead>
         <tbody id="rentTable">
           <tr>
             <td>Morpheus</td>
             <td id="morpheusDia">...</td>
-            <td id="morpheusMes">...</td>
           </tr>
           <tr>
             <td>IBOV</td>
             <td id="ibovDia">...</td>
-            <td id="ibovMes">...</td>
           </tr>
           <tr class="highlight">
             <td>p.p. IBOV</td>
             <td id="ppDia">...</td>
+          </tr>
+          <tr>
+            <td>Morpheus (Mês)</td>
+            <td id="morpheusMes">...</td>
+          </tr>
+          <tr>
+            <td>IBOV (Mês)</td>
+            <td id="ibovMes">...</td>
+          </tr>
+          <tr>
+            <td>p.p. IBOV (Mês)</td>
             <td id="ppMes">...</td>
           </tr>
         </tbody>
@@ -235,52 +243,37 @@
 
           if (docSnap.exists()) {
             const data = docSnap.data();
-            console.log("Dados do Firestore:", data); // Para depuração
             const nome = data.nome || "Usuário";
             const genero = (data.genero || "masculino").toLowerCase();
-
             const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
             document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
           } else {
-            console.warn("Documento do usuário não encontrado no Firestore.");
             document.getElementById("welcomeUser").textContent = `Bem-vindo(a), Usuário`;
           }
         } catch (error) {
-          console.error("Erro ao buscar dados do Firestore:", error);
           document.getElementById("welcomeUser").textContent = `Bem-vindo(a), Usuário`;
         }
       } else {
-        console.warn("Usuário não autenticado. Redirecionando para index.html.");
         window.location.href = "index.html";
       }
     });
 
     document.getElementById("logoutBtn").addEventListener("click", () => {
       signOut(auth)
-        .then(() => {
-          console.log("Usuário deslogado com sucesso.");
-          window.location.href = "index.html";
-        })
-        .catch((error) => {
-          console.error("Erro ao deslogar:", error);
-        });
+        .then(() => window.location.href = "index.html")
+        .catch((error) => console.error("Erro ao deslogar:", error));
     });
 
-    // ====== BUSCAR DADOS DO GOOGLE SHEETS ======
     const sheetURL =
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
     fetch(sheetURL)
       .then((response) => {
-        if (!response.ok) {
-          throw new Error("Erro na resposta da planilha: " + response.status);
-        }
+        if (!response.ok) throw new Error("Erro na resposta da planilha: " + response.status);
         return response.text();
       })
       .then((csvText) => {
         const rows = csvText.trim().split("\n").map((row) => row.split(","));
-
-        // Células específicas
         const morpheusDia = rows[3]?.[2] || "...";
         const morpheusMes = rows[3]?.[3] || "...";
         const ibovDia = rows[4]?.[2] || "...";
@@ -299,9 +292,7 @@
         document.getElementById("ppMes").textContent = ppMes;
         document.getElementById("cotaValor").textContent = `Cota: ${cota}`;
       })
-      .catch((err) => {
-        console.error("Erro ao carregar planilha:", err);
-      });
+      .catch((err) => console.error("Erro ao carregar planilha:", err));
   </script>
 </body>
 </html>
