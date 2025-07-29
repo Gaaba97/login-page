@@ -3,13 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <title>Morpheus - Área Logada</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
   <style>
-    html,
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       height: 100%;
@@ -107,8 +103,8 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      text-align: center;
       margin-top: 20px;
+      text-align: center;
     }
 
     thead {
@@ -171,33 +167,25 @@
       <table>
         <thead>
           <tr>
-            <th>Data</th>
-            <th id="dataReferencia">...</th>
+            <th>Referência</th>
+            <th id="dataReferencia">Dia</th>
+            <th>Mês</th>
           </tr>
         </thead>
-        <tbody id="rentTable">
+        <tbody>
           <tr>
             <td>Morpheus</td>
             <td id="morpheusDia">...</td>
+            <td id="morpheusMes">...</td>
           </tr>
           <tr>
             <td>IBOV</td>
             <td id="ibovDia">...</td>
+            <td id="ibovMes">...</td>
           </tr>
           <tr class="highlight">
             <td>p.p. IBOV</td>
             <td id="ppDia">...</td>
-          </tr>
-          <tr>
-            <td>Morpheus (Mês)</td>
-            <td id="morpheusMes">...</td>
-          </tr>
-          <tr>
-            <td>IBOV (Mês)</td>
-            <td id="ibovMes">...</td>
-          </tr>
-          <tr>
-            <td>p.p. IBOV (Mês)</td>
             <td id="ppMes">...</td>
           </tr>
         </tbody>
@@ -248,10 +236,10 @@
             const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
             document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
           } else {
-            document.getElementById("welcomeUser").textContent = `Bem-vindo(a), Usuário`;
+            document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
           }
         } catch (error) {
-          document.getElementById("welcomeUser").textContent = `Bem-vindo(a), Usuário`;
+          document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
         }
       } else {
         window.location.href = "index.html";
@@ -260,20 +248,25 @@
 
     document.getElementById("logoutBtn").addEventListener("click", () => {
       signOut(auth)
-        .then(() => window.location.href = "index.html")
-        .catch((error) => console.error("Erro ao deslogar:", error));
+        .then(() => {
+          window.location.href = "index.html";
+        })
+        .catch((error) => {
+          console.error("Erro ao deslogar:", error);
+        });
     });
 
-    const sheetURL =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
+    // ====== DADOS GOOGLE SHEETS ======
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
     fetch(sheetURL)
       .then((response) => {
-        if (!response.ok) throw new Error("Erro na resposta da planilha: " + response.status);
+        if (!response.ok) throw new Error("Erro ao carregar planilha.");
         return response.text();
       })
       .then((csvText) => {
         const rows = csvText.trim().split("\n").map((row) => row.split(","));
+        const dataReferencia = rows[2]?.[2] || "...";
         const morpheusDia = rows[3]?.[2] || "...";
         const morpheusMes = rows[3]?.[3] || "...";
         const ibovDia = rows[4]?.[2] || "...";
@@ -281,7 +274,6 @@
         const ppDia = rows[5]?.[2] || "...";
         const ppMes = rows[5]?.[3] || "...";
         const cota = rows[8]?.[2] || "...";
-        const dataReferencia = rows[2]?.[2] || "...";
 
         document.getElementById("dataReferencia").textContent = dataReferencia;
         document.getElementById("morpheusDia").textContent = morpheusDia;
@@ -292,7 +284,9 @@
         document.getElementById("ppMes").textContent = ppMes;
         document.getElementById("cotaValor").textContent = `Cota: ${cota}`;
       })
-      .catch((err) => console.error("Erro ao carregar planilha:", err));
+      .catch((err) => {
+        console.error("Erro ao carregar planilha:", err);
+      });
   </script>
 </body>
 </html>
