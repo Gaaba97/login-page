@@ -157,10 +157,11 @@
 <body>
   <div class="navbar">
     <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
-    <div class="links">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="#">Gráficos</a>
-      <a href="comparacao-fundos.html">Comparação de Fundos</a>
+  <div class="links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="#">Gráficos</a>
+    <a href="comparacao-fundos.html">Comparação de Fundos</a>
+    <a href="#" id="logoutLink">Sair</a>
     </div>
   </div>
 
@@ -195,8 +196,7 @@
       </table>
 
       <p id="cotaValor">Cota: ...</p>
-
-      <button id="logoutBtn">Sair</button>
+      
     </div>
   </div>
 
@@ -249,7 +249,9 @@
       }
     });
 
-    document.getElementById("logoutBtn").addEventListener("click", () => {
+    document.getElementById("logoutLink").addEventListener("click", (e) => {
+  e.preventDefault(); // impede o comportamento padrão do link
+
       signOut(auth)
         .then(() => {
           window.location.href = "index.html";
