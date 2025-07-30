@@ -200,6 +200,8 @@
   });
 </script>
 
+<!-- O RESTO DO CÓDIGO (head, CSS, navbar etc.) permanece igual até o script final -->
+
 <script>
   async function carregarGrafico() {
     const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
@@ -232,10 +234,11 @@
       }
     }
 
-    const cores = [
-      "#3366CC", "#DC3912", "#FF9900", "#109618", "#990099",
-      "#0099C6", "#DD4477", "#66AA00", "#B82E2E", "#316395", "#994499"
-    ];
+    const cores = headers.map((nome, idx) => {
+      if (idx === 0) return "#0E2841"; // Morpheus (coluna K)
+      if (idx === 1) return "#C00000"; // IBOV (coluna L)
+      return "#20842E"; // Títulos 1 ao 9 (colunas M a U)
+    });
 
     const ctx = document.getElementById("fundosChart").getContext("2d");
     new Chart(ctx, {
@@ -245,7 +248,7 @@
         datasets: headers.map((nome, idx) => ({
           label: nome,
           data: series[idx],
-          borderColor: cores[idx % cores.length],
+          borderColor: cores[idx],
           backgroundColor: "transparent",
           tension: 0.3,
           borderWidth: 2
@@ -280,6 +283,9 @@
             title: {
               display: true,
               text: "Data"
+            },
+            grid: {
+              display: false // <- remove grade vertical
             }
           }
         }
@@ -289,5 +295,6 @@
 
   carregarGrafico();
 </script>
+
 </body>
 </html>
