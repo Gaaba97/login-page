@@ -93,8 +93,8 @@
 
     h2 {
       text-align: center;
-      font-size: 30px; /* Aumentado em 1.5x */
-      margin-bottom: 40px; /* Aumentado para dar mais espaço até a legenda */
+      font-size: 30px;
+      margin-bottom: 40px;
     }
 
     canvas {
@@ -102,24 +102,25 @@
       height: auto;
     }
 
-    button {
-      display: block;
-      margin: 30px auto 0;
-      padding: 12px 24px;
-      background-color: #ccc;
-      color: #000;
+    .toggle-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .toggle-button {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background-color: #000;
+      color: #fff;
       border: none;
       font-weight: bold;
-      border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s;
     }
 
     button:hover {
       background-color: #999;
     }
 
-    /* ========== SMARTPHONE ADJUSTMENTS ========== */
     @media (max-width: 1500px) {
       .navbar {
         padding: 15px 30px;
@@ -161,7 +162,6 @@
   </div>
 </div>
 
-<!-- Texto acima do gráfico -->
 <div class="descricao-fundos">
   Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
 </div>
@@ -169,22 +169,17 @@
 <div class="main-wrapper">
   <div class="content">
     <h2>Comparação de Fundos</h2>
+    <div class="toggle-container">
+      <button class="toggle-button" onclick="alternarModo()">Alternar para Variação Percentual</button>
+    </div>
     <canvas id="fundosChart"></canvas>
   </div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import {
-    getAuth,
-    onAuthStateChanged,
-    signOut,
-  } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-  import {
-    getFirestore,
-    doc,
-    getDoc,
-  } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
@@ -223,13 +218,21 @@
 
   document.getElementById("logoutLink").addEventListener("click", (e) => {
     e.preventDefault();
-    signOut(auth)
-      .then(() => window.location.href = "index.html")
+    signOut(auth).then(() => window.location.href = "index.html")
       .catch((error) => console.error("Erro ao deslogar:", error));
   });
 </script>
 
 <script>
+  let modoPercentual = false;
+  let dadosOriginais = [];
+
+  function alternarModo() {
+    modoPercentual = !modoPercentual;
+    document.querySelector('.toggle-button').textContent = modoPercentual ? 'Alternar para Cota Normalizada' : 'Alternar para Variação Percentual';
+    carregarGrafico();
+  }
+
   async function carregarGrafico() {
     const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
     const resposta = await fetch(url);
@@ -240,6 +243,7 @@
     const datas = [];
     const series = headers.map(() => []);
     const bases = headers.map(() => null);
+    const variacoes = headers.map(() => []);
 
     for (let i = 1; i < linhas.length; i++) {
       const linha = linhas[i];
@@ -249,35 +253,40 @@
       for (let j = 10; j < linha.length; j++) {
         const raw = linha[j].trim();
         let valor = parseFloat(raw.replace(",", "."));
+        const idx = j - 10;
         if (isNaN(valor)) {
-          series[j - 10].push(null);
+          series[idx].push(null);
+          variacoes[idx].push(null);
         } else {
-          if (bases[j - 10] === null) bases[j - 10] = valor;
-          const normalizado = valor / bases[j - 10];
-          series[j - 10].push(parseFloat(normalizado.toFixed(6)));
+          if (bases[idx] === null) bases[idx] = valor;
+          const normalizado = valor / bases[idx];
+          series[idx].push(parseFloat(normalizado.toFixed(6)));
+
+          if (series[idx].length > 1) {
+            const anterior = parseFloat(linha[j - (linhas[i - 1] ? 0 : 1)].replace(",", "."));
+            const variacao = ((valor - bases[idx]) / bases[idx]) * 100;
+            variacoes[idx].push(parseFloat(variacao.toFixed(2)));
+          } else {
+            variacoes[idx].push(0);
+          }
         }
       }
     }
 
-    const cores = headers.map((_, idx) => {
-      if (idx === 0) return "#0E2841";
-      if (idx === 1) return "#C00000";
-      return "#20842E";
-    });
-
-    const espessuras = headers.map((_, idx) => (idx === 0 ? 3 : 2));
-
+    const cores = headers.map((_, idx) => idx === 0 ? "#0E2841" : idx === 1 ? "#C00000" : "#20842E");
+    const espessuras = headers.map((_, idx) => idx === 0 ? 3 : 2);
     const larguraTela = window.innerWidth;
     const fator = larguraTela <= 1500 ? 1.5 : 1;
 
     const ctx = document.getElementById("fundosChart").getContext("2d");
-    new Chart(ctx, {
+    if (window.chartFundos) window.chartFundos.destroy();
+    window.chartFundos = new Chart(ctx, {
       type: "line",
       data: {
         labels: datas,
         datasets: headers.map((nome, idx) => ({
           label: nome,
-          data: series[idx],
+          data: modoPercentual ? variacoes[idx] : series[idx],
           borderColor: cores[idx],
           backgroundColor: cores[idx],
           tension: 0.3,
@@ -309,7 +318,7 @@
             beginAtZero: false,
             title: {
               display: true,
-              text: "Cota Normalizada",
+              text: modoPercentual ? "% de Variação" : "Cota Normalizada",
               color: "#000",
               font: { size: 14 * fator }
             },
