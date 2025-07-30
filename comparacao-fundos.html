@@ -200,8 +200,6 @@
   });
 </script>
 
-<!-- O RESTO DO CÓDIGO (head, CSS, navbar etc.) permanece igual até o script final -->
-
 <script>
   async function carregarGrafico() {
     const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
@@ -212,11 +210,11 @@
     const headers = linhas[0].slice(10); // colunas K a U
     const datas = [];
     const series = headers.map(() => []);
-    const bases = headers.map(() => null); // cotas base para normalização
+    const bases = headers.map(() => null);
 
     for (let i = 1; i < linhas.length; i++) {
       const linha = linhas[i];
-      if (!linha[9]) continue; // ignora linhas sem data
+      if (!linha[9]) continue;
       datas.push(linha[9]);
 
       for (let j = 10; j < linha.length; j++) {
@@ -225,9 +223,7 @@
         if (isNaN(valor)) {
           series[j - 10].push(null);
         } else {
-          if (bases[j - 10] === null) {
-            bases[j - 10] = valor; // define a base
-          }
+          if (bases[j - 10] === null) bases[j - 10] = valor;
           const normalizado = valor / bases[j - 10];
           series[j - 10].push(parseFloat(normalizado.toFixed(6)));
         }
@@ -235,9 +231,9 @@
     }
 
     const cores = headers.map((nome, idx) => {
-      if (idx === 0) return "#0E2841"; // Morpheus (coluna K)
-      if (idx === 1) return "#C00000"; // IBOV (coluna L)
-      return "#20842E"; // Títulos 1 ao 9 (colunas M a U)
+      if (idx === 0) return "#0E2841"; // Morpheus
+      if (idx === 1) return "#C00000"; // IBOV
+      return "#20842E"; // Títulos
     });
 
     const ctx = document.getElementById("fundosChart").getContext("2d");
@@ -262,8 +258,9 @@
             labels: {
               boxWidth: 12,
               font: {
-                size: 12
-              }
+                size: 14
+              },
+              color: '#000'
             }
           },
           tooltip: {
@@ -276,16 +273,36 @@
             beginAtZero: false,
             title: {
               display: true,
-              text: "Cota Normalizada"
+              text: "Cota Normalizada",
+              color: "#000",
+              font: {
+                size: 14
+              }
+            },
+            ticks: {
+              color: "#000",
+              font: {
+                size: 13
+              }
             }
           },
           x: {
             title: {
               display: true,
-              text: "Data"
+              text: "Data",
+              color: "#000",
+              font: {
+                size: 14
+              }
             },
             grid: {
-              display: false // <- remove grade vertical
+              display: false
+            },
+            ticks: {
+              color: "#000",
+              font: {
+                size: 13
+              }
             }
           }
         }
@@ -295,6 +312,5 @@
 
   carregarGrafico();
 </script>
-
 </body>
 </html>
