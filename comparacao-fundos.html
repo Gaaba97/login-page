@@ -93,21 +93,24 @@
 
     .chart-header {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       margin-bottom: 30px;
+      position: relative;
     }
 
     .chart-header h2 {
       font-size: 30px;
       margin: 0;
+      text-align: center;
+      flex-grow: 1;
     }
 
     .toggle-switch {
-      position: relative;
+      position: absolute;
+      right: 0;
       width: 120px;
       height: 40px;
-      margin-left: 20px;
     }
 
     .toggle-switch input {
