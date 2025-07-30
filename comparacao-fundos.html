@@ -160,11 +160,17 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
+  // Aguarda o estado de autenticação ser resolvido
   onAuthStateChanged(auth, async (user) => {
+    // Adiciona um pequeno atraso para garantir que o estado de autenticação esteja estabilizado
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     if (!user) {
+      console.log("Nenhum usuário autenticado, redirecionando para index.html");
       window.location.href = "index.html";
       return;
     }
+
     try {
       const docRef = doc(db, "usuarios", user.uid);
       const docSnap = await getDoc(docRef);
