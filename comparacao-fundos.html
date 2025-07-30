@@ -91,70 +91,69 @@
       box-sizing: border-box;
     }
 
-  <style>
-  .chart-header {
-    text-align: center;
-    margin-bottom: 30px;
-    position: relative;
-  }
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
 
-  .chart-header h2 {
-    font-size: 30px;
-    margin: 0;
-  }
+    .chart-header h2 {
+      font-size: 30px;
+      margin: 0;
+    }
 
-  .toggle-switch {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 120px;
-    height: 40px;
-  }
+    .toggle-switch {
+      position: relative;
+      width: 120px;
+      height: 40px;
+      margin-left: 20px;
+    }
 
-  .toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
 
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: 0.4s;
-    border-radius: 34px;
-  }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
 
-  .slider:before {
-    position: absolute;
-    content: attr(data-label-left);
-    height: 32px;
-    width: 32px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: 0.4s;
-    border-radius: 50%;
-    font-size: 14px;
-    line-height: 32px;
-    text-align: center;
-    font-weight: bold;
-    color: black;
-  }
+    .slider:before {
+      position: absolute;
+      content: attr(data-label-left);
+      height: 32px;
+      width: 32px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+      font-size: 14px;
+      line-height: 32px;
+      text-align: center;
+      font-weight: bold;
+      color: black;
+    }
 
-  input:checked + .slider {
-    background-color: #000;
-  }
+    input:checked + .slider {
+      background-color: #000;
+    }
 
-  input:checked + .slider:before {
-    transform: translateX(60px);
-    content: attr(data-label-right);
-  }
-</style>
+    input:checked + .slider:before {
+      transform: translateX(60px);
+      content: attr(data-label-right);
+    }
+
     canvas {
       max-width: 100%;
       height: auto;
