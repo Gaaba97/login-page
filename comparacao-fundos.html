@@ -5,6 +5,7 @@
   <title>Clube Morpheus</title>
   <link rel="icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     html, body {
       margin: 0;
@@ -89,7 +90,7 @@
 
     .content {
       width: 90%;
-      max-width: 720px;
+      max-width: 1000px;
       background-color: rgba(0, 0, 0, 0.05);
       padding: 30px;
       border-radius: 12px;
@@ -99,7 +100,12 @@
     }
 
     h2 {
-      text-align: center; /* <- centraliza o título */
+      text-align: center;
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto;
     }
 
     button {
@@ -131,73 +137,153 @@
   </div>
 </div>
 
-  <div class="main-wrapper">
-    <div class="content">
-      <h2>Comparação de Fundos</h2>
-      <!-- Aqui você pode inserir seus gráficos ou comparativos futuramente -->
-      <p style="text-align: center; font-weight: bold;">(Área reservada para comparação de fundos)</p>
-    </div>
+<div class="main-wrapper">
+  <div class="content">
+    <h2>Comparação de Fundos</h2>
+    <canvas id="fundosChart"></canvas>
   </div>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import {
-      getAuth,
-      onAuthStateChanged,
-      signOut,
-    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      getDoc,
-    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import {
+    getAuth,
+    onAuthStateChanged,
+    signOut,
+  } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+  } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
-      authDomain: "login-site-9cbbd.firebaseapp.com",
-      projectId: "login-site-9cbbd",
-      storageBucket: "login-site-9cbbd.appspot.com",
-      messagingSenderId: "703993528666",
-      appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+    authDomain: "login-site-9cbbd.firebaseapp.com",
+    projectId: "login-site-9cbbd",
+    storageBucket: "login-site-9cbbd.appspot.com",
+    messagingSenderId: "703993528666",
+    appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const docRef = doc(db, "usuarios", user.uid);
-          const docSnap = await getDoc(docRef);
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      try {
+        const docRef = doc(db, "usuarios", user.uid);
+        const docSnap = await getDoc(docRef);
 
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            const nome = data.nome || "Usuário";
-            const genero = (data.genero || "masculino").toLowerCase();
-            const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
-            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
-          } else {
-            document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
-          }
-        } catch (error) {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const nome = data.nome || "Usuário";
+          const genero = (data.genero || "masculino").toLowerCase();
+          const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
+          document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+        } else {
           document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
         }
-      } else {
+      } catch (error) {
+        document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
+      }
+    } else {
+      window.location.href = "index.html";
+    }
+  });
+
+  document.getElementById("logoutLink").addEventListener("click", (e) => {
+    e.preventDefault();
+    signOut(auth)
+      .then(() => {
         window.location.href = "index.html";
+      })
+      .catch((error) => {
+        console.error("Erro ao deslogar:", error);
+      });
+  });
+</script>
+
+<script>
+  async function carregarGrafico() {
+    const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
+    const resposta = await fetch(url);
+    const texto = await resposta.text();
+    const linhas = texto.split("\n").map(l => l.split(","));
+
+    const headers = linhas[0].slice(10); // K até U
+    const datas = [];
+    const series = headers.map(() => []);
+
+    for (let i = 1; i < linhas.length; i++) {
+      const linha = linhas[i];
+      if (!linha[9]) continue; // ignora linhas vazias
+
+      datas.push(linha[9]);
+
+      for (let j = 10; j < linha.length; j++) {
+        const valor = parseFloat(linha[j].replace(",", "."));
+        series[j - 10].push(isNaN(valor) ? null : valor);
+      }
+    }
+
+    const cores = [
+      "#3366CC", "#DC3912", "#FF9900", "#109618", "#990099",
+      "#0099C6", "#DD4477", "#66AA00", "#B82E2E", "#316395", "#994499"
+    ];
+
+    const ctx = document.getElementById("fundosChart").getContext("2d");
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: datas,
+        datasets: headers.map((nome, idx) => ({
+          label: nome,
+          data: series[idx],
+          borderColor: cores[idx % cores.length],
+          backgroundColor: "transparent",
+          tension: 0.3,
+          borderWidth: 2
+        }))
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "top",
+            labels: {
+              boxWidth: 12,
+              font: {
+                size: 12
+              }
+            }
+          },
+          tooltip: {
+            mode: "index",
+            intersect: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            title: {
+              display: true,
+              text: "Valor"
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: "Data"
+            }
+          }
+        }
       }
     });
+  }
 
-    document.getElementById("logoutLink").addEventListener("click", (e) => {
-      e.preventDefault();
-      signOut(auth)
-        .then(() => {
-          window.location.href = "index.html";
-        })
-        .catch((error) => {
-          console.error("Erro ao deslogar:", error);
-        });
-    });
-  </script>
+  carregarGrafico();
+</script>
 </body>
 </html>
