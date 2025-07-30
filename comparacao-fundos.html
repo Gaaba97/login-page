@@ -245,9 +245,11 @@
           label: nome,
           data: series[idx],
           borderColor: cores[idx],
-          backgroundColor: "transparent",
+          backgroundColor: cores[idx],
           tension: 0.3,
-          borderWidth: 2
+          borderWidth: 2,
+          pointRadius: 0, // remove os pontos
+          fill: false
         }))
       },
       options: {
@@ -257,6 +259,8 @@
             position: "top",
             labels: {
               boxWidth: 12,
+              usePointStyle: false, // deixa o quadrado sólido
+              pointStyle: 'rect',
               font: {
                 size: 14
               },
@@ -302,7 +306,9 @@
               color: "#000",
               font: {
                 size: 13
-              }
+              },
+              maxRotation: 45,
+              minRotation: 45
             }
           }
         }
