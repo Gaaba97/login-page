@@ -221,7 +221,7 @@
     const texto = await resposta.text();
     const linhas = texto.split("\n").map(l => l.split(","));
 
-    const headers = linhas[0].slice(10); // colunas K a U
+    const headers = linhas[0].slice(10);
     const datas = [];
     const series = headers.map(() => []);
     const bases = headers.map(() => null);
@@ -277,7 +277,7 @@
               boxWidth: 12,
               usePointStyle: false,
               pointStyle: 'rect',
-              font: { size: 14 },
+              font: { size: 12 },  // <<< REDUZIDO
               color: '#000'
             }
           },
@@ -293,11 +293,11 @@
               display: true,
               text: "Cota Normalizada",
               color: "#000",
-              font: { size: 14 }
+              font: { size: 12 }  // <<< REDUZIDO
             },
             ticks: {
               color: "#000",
-              font: { size: 13 }
+              font: { size: 11 }  // <<< REDUZIDO
             }
           },
           x: {
@@ -305,12 +305,12 @@
               display: true,
               text: "Data",
               color: "#000",
-              font: { size: 14 }
+              font: { size: 12 }  // <<< REDUZIDO
             },
             grid: { display: false },
             ticks: {
               color: "#000",
-              font: { size: 13 },
+              font: { size: 11 },  // <<< REDUZIDO
               maxRotation: 45,
               minRotation: 45
             }
