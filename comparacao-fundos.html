@@ -79,12 +79,21 @@
       }
     }
 
+    .descricao-fundos {
+      width: 90%;
+      max-width: 1000px;
+      margin: 100px auto 10px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 16px;
+    }
+
     .main-wrapper {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding-top: 80px;
+      padding-top: 20px;
       box-sizing: border-box;
     }
 
@@ -98,15 +107,6 @@
       color: #000;
       box-sizing: border-box;
     }
-
-
-
-
-
-
-
-
-
 
     h2 {
       text-align: center;
@@ -146,18 +146,13 @@
   </div>
 </div>
 
-
-
-
-
+<!-- Texto acima do gráfico -->
+<div class="descricao-fundos">
+  Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
+</div>
 
 <div class="main-wrapper">
   <div class="content">
-<div class="main-wrapper">
-    <div class="content">
-      <p style="text-align: center; font-weight: 500; margin-bottom: 24px;">
-        Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
-      </p>
     <h2>Comparação de Fundos</h2>
     <canvas id="fundosChart"></canvas>
   </div>
@@ -252,10 +247,10 @@
     const cores = headers.map((nome, idx) => {
       if (idx === 0) return "#0E2841"; // Morpheus
       if (idx === 1) return "#C00000"; // IBOV
-      return "#20842E"; // Títulos
+      return "#20842E"; // Outros
     });
 
-
+    const espessuras = headers.map((_, idx) => (idx === 0 ? 3 : 2)); // Morpheus linha 1.5x mais grossa
 
     const ctx = document.getElementById("fundosChart").getContext("2d");
     new Chart(ctx, {
@@ -268,8 +263,8 @@
           borderColor: cores[idx],
           backgroundColor: cores[idx],
           tension: 0.3,
-          borderWidth: 2,
-          pointRadius: 0, // remove os pontos
+          borderWidth: espessuras[idx],
+          pointRadius: 0,
           fill: false
         }))
       },
@@ -280,11 +275,9 @@
             position: "top",
             labels: {
               boxWidth: 12,
-              usePointStyle: false, // deixa o quadrado sólido
+              usePointStyle: false,
               pointStyle: 'rect',
-              font: {
-                size: 14
-              },
+              font: { size: 14 },
               color: '#000'
             }
           },
@@ -300,15 +293,11 @@
               display: true,
               text: "Cota Normalizada",
               color: "#000",
-              font: {
-                size: 14
-              }
+              font: { size: 14 }
             },
             ticks: {
               color: "#000",
-              font: {
-                size: 13
-              }
+              font: { size: 13 }
             }
           },
           x: {
@@ -316,18 +305,12 @@
               display: true,
               text: "Data",
               color: "#000",
-              font: {
-                size: 14
-              }
+              font: { size: 14 }
             },
-            grid: {
-              display: false
-            },
+            grid: { display: false },
             ticks: {
               color: "#000",
-              font: {
-                size: 13
-              },
+              font: { size: 13 },
               maxRotation: 45,
               minRotation: 45
             }
