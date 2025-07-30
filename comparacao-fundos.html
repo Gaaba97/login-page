@@ -88,6 +88,12 @@
       font-size: 20px;
     }
 
+    @media (max-width: 768px) {
+      .descricao-fundos {
+        font-size: 32px;
+      }
+    }
+
     .main-wrapper {
       flex: 1;
       display: flex;
@@ -245,12 +251,12 @@
     }
 
     const cores = headers.map((nome, idx) => {
-      if (idx === 0) return "#0E2841"; // Morpheus
-      if (idx === 1) return "#C00000"; // IBOV
-      return "#20842E"; // Outros
+      if (idx === 0) return "#0E2841";
+      if (idx === 1) return "#C00000";
+      return "#20842E";
     });
 
-    const espessuras = headers.map((_, idx) => (idx === 0 ? 3 : 2)); // Morpheus linha 1.5x mais grossa
+    const espessuras = headers.map((_, idx) => (idx === 0 ? 3 : 2));
 
     const ctx = document.getElementById("fundosChart").getContext("2d");
     new Chart(ctx, {
@@ -277,7 +283,7 @@
               boxWidth: 12,
               usePointStyle: false,
               pointStyle: 'rect',
-              font: { size: 14 },  // <<< REDUZIDO
+              font: { size: 14 },
               color: '#000'
             }
           },
@@ -293,11 +299,11 @@
               display: true,
               text: "Cota Normalizada",
               color: "#000",
-              font: { size: 14 }  // <<< REDUZIDO
+              font: { size: 14 }
             },
             ticks: {
               color: "#000",
-              font: { size: 13 }  // <<< REDUZIDO
+              font: { size: 13 }
             }
           },
           x: {
@@ -305,12 +311,12 @@
               display: true,
               text: "Data",
               color: "#000",
-              font: { size: 14 }  // <<< REDUZIDO
+              font: { size: 14 }
             },
             grid: { display: false },
             ticks: {
               color: "#000",
-              font: { size: 13 },  // <<< REDUZIDO
+              font: { size: 13 },
               maxRotation: 45,
               minRotation: 45
             }
