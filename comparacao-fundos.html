@@ -99,6 +99,15 @@
       box-sizing: border-box;
     }
 
+    .descricao-fundos {
+      width: 90%;
+      max-width: 1000px;
+      margin: 30px auto 10px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 16px;
+    }
+
     h2 {
       text-align: center;
     }
@@ -137,13 +146,13 @@
   </div>
 </div>
 
+<!-- Mensagem explicativa acima da comparação -->
+<div class="descricao-fundos">
+  Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
+</div>
+
 <div class="main-wrapper">
   <div class="content">
-<div class="main-wrapper">
-    <div class="content">
-      <p style="text-align: center; font-weight: 500; margin-bottom: 24px;">
-        Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
-      </p>
     <h2>Comparação de Fundos</h2>
     <canvas id="fundosChart"></canvas>
   </div>
@@ -163,7 +172,7 @@
   } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+    apiKey: "AIzaSyAYLyEfTVl8zR1drcNYyK33IT6ytVJYJ8",
     authDomain: "login-site-9cbbd.firebaseapp.com",
     projectId: "login-site-9cbbd",
     storageBucket: "login-site-9cbbd.appspot.com",
@@ -238,8 +247,10 @@
     const cores = headers.map((nome, idx) => {
       if (idx === 0) return "#0E2841"; // Morpheus
       if (idx === 1) return "#C00000"; // IBOV
-      return "#20842E"; // Títulos
+      return "#20842E"; // Outros fundos
     });
+
+    const espessuras = headers.map((_, idx) => (idx === 0 ? 3 : 2)); // Morpheus = 3, resto = 2
 
     const ctx = document.getElementById("fundosChart").getContext("2d");
     new Chart(ctx, {
@@ -252,8 +263,8 @@
           borderColor: cores[idx],
           backgroundColor: cores[idx],
           tension: 0.3,
-          borderWidth: 2,
-          pointRadius: 0, // remove os pontos
+          borderWidth: espessuras[idx],
+          pointRadius: 0,
           fill: false
         }))
       },
@@ -264,7 +275,7 @@
             position: "top",
             labels: {
               boxWidth: 12,
-              usePointStyle: false, // deixa o quadrado sólido
+              usePointStyle: false,
               pointStyle: 'rect',
               font: {
                 size: 14
