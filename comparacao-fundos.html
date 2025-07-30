@@ -105,8 +105,9 @@
 
     .toggle-switch {
       position: relative;
-      width: 60px;
-      height: 28px;
+      width: 120px;
+      height: 40px;
+      margin-left: 20px;
     }
 
     .toggle-switch input {
@@ -130,15 +131,15 @@
     .slider:before {
       position: absolute;
       content: attr(data-label-left);
-      height: 22px;
-      width: 22px;
+      height: 32px;
+      width: 32px;
       left: 4px;
-      bottom: 3px;
+      bottom: 4px;
       background-color: white;
       transition: 0.4s;
       border-radius: 50%;
-      font-size: 12px;
-      line-height: 22px;
+      font-size: 14px;
+      line-height: 32px;
       text-align: center;
       font-weight: bold;
       color: black;
@@ -149,7 +150,7 @@
     }
 
     input:checked + .slider:before {
-      transform: translateX(32px);
+      transform: translateX(60px);
       content: attr(data-label-right);
     }
 
@@ -216,6 +217,7 @@
   </div>
 </div>
 
+<!-- FIREBASE -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
@@ -263,6 +265,7 @@
   });
 </script>
 
+<!-- CHART -->
 <script>
   let modoPercentual = false;
 
