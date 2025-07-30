@@ -92,110 +92,105 @@
     }
 
     .chart-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 30px;
-    position: relative;
-  }
-
-  .chart-header h2 {
-    font-size: 30px;
-    margin: 0;
-    text-align: center;
-    flex-grow: 1;
-  }
-
-  .toggle-switch {
-    position: absolute;
-    right: 0;
-    width: 70px;
-    height: 40px;
-  }
-
-  .toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: 0.4s;
-    border-radius: 34px;
-  }
-
-  .slider:before {
-    position: absolute;
-    content: attr(data-label-left);
-    height: 32px;
-    width: 32px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: 0.4s;
-    border-radius: 50%;
-    font-size: 14px;
-    line-height: 32px;
-    text-align: center;
-    font-weight: bold;
-    color: black;
-  }
-
-  input:checked + .slider {
-    background-color: #000;
-  }
-
-  input:checked + .slider:before {
-    transform: translateX(30px);
-    content: attr(data-label-right);
-  }
-
-  @media (max-width: 1500px) {
-    .navbar {
-      padding: 15px 30px;
-    }
-
-    .navbar .welcome {
-      font-size: 20px;
-    }
-
-    .navbar .links a {
-      font-size: 20px;
-    }
-
-    .descricao-fundos {
-      font-size: 30px;
-      margin-top: 120px;
-      margin-bottom: 20px;
-    }
-
-    .main-wrapper {
-      padding-top: 0px;
-    }
-
-    h2 {
-      font-size: 30px !important;
-      margin-bottom: 10px !important;
-    }
-
-    .chart-header {
-      flex-direction: column;
+      display: flex;
+      justify-content: center;
       align-items: center;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .chart-header h2 {
+      font-size: 30px;
+      margin: 0;
+      text-align: center;
+      flex-grow: 1;
     }
 
     .toggle-switch {
-      position: static;
-      margin-top: 10px;
+      position: absolute;
+      right: 0;
+      width: 70px;
+      height: 40px;
     }
-  }
-</style>
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: attr(data-label-left);
+      height: 32px;
+      width: 32px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+      font-size: 14px;
+      line-height: 32px;
+      text-align: center;
+      font-weight: bold;
+      color: black;
+    }
+
+    input:checked + .slider {
+      background-color: #000;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(30px);
+      content: attr(data-label-right);
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 1500px) {
+      .navbar {
+        padding: 15px 30px;
+      }
+
+      .navbar .welcome {
+        font-size: 20px;
+      }
+
+      .navbar .links a {
+        font-size: 20px;
+      }
+
+      .descricao-fundos {
+        font-size: 30px;
+        margin-top: 120px;
+        margin-bottom: 20px;
+      }
+
+      .main-wrapper {
+        padding-top: 0px;
+      }
+
+      h2 {
+        font-size: 30px !important;
+        margin-bottom: 40px !important;
+      }
+    }
+  </style>
 </head>
 <body>
 <div class="navbar">
