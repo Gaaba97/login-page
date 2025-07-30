@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Clube Morpheus</title>
-<link rel="icon" href="favicon.ico">
+  <link rel="icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
   <style>
     html, body {
@@ -98,6 +98,10 @@
       box-sizing: border-box;
     }
 
+    h2 {
+      text-align: center; /* <- centraliza o título */
+    }
+
     button {
       display: block;
       margin: 30px auto 0;
@@ -132,8 +136,6 @@
       <h2>Comparação de Fundos</h2>
       <!-- Aqui você pode inserir seus gráficos ou comparativos futuramente -->
       <p style="text-align: center; font-weight: bold;">(Área reservada para comparação de fundos)</p>
-
-      
     </div>
   </div>
 
@@ -187,7 +189,7 @@
     });
 
     document.getElementById("logoutLink").addEventListener("click", (e) => {
-  e.preventDefault(); // impede o comportamento padrão do link
+      e.preventDefault();
       signOut(auth)
         .then(() => {
           window.location.href = "index.html";
