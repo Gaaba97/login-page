@@ -91,34 +91,71 @@
       box-sizing: border-box;
     }
 
-    h2 {
-      text-align: center;
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .chart-header h2 {
       font-size: 30px;
-      margin-bottom: 40px;
+      margin: 0;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 60px;
+      height: 28px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: attr(data-label-left);
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+      font-size: 12px;
+      line-height: 22px;
+      text-align: center;
+      font-weight: bold;
+      color: black;
+    }
+
+    input:checked + .slider {
+      background-color: #000;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(32px);
+      content: attr(data-label-right);
     }
 
     canvas {
       max-width: 100%;
       height: auto;
-    }
-
-    .toggle-container {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .toggle-button {
-      padding: 8px 16px;
-      border-radius: 20px;
-      background-color: #000;
-      color: #fff;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #999;
     }
 
     @media (max-width: 1500px) {
@@ -168,9 +205,12 @@
 
 <div class="main-wrapper">
   <div class="content">
-    <h2>Comparação de Fundos</h2>
-    <div class="toggle-container">
-      <button class="toggle-button" onclick="alternarModo()">Alternar para Variação Percentual</button>
+    <div class="chart-header">
+      <h2>Comparação de Fundos</h2>
+      <label class="toggle-switch">
+        <input type="checkbox" onchange="alternarModo()" id="modoToggle">
+        <span class="slider" data-label-left="Cota" data-label-right="%"></span>
+      </label>
     </div>
     <canvas id="fundosChart"></canvas>
   </div>
@@ -225,11 +265,9 @@
 
 <script>
   let modoPercentual = false;
-  let dadosOriginais = [];
 
   function alternarModo() {
-    modoPercentual = !modoPercentual;
-    document.querySelector('.toggle-button').textContent = modoPercentual ? 'Alternar para Cota Normalizada' : 'Alternar para Variação Percentual';
+    modoPercentual = document.getElementById("modoToggle").checked;
     carregarGrafico();
   }
 
@@ -261,14 +299,8 @@
           if (bases[idx] === null) bases[idx] = valor;
           const normalizado = valor / bases[idx];
           series[idx].push(parseFloat(normalizado.toFixed(6)));
-
-          if (series[idx].length > 1) {
-            const anterior = parseFloat(linha[j - (linhas[i - 1] ? 0 : 1)].replace(",", "."));
-            const variacao = ((valor - bases[idx]) / bases[idx]) * 100;
-            variacoes[idx].push(parseFloat(variacao.toFixed(2)));
-          } else {
-            variacoes[idx].push(0);
-          }
+          const variacao = ((valor - bases[idx]) / bases[idx]) * 100;
+          variacoes[idx].push(parseFloat(variacao.toFixed(2)));
         }
       }
     }
