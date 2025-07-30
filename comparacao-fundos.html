@@ -175,7 +175,6 @@
       try {
         const docRef = doc(db, "usuarios", user.uid);
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) {
           const data = docSnap.data();
           const nome = data.nome || "Usuário";
@@ -185,7 +184,7 @@
         } else {
           document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
         }
-      } catch (error) {
+      } catch {
         document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
       }
     } else {
@@ -196,12 +195,8 @@
   document.getElementById("logoutLink").addEventListener("click", (e) => {
     e.preventDefault();
     signOut(auth)
-      .then(() => {
-        window.location.href = "index.html";
-      })
-      .catch((error) => {
-        console.error("Erro ao deslogar:", error);
-      });
+      .then(() => window.location.href = "index.html")
+      .catch((error) => console.error("Erro ao deslogar:", error));
   });
 </script>
 
@@ -212,19 +207,28 @@
     const texto = await resposta.text();
     const linhas = texto.split("\n").map(l => l.split(","));
 
-    const headers = linhas[0].slice(10); // K até U
+    const headers = linhas[0].slice(10); // colunas K a U
     const datas = [];
     const series = headers.map(() => []);
+    const bases = headers.map(() => null); // cotas base para normalização
 
     for (let i = 1; i < linhas.length; i++) {
       const linha = linhas[i];
-      if (!linha[9]) continue; // ignora linhas vazias
-
+      if (!linha[9]) continue; // ignora linhas sem data
       datas.push(linha[9]);
 
       for (let j = 10; j < linha.length; j++) {
-        const valor = parseFloat(linha[j].replace(",", "."));
-        series[j - 10].push(isNaN(valor) ? null : valor);
+        const raw = linha[j].trim();
+        let valor = parseFloat(raw.replace(",", "."));
+        if (isNaN(valor)) {
+          series[j - 10].push(null);
+        } else {
+          if (bases[j - 10] === null) {
+            bases[j - 10] = valor; // define a base
+          }
+          const normalizado = valor / bases[j - 10];
+          series[j - 10].push(parseFloat(normalizado.toFixed(6)));
+        }
       }
     }
 
@@ -269,7 +273,7 @@
             beginAtZero: false,
             title: {
               display: true,
-              text: "Valor"
+              text: "Cota Normalizada"
             }
           },
           x: {
