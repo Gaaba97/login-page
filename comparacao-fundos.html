@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Clube Morpheus</title>
   <link rel="icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
@@ -279,24 +280,29 @@
   <script>
     function detectarDispositivo() {
       const largura = window.innerWidth;
+      const altura = window.innerHeight;
       const body = document.body;
       const deviceInfo = document.getElementById('deviceInfo');
       
-      if (largura <= 768) {
+      // Critérios aprimorados de detecção
+      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
+      
+      if (isMobileSize && isTouchDevice) {
         body.classList.remove('desktop');
         body.classList.add('smartphone');
-        deviceInfo.textContent = 'Dispositivo detectado: Celular';
+        deviceInfo.textContent = 'Dispositivo detectado: Celular (Largura: ' + largura + 'px, Touch: Sim)';
       } else {
         body.classList.remove('smartphone');
         body.classList.add('desktop');
-        deviceInfo.textContent = 'Dispositivo detectado: Computador';
+        deviceInfo.textContent = 'Dispositivo detectado: Computador (Largura: ' + largura + 'px, Touch: ' + (isTouchDevice ? 'Sim' : 'Não') + ')';
       }
     }
 
     window.addEventListener('resize', detectarDispositivo);
+    window.addEventListener('orientationchange', detectarDispositivo);
     detectarDispositivo();
   </script>
-
   <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
