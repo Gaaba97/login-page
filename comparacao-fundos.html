@@ -93,24 +93,25 @@
 
     .chart-header {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
       margin-bottom: 30px;
       position: relative;
+      flex-wrap: wrap;
     }
 
     .chart-header h2 {
       font-size: 30px;
       margin: 0;
-      text-align: center;
+      text-align: left;
       flex-grow: 1;
+      min-width: 200px;
     }
 
     .toggle-switch {
-      position: absolute;
-      right: 0;
       width: 70px;
       height: 40px;
+      margin-left: 20px;
     }
 
     .toggle-switch input {
@@ -188,6 +189,25 @@
       h2 {
         font-size: 30px !important;
         margin-bottom: 40px !important;
+      }
+    }
+
+    @media (max-width: 1000px) {
+      .chart-header {
+        flex-direction: row;
+        align-items: center;
+        gap: 15px;
+      }
+      
+      .chart-header h2 {
+        margin-bottom: 0;
+        flex: 1;
+        min-width: auto;
+      }
+      
+      .toggle-switch {
+        position: static;
+        margin-left: 0;
       }
     }
   </style>
