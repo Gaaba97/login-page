@@ -163,7 +163,6 @@
       height: auto;
     }
 
-    /* Estilos padrão para desktop */
     .desktop .navbar {
       padding: 10px 20px;
     }
@@ -198,27 +197,26 @@
       font-size: 14px;
     }
 
-    /* Estilos para smartphone */
     .smartphone .navbar {
-      padding: 5px 10px; /* Reduzido pela metade */
+      padding: 5px 10px;
     }
 
     .smartphone .navbar .welcome {
-      font-size: 8px; /* Reduzido pela metade */
+      font-size: 8px;
     }
 
     .smartphone .navbar .links a {
-      font-size: 8px; /* Reduzido pela metade */
+      font-size: 8px;
     }
 
     .smartphone .descricao-fundos {
       font-size: 16px;
-      margin-top: 60px; /* Ajustado para navbar menor */
+      margin-top: 60px;
       margin-bottom: 20px;
     }
 
     .smartphone .chart-header h2 {
-      font-size: 21px; /* 70% de 30px */
+      font-size: 21px;
     }
 
     .smartphone .toggle-switch {
@@ -233,7 +231,6 @@
       font-size: 12px;
     }
 
-    /* Novo estilo para o dispositivo detectado */
     .device-info {
       text-align: center;
       margin: 20px auto;
@@ -245,7 +242,7 @@
     }
 
     .smartphone .device-info {
-      font-size: 9px; /* Reduzido pela metade */
+      font-size: 9px;
     }
   </style>
 </head>
@@ -261,7 +258,7 @@
   </div>
 
   <div class="descricao-fundos">
-   Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
+    Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
   </div>
 
   <div class="main-wrapper">
@@ -277,21 +274,17 @@
     </div>
   </div>
 
-  <!-- Elemento que mostra o tipo de dispositivo -->
   <div class="device-info" id="deviceInfo"></div>
 
-  <!-- DETECÇÃO DE DISPOSITIVO -->
   <script>
     function detectarDispositivo() {
       const largura = window.innerWidth;
       const altura = window.innerHeight;
       const body = document.body;
       const deviceInfo = document.getElementById('deviceInfo');
-      
-      // Critérios aprimorados de detecção
       const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
       const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
-      
+
       if (isMobileSize && isTouchDevice) {
         body.classList.remove('desktop');
         body.classList.add('smartphone');
@@ -307,7 +300,7 @@
     window.addEventListener('orientationchange', detectarDispositivo);
     detectarDispositivo();
   </script>
-  <!-- FIREBASE -->
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
@@ -355,7 +348,6 @@
     });
   </script>
 
-  <!-- CHART -->
   <script>
     let modoPercentual = false;
 
@@ -404,14 +396,11 @@
 
       const cores = headers.map((_, idx) => idx === 0 ? "#0E2841" : idx === 1 ? "#C00000" : "#20842E");
       const espessuras = headers.map((_, idx) => idx === 0 ? 3 : 2);
-      
-      // Configuração de tamanho reduzido para mobile
-      const mobileFontSize = 8;  // Tamanho muito reduzido para mobile
-      const desktopFontSize = 14; // Tamanho normal para desktop
+      const fator = isSmartphone() ? 0.6 : 1;
 
       const ctx = document.getElementById("fundosChart").getContext("2d");
       if (window.chartFundos) window.chartFundos.destroy();
-      
+
       window.chartFundos = new Chart(ctx, {
         type: "line",
         data: {
@@ -429,27 +418,20 @@
         },
         options: {
           responsive: true,
-          maintainAspectRatio: true,
           plugins: {
             legend: {
               position: "top",
               labels: {
-                boxWidth: 12,
-                font: { 
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                },
+                boxWidth: 10,
+                font: { size: 14 * fator },
                 color: '#000'
               }
             },
             tooltip: {
               mode: "index",
               intersect: false,
-              bodyFont: {
-                size: isSmartphone() ? mobileFontSize : desktopFontSize
-              },
-              titleFont: {
-                size: isSmartphone() ? mobileFontSize : desktopFontSize
-              }
+              titleFont: { size: 13 * fator },
+              bodyFont: { size: 12 * fator }
             }
           },
           scales: {
@@ -459,15 +441,11 @@
                 display: true,
                 text: modoPercentual ? "% de Variação" : "Cota Normalizada",
                 color: "#000",
-                font: {
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                }
+                font: { size: 14 * fator }
               },
               ticks: {
                 color: "#000",
-                font: {
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                }
+                font: { size: 13 * fator }
               }
             },
             x: {
@@ -475,16 +453,12 @@
                 display: true,
                 text: "Data",
                 color: "#000",
-                font: {
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                }
+                font: { size: 14 * fator }
               },
               grid: { display: false },
               ticks: {
                 color: "#000",
-                font: {
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                },
+                font: { size: 13 * fator },
                 maxRotation: 45,
                 minRotation: 45
               }
