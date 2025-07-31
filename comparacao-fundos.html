@@ -1,395 +1,76 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8" />
-  <title>Clube Morpheus</title>
-  <link rel="icon" href="favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: "DM Sans", sans-serif;
-      background-color: white;
-      color: black;
-      display: flex;
-      flex-direction: column;
-    }
+<style>
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+    gap: 12px;
+  }
 
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: rgba(0, 0, 0, 0.8);
-      padding: 10px 20px;
-      position: fixed;
-      width: 100%;
-      top: 0;
-      left: 0;
-      z-index: 3;
-      color: white;
-      box-sizing: border-box;
-      height: auto;
-    }
+  .chart-header h2 {
+    font-size: 30px;
+    margin: 0;
+  }
 
-    .navbar .welcome {
-      font-weight: bold;
-      white-space: nowrap;
-      font-size: 16px;
-    }
+  .toggle-switch {
+    width: 70px;
+    height: 40px;
+    position: relative;
+  }
 
-    .navbar .links {
-      display: flex;
-      gap: 20px;
-      flex-wrap: nowrap;
-      white-space: nowrap;
-      padding-left: 4px;
-    }
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
 
-    .navbar a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 16px;
-      display: inline-block;
-      transition: transform 0.2s ease-in-out;
-    }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+  }
 
-    .navbar a:hover {
-      transform: scale(1.1);
-      color: white;
-    }
+  .slider:before {
+    position: absolute;
+    content: attr(data-label-left);
+    height: 32px;
+    width: 32px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+    font-size: 14px;
+    line-height: 32px;
+    text-align: center;
+    font-weight: bold;
+    color: black;
+  }
 
-    .descricao-fundos {
-      width: 90%;
-      max-width: 1000px;
-      margin: 100px auto 30px;
-      text-align: center;
-      font-weight: 500;
-      font-size: 20px;
-    }
+  input:checked + .slider {
+    background-color: #000;
+  }
 
-    .main-wrapper {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding-top: 10px;
-      box-sizing: border-box;
-    }
+  input:checked + .slider:before {
+    transform: translateX(30px);
+    content: attr(data-label-right);
+  }
 
-    .content {
-      width: 90%;
-      max-width: 1000px;
-      background-color: rgba(0, 0, 0, 0.05);
-      padding: 30px;
-      border-radius: 12px;
-      border: 1px solid #000;
-      color: #000;
-      box-sizing: border-box;
-    }
-
+  @media (max-width: 1000px) {
     .chart-header {
-      display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
-      margin-bottom: 30px;
-      position: relative;
-      gap: 20px;
     }
 
     .chart-header h2 {
-      font-size: 30px;
-      margin: 0;
-      text-align: center;
-      line-height: 1;
+      margin-bottom: 0;
     }
-
-    .toggle-switch {
-      width: 70px;
-      height: 40px;
-      flex-shrink: 0;
-    }
-
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: 0.4s;
-      border-radius: 34px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: attr(data-label-left);
-      height: 32px;
-      width: 32px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: 0.4s;
-      border-radius: 50%;
-      font-size: 14px;
-      line-height: 32px;
-      text-align: center;
-      font-weight: bold;
-      color: black;
-    }
-
-    input:checked + .slider {
-      background-color: #000;
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(30px);
-      content: attr(data-label-right);
-    }
-
-    canvas {
-      max-width: 100%;
-      height: auto;
-    }
-
-    @media (max-width: 1000px) {
-      .navbar {
-        padding: 15px 30px;
-      }
-
-      .navbar .welcome {
-        font-size: 20px;
-      }
-
-      .navbar .links a {
-        font-size: 20px;
-      }
-
-      .descricao-fundos {
-        font-size: 30px;
-        margin-top: 120px;
-        margin-bottom: 20px;
-      }
-
-      .main-wrapper {
-        padding-top: 0px;
-      }
-
-      .chart-header {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .chart-header h2 {
-        font-size: 26px !important;
-        margin: 0 !important;
-      }
-    }
-  </style>
-</head>
-<body>
-<div class="navbar">
-  <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
-  <div class="links">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="#">Gráficos</a>
-    <a href="comparacao-fundos.html">Comparação com Fundos</a>
-    <a href="#" id="logoutLink">Sair</a>
-  </div>
-</div>
-
-<div class="descricao-fundos">
-  Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
-</div>
-
-<div class="main-wrapper">
-  <div class="content">
-    <div class="chart-header">
-      <h2>Comparação de Fundos</h2>
-      <label class="toggle-switch">
-        <input type="checkbox" onchange="alternarModo()" id="modoToggle">
-        <span class="slider" data-label-left="Cota" data-label-right="%"></span>
-      </label>
-    </div>
-    <canvas id="fundosChart"></canvas>
-  </div>
-</div>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
-    authDomain: "login-site-9cbbd.firebaseapp.com",
-    projectId: "login-site-9cbbd",
-    storageBucket: "login-site-9cbbd.appspot.com",
-    messagingSenderId: "703993528666",
-    appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      try {
-        const docRef = doc(db, "usuarios", user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          const nome = data.nome || "Usuário";
-          const genero = (data.genero || "masculino").toLowerCase();
-          const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
-          document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
-        } else {
-          document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
-        }
-      } catch {
-        document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
-      }
-    } else {
-      window.location.href = "index.html";
-    }
-  });
-
-  document.getElementById("logoutLink").addEventListener("click", (e) => {
-    e.preventDefault();
-    signOut(auth).then(() => window.location.href = "index.html")
-      .catch((error) => console.error("Erro ao deslogar:", error));
-  });
-</script>
-
-<script>
-  let modoPercentual = false;
-
-  function alternarModo() {
-    modoPercentual = document.getElementById("modoToggle").checked;
-    carregarGrafico();
   }
-
-  async function carregarGrafico() {
-    const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
-    const resposta = await fetch(url);
-    const texto = await resposta.text();
-    const linhas = texto.split("\n").map(l => l.split(","));
-
-    const headers = linhas[0].slice(10);
-    const datas = [];
-    const series = headers.map(() => []);
-    const bases = headers.map(() => null);
-    const variacoes = headers.map(() => []);
-
-    for (let i = 1; i < linhas.length; i++) {
-      const linha = linhas[i];
-      if (!linha[9]) continue;
-      datas.push(linha[9]);
-
-      for (let j = 10; j < linha.length; j++) {
-        const raw = linha[j].trim();
-        let valor = parseFloat(raw.replace(",", "."));
-        const idx = j - 10;
-        if (isNaN(valor)) {
-          series[idx].push(null);
-          variacoes[idx].push(null);
-        } else {
-          if (bases[idx] === null) bases[idx] = valor;
-          const normalizado = valor / bases[idx];
-          series[idx].push(parseFloat(normalizado.toFixed(6)));
-          const variacao = ((valor - bases[idx]) / bases[idx]) * 100;
-          variacoes[idx].push(parseFloat(variacao.toFixed(2)));
-        }
-      }
-    }
-
-    const cores = headers.map((_, idx) => idx === 0 ? "#0E2841" : idx === 1 ? "#C00000" : "#20842E");
-    const espessuras = headers.map((_, idx) => idx === 0 ? 3 : 2);
-    const larguraTela = window.innerWidth;
-    const fator = larguraTela <= 1000 ? 1.5 : 1;
-
-    const ctx = document.getElementById("fundosChart").getContext("2d");
-    if (window.chartFundos) window.chartFundos.destroy();
-    window.chartFundos = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: datas,
-        datasets: headers.map((nome, idx) => ({
-          label: nome,
-          data: modoPercentual ? variacoes[idx] : series[idx],
-          borderColor: cores[idx],
-          backgroundColor: cores[idx],
-          tension: 0.3,
-          borderWidth: espessuras[idx],
-          pointRadius: 0,
-          fill: false
-        }))
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "top",
-            labels: {
-              boxWidth: 12,
-              usePointStyle: false,
-              pointStyle: 'rect',
-              font: { size: 14 * fator },
-              color: '#000'
-            }
-          },
-          tooltip: {
-            mode: "index",
-            intersect: false
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: false,
-            title: {
-              display: true,
-              text: modoPercentual ? "% de Variação" : "Cota Normalizada",
-              color: "#000",
-              font: { size: 14 * fator }
-            },
-            ticks: {
-              color: "#000",
-              font: { size: 13 * fator }
-            }
-          },
-          x: {
-            title: {
-              display: true,
-              text: "Data",
-              color: "#000",
-              font: { size: 14 * fator }
-            },
-            grid: { display: false },
-            ticks: {
-              color: "#000",
-              font: { size: 13 * fator },
-              maxRotation: 45,
-              minRotation: 45
-            }
-          }
-        }
-      }
-    });
-  }
-
-  carregarGrafico();
-</script>
-</body>
-</html>
+</style>
