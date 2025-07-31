@@ -405,8 +405,9 @@
       const cores = headers.map((_, idx) => idx === 0 ? "#0E2841" : idx === 1 ? "#C00000" : "#20842E");
       const espessuras = headers.map((_, idx) => idx === 0 ? 3 : 2);
       
-      // Configuração de tamanho para mobile
-      const fator = isSmartphone() ? 1.5 : 1;
+      // Configuração de tamanho reduzido para mobile
+      const mobileFontSize = 8;  // Tamanho muito reduzido para mobile
+      const desktopFontSize = 14; // Tamanho normal para desktop
 
       const ctx = document.getElementById("fundosChart").getContext("2d");
       if (window.chartFundos) window.chartFundos.destroy();
@@ -428,20 +429,27 @@
         },
         options: {
           responsive: true,
+          maintainAspectRatio: true,
           plugins: {
             legend: {
               position: "top",
               labels: {
                 boxWidth: 12,
-                usePointStyle: false,
-                pointStyle: 'rect',
-                font: { size: 14 * fator },
+                font: { 
+                  size: isSmartphone() ? mobileFontSize : desktopFontSize
+                },
                 color: '#000'
               }
             },
             tooltip: {
               mode: "index",
-              intersect: false
+              intersect: false,
+              bodyFont: {
+                size: isSmartphone() ? mobileFontSize : desktopFontSize
+              },
+              titleFont: {
+                size: isSmartphone() ? mobileFontSize : desktopFontSize
+              }
             }
           },
           scales: {
@@ -451,11 +459,15 @@
                 display: true,
                 text: modoPercentual ? "% de Variação" : "Cota Normalizada",
                 color: "#000",
-                font: { size: 14 * fator }
+                font: {
+                  size: isSmartphone() ? mobileFontSize : desktopFontSize
+                }
               },
               ticks: {
                 color: "#000",
-                font: { size: 13 * fator }
+                font: {
+                  size: isSmartphone() ? mobileFontSize : desktopFontSize
+                }
               }
             },
             x: {
@@ -463,12 +475,16 @@
                 display: true,
                 text: "Data",
                 color: "#000",
-                font: { size: 14 * fator }
+                font: {
+                  size: isSmartphone() ? mobileFontSize : desktopFontSize
+                }
               },
               grid: { display: false },
               ticks: {
                 color: "#000",
-                font: { size: 13 * fator },
+                font: {
+                  size: isSmartphone() ? mobileFontSize : desktopFontSize
+                },
                 maxRotation: 45,
                 minRotation: 45
               }
