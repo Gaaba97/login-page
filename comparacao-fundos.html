@@ -31,7 +31,6 @@
       z-index: 3;
       color: white;
       box-sizing: border-box;
-      height: auto;
     }
 
     .navbar .welcome {
@@ -45,7 +44,6 @@
       gap: 20px;
       flex-wrap: nowrap;
       white-space: nowrap;
-      padding-left: 4px;
     }
 
     .navbar a {
@@ -59,13 +57,12 @@
 
     .navbar a:hover {
       transform: scale(1.1);
-      color: white;
     }
 
     .descricao-fundos {
       width: 90%;
       max-width: 1000px;
-      margin: 90px auto 20px;
+      margin: 100px auto 30px;
       text-align: center;
       font-weight: 500;
       font-size: 20px;
@@ -76,7 +73,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding-top: 0;
+      padding-top: 10px;
       box-sizing: border-box;
     }
 
@@ -84,7 +81,7 @@
       width: 90%;
       max-width: 1000px;
       background-color: rgba(0, 0, 0, 0.05);
-      padding: 30px 20px;
+      padding: 30px;
       border-radius: 12px;
       border: 1px solid #000;
       color: #000;
@@ -95,21 +92,23 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-bottom: 20px;
-      margin-top: -10px;
+      margin-bottom: 30px;
       position: relative;
+      min-height: 40px;
     }
 
     .chart-header h2 {
       font-size: 30px;
       margin: 0;
-      text-align: center;
       flex-grow: 1;
+      text-align: center;
     }
 
     .toggle-switch {
       position: absolute;
       right: 0;
+      top: 50%;
+      transform: translateY(-50%);
       width: 70px;
       height: 40px;
     }
@@ -163,263 +162,229 @@
       height: auto;
     }
 
-    @media (max-width: 1500px) {
+    @media (max-width: 1000px) {
       .navbar {
-        padding: 15px 30px;
+        padding: 10px 15px;
       }
 
       .navbar .welcome {
-        font-size: 20px;
+        font-size: 14px;
       }
 
       .navbar .links a {
-        font-size: 20px;
+        font-size: 14px;
       }
 
       .descricao-fundos {
-        font-size: 24px;
-        margin-top: 100px;
+        font-size: 16px;
+        margin-top: 80px;
         margin-bottom: 20px;
-      }
-
-      .main-wrapper {
-        padding-top: 0px;
-      }
-
-      h2 {
-        font-size: 26px !important;
-        margin-bottom: 30px !important;
-      }
-    }
-
-    @media (max-width: 1000px) {
-      .chart-header {
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
       }
 
       .chart-header h2 {
         font-size: 22px;
       }
 
+      .toggle-switch {
+        width: 60px;
+        height: 34px;
+      }
+
       .slider:before {
-        font-size: 12px;
-        line-height: 28px;
         height: 28px;
         width: 28px;
-      }
-
-      .toggle-switch {
-        position: static;
-      }
-
-      .descricao-fundos {
-        font-size: 18px;
-        margin-top: 110px;
-        padding: 0 10px;
-      }
-
-      .content {
-        padding: 20px 10px;
+        line-height: 28px;
+        font-size: 12px;
       }
     }
   </style>
 </head>
 <body>
-<div class="navbar">
-  <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
-  <div class="links">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="#">Gráficos</a>
-    <a href="comparacao-fundos.html">Comparação com Fundos</a>
-    <a href="#" id="logoutLink">Sair</a>
-  </div>
-</div>
-
-<div class="descricao-fundos">
-  Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
-</div>
-
-<div class="main-wrapper">
-  <div class="content">
-    <div class="chart-header">
-      <h2>Comparação de Fundos</h2>
-      <label class="toggle-switch">
-        <input type="checkbox" onchange="alternarModo()" id="modoToggle">
-        <span class="slider" data-label-left="Cota" data-label-right="%"></span>
-      </label>
+  <div class="navbar">
+    <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
+    <div class="links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="#">Gráficos</a>
+      <a href="comparacao-fundos.html">Comparação com Fundos</a>
+      <a href="#" id="logoutLink">Sair</a>
     </div>
-    <canvas id="fundosChart"></canvas>
   </div>
-</div>
 
-<!-- FIREBASE -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+  <div class="descricao-fundos">
+    Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa...
+  </div>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
-    authDomain: "login-site-9cbbd.firebaseapp.com",
-    projectId: "login-site-9cbbd",
-    storageBucket: "login-site-9cbbd.appspot.com",
-    messagingSenderId: "703993528666",
-    appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
-  };
+  <div class="main-wrapper">
+    <div class="content">
+      <div class="chart-header">
+        <h2>Comparação de Fundos</h2>
+        <label class="toggle-switch">
+          <input type="checkbox" onchange="alternarModo()" id="modoToggle">
+          <span class="slider" data-label-left="Cota" data-label-right="%"></span>
+        </label>
+      </div>
+      <canvas id="fundosChart"></canvas>
+    </div>
+  </div>
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+  <!-- FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      try {
-        const docRef = doc(db, "usuarios", user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          const nome = data.nome || "Usuário";
-          const genero = (data.genero || "masculino").toLowerCase();
-          const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
-          document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
-        } else {
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+      authDomain: "login-site-9cbbd.firebaseapp.com",
+      projectId: "login-site-9cbbd",
+      storageBucket: "login-site-9cbbd.appspot.com",
+      messagingSenderId: "703993528666",
+      appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const docRef = doc(db, "usuarios", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            const nome = data.nome || "Usuário";
+            const genero = (data.genero || "masculino").toLowerCase();
+            const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
+            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+          } else {
+            document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
+          }
+        } catch {
           document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
         }
-      } catch {
-        document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
-      }
-    } else {
-      window.location.href = "index.html";
-    }
-  });
-
-  document.getElementById("logoutLink").addEventListener("click", (e) => {
-    e.preventDefault();
-    signOut(auth).then(() => window.location.href = "index.html")
-      .catch((error) => console.error("Erro ao deslogar:", error));
-  });
-</script>
-
-<!-- CHART -->
-<script>
-  let modoPercentual = false;
-
-  function alternarModo() {
-    modoPercentual = document.getElementById("modoToggle").checked;
-    carregarGrafico();
-  }
-
-  async function carregarGrafico() {
-    const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
-    const resposta = await fetch(url);
-    const texto = await resposta.text();
-    const linhas = texto.split("\n").map(l => l.split(","));
-
-    const headers = linhas[0].slice(10);
-    const datas = [];
-    const series = headers.map(() => []);
-    const bases = headers.map(() => null);
-    const variacoes = headers.map(() => []);
-
-    for (let i = 1; i < linhas.length; i++) {
-      const linha = linhas[i];
-      if (!linha[9]) continue;
-      datas.push(linha[9]);
-
-      for (let j = 10; j < linha.length; j++) {
-        const raw = linha[j].trim();
-        let valor = parseFloat(raw.replace(",", "."));
-        const idx = j - 10;
-        if (isNaN(valor)) {
-          series[idx].push(null);
-          variacoes[idx].push(null);
-        } else {
-          if (bases[idx] === null) bases[idx] = valor;
-          const normalizado = valor / bases[idx];
-          series[idx].push(parseFloat(normalizado.toFixed(6)));
-          const variacao = ((valor - bases[idx]) / bases[idx]) * 100;
-          variacoes[idx].push(parseFloat(variacao.toFixed(2)));
-        }
-      }
-    }
-
-    const cores = headers.map((_, idx) => idx === 0 ? "#0E2841" : idx === 1 ? "#C00000" : "#20842E");
-    const espessuras = headers.map((_, idx) => idx === 0 ? 3 : 2);
-    const larguraTela = window.innerWidth;
-    const fator = larguraTela <= 1500 ? 1.5 : 1;
-
-    const ctx = document.getElementById("fundosChart").getContext("2d");
-    if (window.chartFundos) window.chartFundos.destroy();
-    window.chartFundos = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: datas,
-        datasets: headers.map((nome, idx) => ({
-          label: nome,
-          data: modoPercentual ? variacoes[idx] : series[idx],
-          borderColor: cores[idx],
-          backgroundColor: cores[idx],
-          tension: 0.3,
-          borderWidth: espessuras[idx],
-          pointRadius: 0,
-          fill: false
-        }))
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "top",
-            labels: {
-              boxWidth: 12,
-              usePointStyle: false,
-              pointStyle: 'rect',
-              font: { size: 14 * fator },
-              color: '#000'
-            }
-          },
-          tooltip: {
-            mode: "index",
-            intersect: false
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: false,
-            title: {
-              display: true,
-              text: modoPercentual ? "% de Variação" : "Cota Normalizada",
-              color: "#000",
-              font: { size: 14 * fator }
-            },
-            ticks: {
-              color: "#000",
-              font: { size: 13 * fator }
-            }
-          },
-          x: {
-            title: {
-              display: true,
-              text: "Data",
-              color: "#000",
-              font: { size: 14 * fator }
-            },
-            grid: { display: false },
-            ticks: {
-              color: "#000",
-              font: { size: 13 * fator },
-              maxRotation: 45,
-              minRotation: 45
-            }
-          }
-        }
+      } else {
+        window.location.href = "index.html";
       }
     });
-  }
 
-  carregarGrafico();
-</script>
+    document.getElementById("logoutLink").addEventListener("click", (e) => {
+      e.preventDefault();
+      signOut(auth).then(() => window.location.href = "index.html")
+        .catch((error) => console.error("Erro ao deslogar:", error));
+    });
+  </script>
+
+  <!-- CHART -->
+  <script>
+    let modoPercentual = false;
+
+    function alternarModo() {
+      modoPercentual = document.getElementById("modoToggle").checked;
+      carregarGrafico();
+    }
+
+    async function carregarGrafico() {
+      const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
+      const resposta = await fetch(url);
+      const texto = await resposta.text();
+      const linhas = texto.split("\n").map(l => l.split(","));
+
+      const headers = linhas[0].slice(10);
+      const datas = [];
+      const series = headers.map(() => []);
+      const bases = headers.map(() => null);
+      const variacoes = headers.map(() => []);
+
+      for (let i = 1; i < linhas.length; i++) {
+        const linha = linhas[i];
+        if (!linha[9]) continue;
+        datas.push(linha[9]);
+
+        for (let j = 10; j < linha.length; j++) {
+          const raw = linha[j].trim();
+          let valor = parseFloat(raw.replace(",", "."));
+          const idx = j - 10;
+          if (isNaN(valor)) {
+            series[idx].push(null);
+            variacoes[idx].push(null);
+          } else {
+            if (bases[idx] === null) bases[idx] = valor;
+            const normalizado = valor / bases[idx];
+            series[idx].push(parseFloat(normalizado.toFixed(6)));
+            const variacao = ((valor - bases[idx]) / bases[idx]) * 100;
+            variacoes[idx].push(parseFloat(variacao.toFixed(2)));
+          }
+        }
+      }
+
+      const cores = headers.map((_, idx) => idx === 0 ? "#0E2841" : idx === 1 ? "#C00000" : "#20842E");
+      const espessuras = headers.map((_, idx) => idx === 0 ? 3 : 2);
+
+      const ctx = document.getElementById("fundosChart").getContext("2d");
+      if (window.chartFundos) window.chartFundos.destroy();
+      window.chartFundos = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: datas,
+          datasets: headers.map((nome, idx) => ({
+            label: nome,
+            data: modoPercentual ? variacoes[idx] : series[idx],
+            borderColor: cores[idx],
+            backgroundColor: cores[idx],
+            tension: 0.3,
+            borderWidth: espessuras[idx],
+            pointRadius: 0,
+            fill: false
+          }))
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "top",
+              labels: {
+                boxWidth: 12,
+                font: { size: 14 },
+                color: '#000'
+              }
+            },
+            tooltip: {
+              mode: "index",
+              intersect: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              title: {
+                display: true,
+                text: modoPercentual ? "% de Variação" : "Cota Normalizada",
+                color: "#000"
+              },
+              ticks: {
+                color: "#000"
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: "Data",
+                color: "#000"
+              },
+              grid: { display: false },
+              ticks: {
+                color: "#000",
+                maxRotation: 45,
+                minRotation: 45
+              }
+            }
+          }
+        }
+      });
+    }
+
+    carregarGrafico();
+  </script>
 </body>
 </html>
