@@ -97,6 +97,7 @@
       align-items: center;
       margin-bottom: 30px;
       position: relative;
+      height: 50px;
     }
 
     .chart-header h2 {
@@ -104,6 +105,8 @@
       margin: 0;
       text-align: center;
       flex-grow: 1;
+      line-height: 1;
+      padding-top: 5px; /* ⬅️ leve descida para alinhar com toggle */
     }
 
     .toggle-switch {
@@ -220,7 +223,6 @@
   </div>
 </div>
 
-<!-- FIREBASE -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
@@ -268,7 +270,6 @@
   });
 </script>
 
-<!-- CHART -->
 <script>
   let modoPercentual = false;
 
