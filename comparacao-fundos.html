@@ -162,40 +162,74 @@
       height: auto;
     }
 
-    @media (max-width: 1000px) {
-      .navbar {
-        padding: 10px 15px;
-      }
+    /* Estilos padrão para desktop */
+    .desktop .navbar {
+      padding: 10px 20px;
+    }
 
-      .navbar .welcome {
-        font-size: 14px;
-      }
+    .desktop .navbar .welcome {
+      font-size: 16px;
+    }
 
-      .navbar .links a {
-        font-size: 14px;
-      }
+    .desktop .navbar .links a {
+      font-size: 16px;
+    }
 
-      .descricao-fundos {
-        font-size: 16px;
-        margin-top: 80px;
-        margin-bottom: 20px;
-      }
+    .desktop .descricao-fundos {
+      font-size: 20px;
+      margin-top: 100px;
+      margin-bottom: 30px;
+    }
 
-      .chart-header h2 {
-        font-size: 22px;
-      }
+    .desktop .chart-header h2 {
+      font-size: 30px;
+    }
 
-      .toggle-switch {
-        width: 60px;
-        height: 34px;
-      }
+    .desktop .toggle-switch {
+      width: 70px;
+      height: 40px;
+    }
 
-      .slider:before {
-        height: 28px;
-        width: 28px;
-        line-height: 28px;
-        font-size: 12px;
-      }
+    .desktop .slider:before {
+      height: 32px;
+      width: 32px;
+      line-height: 32px;
+      font-size: 14px;
+    }
+
+    /* Estilos para smartphone */
+    .smartphone .navbar {
+      padding: 10px 15px;
+    }
+
+    .smartphone .navbar .welcome {
+      font-size: 14px;
+    }
+
+    .smartphone .navbar .links a {
+      font-size: 14px;
+    }
+
+    .smartphone .descricao-fundos {
+      font-size: 16px;
+      margin-top: 80px;
+      margin-bottom: 20px;
+    }
+
+    .smartphone .chart-header h2 {
+      font-size: 22px;
+    }
+
+    .smartphone .toggle-switch {
+      width: 60px;
+      height: 34px;
+    }
+
+    .smartphone .slider:before {
+      height: 28px;
+      width: 28px;
+      line-height: 28px;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -226,6 +260,24 @@
       <canvas id="fundosChart"></canvas>
     </div>
   </div>
+
+  <!-- DETECÇÃO DE DISPOSITIVO -->
+  <script>
+    function detectarDispositivo() {
+      const largura = window.innerWidth;
+      const body = document.body;
+      if (largura <= 768) {
+        body.classList.remove('desktop');
+        body.classList.add('smartphone');
+      } else {
+        body.classList.remove('smartphone');
+        body.classList.add('desktop');
+      }
+    }
+
+    window.addEventListener('resize', detectarDispositivo);
+    detectarDispositivo();
+  </script>
 
   <!-- FIREBASE -->
   <script type="module">
