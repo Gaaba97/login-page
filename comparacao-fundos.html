@@ -163,74 +163,6 @@
       height: auto;
     }
 
-    .desktop .navbar {
-      padding: 10px 20px;
-    }
-
-    .desktop .navbar .welcome {
-      font-size: 16px;
-    }
-
-    .desktop .navbar .links a {
-      font-size: 16px;
-    }
-
-    .desktop .descricao-fundos {
-      font-size: 20px;
-      margin-top: 100px;
-      margin-bottom: 30px;
-    }
-
-    .desktop .chart-header h2 {
-      font-size: 30px;
-    }
-
-    .desktop .toggle-switch {
-      width: 70px;
-      height: 40px;
-    }
-
-    .desktop .slider:before {
-      height: 32px;
-      width: 32px;
-      line-height: 32px;
-      font-size: 14px;
-    }
-
-    .smartphone .navbar {
-      padding: 5px 10px;
-    }
-
-    .smartphone .navbar .welcome {
-      font-size: 8px;
-    }
-
-    .smartphone .navbar .links a {
-      font-size: 8px;
-    }
-
-    .smartphone .descricao-fundos {
-      font-size: 16px;
-      margin-top: 60px;
-      margin-bottom: 20px;
-    }
-
-    .smartphone .chart-header h2 {
-      font-size: 21px;
-    }
-
-    .smartphone .toggle-switch {
-      width: 60px;
-      height: 34px;
-    }
-
-    .smartphone .slider:before {
-      height: 28px;
-      width: 28px;
-      line-height: 28px;
-      font-size: 12px;
-    }
-
     .device-info {
       text-align: center;
       margin: 20px auto;
@@ -241,8 +173,48 @@
       max-width: 1000px;
     }
 
-    .smartphone .device-info {
-      font-size: 9px;
+    /* SMARTPHONE MODE */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 5px 10px;
+      }
+
+      .navbar .welcome {
+        font-size: 10px;
+      }
+
+      .navbar .links a {
+        font-size: 10px;
+      }
+
+      .descricao-fundos {
+        font-size: 16px;
+        margin-top: 60px;
+      }
+
+      .chart-header h2 {
+        font-size: 20px;
+      }
+
+      .toggle-switch {
+        width: 60px;
+        height: 34px;
+      }
+
+      .slider:before {
+        height: 28px;
+        width: 28px;
+        line-height: 28px;
+        font-size: 12px;
+      }
+
+      .content {
+        padding: 15px;
+      }
+
+      .device-info {
+        font-size: 10px;
+      }
     }
   </style>
 </head>
@@ -258,7 +230,7 @@
   </div>
 
   <div class="descricao-fundos">
-    Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
+    Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa...
   </div>
 
   <div class="main-wrapper">
@@ -270,30 +242,24 @@
           <span class="slider" data-label-left="Cota" data-label-right="%"></span>
         </label>
       </div>
-      <canvas id="fundosChart"></canvas>
+      <canvas id="fundosChart" height="300"></canvas>
     </div>
   </div>
 
   <div class="device-info" id="deviceInfo"></div>
 
+  <!-- JS DETECTOR -->
   <script>
     function detectarDispositivo() {
       const largura = window.innerWidth;
       const altura = window.innerHeight;
-      const body = document.body;
       const deviceInfo = document.getElementById('deviceInfo');
       const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-      const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
+      const isMobileSize = largura <= 768;
 
-      if (isMobileSize && isTouchDevice) {
-        body.classList.remove('desktop');
-        body.classList.add('smartphone');
-        deviceInfo.textContent = 'Dispositivo detectado: Celular (Largura: ' + largura + 'px, Touch: Sim)';
-      } else {
-        body.classList.remove('smartphone');
-        body.classList.add('desktop');
-        deviceInfo.textContent = 'Dispositivo detectado: Computador (Largura: ' + largura + 'px, Touch: ' + (isTouchDevice ? 'Sim' : 'Não') + ')';
-      }
+      deviceInfo.textContent = isMobileSize
+        ? `Dispositivo detectado: Celular (Largura: ${largura}px, Touch: ${isTouchDevice ? 'Sim' : 'Não'})`
+        : `Dispositivo detectado: Computador (Largura: ${largura}px, Touch: ${isTouchDevice ? 'Sim' : 'Não'})`;
     }
 
     window.addEventListener('resize', detectarDispositivo);
@@ -301,63 +267,13 @@
     detectarDispositivo();
   </script>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
-      authDomain: "login-site-9cbbd.firebaseapp.com",
-      projectId: "login-site-9cbbd",
-      storageBucket: "login-site-9cbbd.appspot.com",
-      messagingSenderId: "703993528666",
-      appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const docRef = doc(db, "usuarios", user.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            const nome = data.nome || "Usuário";
-            const genero = (data.genero || "masculino").toLowerCase();
-            const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
-            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
-          } else {
-            document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
-          }
-        } catch {
-          document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
-        }
-      } else {
-        window.location.href = "index.html";
-      }
-    });
-
-    document.getElementById("logoutLink").addEventListener("click", (e) => {
-      e.preventDefault();
-      signOut(auth).then(() => window.location.href = "index.html")
-        .catch((error) => console.error("Erro ao deslogar:", error));
-    });
-  </script>
-
+  <!-- CHART -->
   <script>
     let modoPercentual = false;
 
     function alternarModo() {
       modoPercentual = document.getElementById("modoToggle").checked;
       carregarGrafico();
-    }
-
-    function isSmartphone() {
-      return document.body.classList.contains('smartphone');
     }
 
     async function carregarGrafico() {
@@ -378,89 +294,67 @@
         datas.push(linha[9]);
 
         for (let j = 10; j < linha.length; j++) {
-          const raw = linha[j].trim();
-          let valor = parseFloat(raw.replace(",", "."));
           const idx = j - 10;
-          if (isNaN(valor)) {
+          const valor = parseFloat(linha[j].replace(",", "."));
+          if (!isNaN(valor)) {
+            if (bases[idx] === null) bases[idx] = valor;
+            series[idx].push(valor);
+            variacoes[idx].push((valor / bases[idx] - 1) * 100);
+          } else {
             series[idx].push(null);
             variacoes[idx].push(null);
-          } else {
-            if (bases[idx] === null) bases[idx] = valor;
-            const normalizado = valor / bases[idx];
-            series[idx].push(parseFloat(normalizado.toFixed(6)));
-            const variacao = ((valor - bases[idx]) / bases[idx]) * 100;
-            variacoes[idx].push(parseFloat(variacao.toFixed(2)));
           }
         }
       }
 
-      const cores = headers.map((_, idx) => idx === 0 ? "#0E2841" : idx === 1 ? "#C00000" : "#20842E");
-      const espessuras = headers.map((_, idx) => idx === 0 ? 3 : 2);
-      const fator = isSmartphone() ? 0.6 : 1;
-
       const ctx = document.getElementById("fundosChart").getContext("2d");
-      if (window.chartFundos) window.chartFundos.destroy();
+      if (window.fundosChart) window.fundosChart.destroy();
 
-      window.chartFundos = new Chart(ctx, {
+      const cores = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"];
+      const datasets = headers.map((h, i) => ({
+        label: h,
+        data: modoPercentual ? variacoes[i] : series[i],
+        borderColor: cores[i % cores.length],
+        fill: false,
+        tension: 0.3,
+        borderWidth: window.innerWidth < 768 ? 2.5 : 2,
+        pointRadius: window.innerWidth < 768 ? 0.8 : 1.5
+      }));
+
+      window.fundosChart = new Chart(ctx, {
         type: "line",
-        data: {
-          labels: datas,
-          datasets: headers.map((nome, idx) => ({
-            label: nome,
-            data: modoPercentual ? variacoes[idx] : series[idx],
-            borderColor: cores[idx],
-            backgroundColor: cores[idx],
-            tension: 0.3,
-            borderWidth: espessuras[idx],
-            pointRadius: 0,
-            fill: false
-          }))
-        },
+        data: { labels: datas, datasets },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
           plugins: {
-            legend: {
-              position: "top",
-              labels: {
-                boxWidth: 10,
-                font: { size: 14 * fator },
-                color: '#000'
-              }
-            },
             tooltip: {
-              mode: "index",
-              intersect: false,
-              titleFont: { size: 13 * fator },
-              bodyFont: { size: 12 * fator }
+              mode: 'index',
+              intersect: false
+            },
+            legend: {
+              labels: {
+                font: {
+                  size: window.innerWidth < 768 ? 10 : 14
+                }
+              }
             }
           },
           scales: {
-            y: {
-              beginAtZero: false,
-              title: {
-                display: true,
-                text: modoPercentual ? "% de Variação" : "Cota Normalizada",
-                color: "#000",
-                font: { size: 14 * fator }
-              },
+            x: {
               ticks: {
-                color: "#000",
-                font: { size: 13 * fator }
+                maxTicksLimit: window.innerWidth < 768 ? 4 : 12,
+                font: { size: window.innerWidth < 768 ? 9 : 12 },
               }
             },
-            x: {
-              title: {
-                display: true,
-                text: "Data",
-                color: "#000",
-                font: { size: 14 * fator }
-              },
-              grid: { display: false },
+            y: {
               ticks: {
-                color: "#000",
-                font: { size: 13 * fator },
-                maxRotation: 45,
-                minRotation: 45
+                callback: (v) => modoPercentual ? v.toFixed(1) + "%" : v.toFixed(2),
+                font: { size: window.innerWidth < 768 ? 9 : 12 },
               }
             }
           }
