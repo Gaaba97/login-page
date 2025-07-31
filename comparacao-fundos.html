@@ -203,15 +203,15 @@
     }
 
     .smartphone .navbar .welcome {
-      font-size: 21px;
+      font-size: 14px;
     }
 
     .smartphone .navbar .links a {
-      font-size: 21px;
+      font-size: 14px;
     }
 
     .smartphone .descricao-fundos {
-      font-size: 24px;
+      font-size: 16px;
       margin-top: 80px;
       margin-bottom: 20px;
     }
@@ -261,6 +261,7 @@
     </div>
   </div>
 
+  <!-- DETECÇÃO DE DISPOSITIVO -->
   <script>
     function detectarDispositivo() {
       const largura = window.innerWidth;
@@ -278,6 +279,7 @@
     detectarDispositivo();
   </script>
 
+  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
@@ -306,7 +308,7 @@
             const nome = data.nome || "Usuário";
             const genero = (data.genero || "masculino").toLowerCase();
             const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
-            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+            document.getElementById("welcomeUser").textContent = ${saudacao}, ${nome};
           } else {
             document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
           }
@@ -325,6 +327,7 @@
     });
   </script>
 
+  <!-- CHART -->
   <script>
     let modoPercentual = false;
 
