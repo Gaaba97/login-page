@@ -231,6 +231,17 @@
       line-height: 28px;
       font-size: 12px;
     }
+
+    /* Novo estilo para o dispositivo detectado */
+    .device-info {
+      text-align: center;
+      margin: 20px auto;
+      padding: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      width: 90%;
+      max-width: 1000px;
+    }
   </style>
 </head>
 <body>
@@ -261,17 +272,24 @@
     </div>
   </div>
 
+  <!-- Elemento que mostra o tipo de dispositivo -->
+  <div class="device-info" id="deviceInfo"></div>
+
   <!-- DETECÇÃO DE DISPOSITIVO -->
   <script>
     function detectarDispositivo() {
       const largura = window.innerWidth;
       const body = document.body;
+      const deviceInfo = document.getElementById('deviceInfo');
+      
       if (largura <= 768) {
         body.classList.remove('desktop');
         body.classList.add('smartphone');
+        deviceInfo.textContent = 'Dispositivo detectado: Celular';
       } else {
         body.classList.remove('smartphone');
         body.classList.add('desktop');
+        deviceInfo.textContent = 'Dispositivo detectado: Computador';
       }
     }
 
@@ -308,7 +326,7 @@
             const nome = data.nome || "Usuário";
             const genero = (data.genero || "masculino").toLowerCase();
             const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
-            document.getElementById("welcomeUser").textContent = ${saudacao}, ${nome};
+            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
           } else {
             document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
           }
