@@ -364,6 +364,10 @@
       carregarGrafico();
     }
 
+    function isSmartphone() {
+      return document.body.classList.contains('smartphone');
+    }
+
     async function carregarGrafico() {
       const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
       const resposta = await fetch(url);
@@ -403,6 +407,12 @@
 
       const ctx = document.getElementById("fundosChart").getContext("2d");
       if (window.chartFundos) window.chartFundos.destroy();
+      
+      // Configurações específicas para mobile
+      const mobileFontSize = 10;
+      const desktopFontSize = 14;
+      const currentFontSize = isSmartphone() ? mobileFontSize : desktopFontSize;
+      
       window.chartFundos = new Chart(ctx, {
         type: "line",
         data: {
@@ -414,24 +424,34 @@
             backgroundColor: cores[idx],
             tension: 0.3,
             borderWidth: espessuras[idx],
-            pointRadius: 0,
+            pointRadius: isSmartphone() ? 1 : 0, // Pontos menores em mobile
             fill: false
           }))
         },
         options: {
           responsive: true,
+          maintainAspectRatio: true,
           plugins: {
             legend: {
               position: "top",
               labels: {
                 boxWidth: 12,
-                font: { size: 14 }, /* Mantido igual ao desktop */
-                color: '#000'
+                font: { 
+                  size: isSmartphone() ? mobileFontSize : desktopFontSize
+                },
+                color: '#000',
+                padding: isSmartphone() ? 10 : 20
               }
             },
             tooltip: {
               mode: "index",
-              intersect: false
+              intersect: false,
+              bodyFont: {
+                size: isSmartphone() ? mobileFontSize : desktopFontSize
+              },
+              titleFont: {
+                size: isSmartphone() ? mobileFontSize : desktopFontSize
+              }
             }
           },
           scales: {
@@ -440,26 +460,54 @@
               title: {
                 display: true,
                 text: modoPercentual ? "% de Variação" : "Cota Normalizada",
-                color: "#000"
+                color: "#000",
+                font: {
+                  size: isSmartphone() ? mobileFontSize : desktopFontSize
+                }
               },
               ticks: {
                 color: "#000",
-                font: { size: 14 } /* Mantido igual ao desktop */
+                font: {
+                  size: isSmartphone() ? mobileFontSize : desktopFontSize
+                },
+                padding: isSmartphone() ? 5 : 10
+              },
+              grid: {
+                color: 'rgba(0, 0, 0, 0.1)'
               }
             },
             x: {
               title: {
                 display: true,
                 text: "Data",
-                color: "#000"
+                color: "#000",
+                font: {
+                  size: isSmartphone() ? mobileFontSize : desktopFontSize
+                }
               },
               grid: { display: false },
               ticks: {
                 color: "#000",
-                maxRotation: 45,
-                minRotation: 45,
-                font: { size: 14 } /* Mantido igual ao desktop */
+                maxRotation: isSmartphone() ? 90 : 45,
+                minRotation: isSmartphone() ? 90 : 45,
+                font: {
+                  size: isSmartphone() ? mobileFontSize : desktopFontSize
+                },
+                padding: isSmartphone() ? 5 : 10
               }
+            }
+          },
+          layout: {
+            padding: isSmartphone() ? {
+              left: 10,
+              right: 10,
+              top: 10,
+              bottom: 10
+            } : {
+              left: 20,
+              right: 20,
+              top: 20,
+              bottom: 20
             }
           }
         }
