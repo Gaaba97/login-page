@@ -200,25 +200,25 @@
 
     /* Estilos para smartphone */
     .smartphone .navbar {
-      padding: 10px 15px;
+      padding: 5px 10px; /* Reduzido pela metade */
     }
 
     .smartphone .navbar .welcome {
-      font-size: 14px;
+      font-size: 8px; /* Reduzido pela metade */
     }
 
     .smartphone .navbar .links a {
-      font-size: 14px;
+      font-size: 8px; /* Reduzido pela metade */
     }
 
     .smartphone .descricao-fundos {
       font-size: 16px;
-      margin-top: 80px;
+      margin-top: 60px; /* Ajustado para navbar menor */
       margin-bottom: 20px;
     }
 
     .smartphone .chart-header h2 {
-      font-size: 22px;
+      font-size: 21px; /* 70% de 30px */
     }
 
     .smartphone .toggle-switch {
@@ -242,6 +242,10 @@
       font-weight: bold;
       width: 90%;
       max-width: 1000px;
+    }
+
+    .smartphone .device-info {
+      font-size: 9px; /* Reduzido pela metade */
     }
   </style>
 </head>
@@ -421,7 +425,7 @@
               position: "top",
               labels: {
                 boxWidth: 12,
-                font: { size: 14 },
+                font: { size: 14 }, /* Mantido igual ao desktop */
                 color: '#000'
               }
             },
@@ -439,7 +443,8 @@
                 color: "#000"
               },
               ticks: {
-                color: "#000"
+                color: "#000",
+                font: { size: 14 } /* Mantido igual ao desktop */
               }
             },
             x: {
@@ -452,7 +457,8 @@
               ticks: {
                 color: "#000",
                 maxRotation: 45,
-                minRotation: 45
+                minRotation: 45,
+                font: { size: 14 } /* Mantido igual ao desktop */
               }
             }
           }
