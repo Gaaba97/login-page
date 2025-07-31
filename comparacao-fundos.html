@@ -163,89 +163,8 @@
       height: auto;
     }
 
-    /* Estilos padrão para desktop */
-    .desktop .navbar {
-      padding: 10px 20px;
-    }
-
-    .desktop .navbar .welcome {
-      font-size: 16px;
-    }
-
-    .desktop .navbar .links a {
-      font-size: 16px;
-    }
-
-    .desktop .descricao-fundos {
-      font-size: 20px;
-      margin-top: 100px;
-      margin-bottom: 30px;
-    }
-
-    .desktop .chart-header h2 {
-      font-size: 30px;
-    }
-
-    .desktop .toggle-switch {
-      width: 70px;
-      height: 40px;
-    }
-
-    .desktop .slider:before {
-      height: 32px;
-      width: 32px;
-      line-height: 32px;
-      font-size: 14px;
-    }
-
-    /* Estilos para smartphone */
-    .smartphone .navbar {
-      padding: 5px 10px; /* Reduzido pela metade */
-    }
-
-    .smartphone .navbar .welcome {
-      font-size: 8px; /* Reduzido pela metade */
-    }
-
-    .smartphone .navbar .links a {
-      font-size: 8px; /* Reduzido pela metade */
-    }
-
-    .smartphone .descricao-fundos {
-      font-size: 16px;
-      margin-top: 60px; /* Ajustado para navbar menor */
-      margin-bottom: 20px;
-    }
-
-    .smartphone .chart-header h2 {
-      font-size: 21px; /* 70% de 30px */
-    }
-
-    .smartphone .toggle-switch {
-      width: 60px;
-      height: 34px;
-    }
-
-    .smartphone .slider:before {
-      height: 28px;
-      width: 28px;
-      line-height: 28px;
-      font-size: 12px;
-    }
-
-    /* Novo estilo para o dispositivo detectado */
     .device-info {
-      text-align: center;
-      margin: 20px auto;
-      padding: 10px;
-      font-size: 18px;
-      font-weight: bold;
-      width: 90%;
-      max-width: 1000px;
-    }
-
-    .smartphone .device-info {
-      font-size: 9px; /* Reduzido pela metade */
+      display: none;
     }
   </style>
 </head>
@@ -261,7 +180,7 @@
   </div>
 
   <div class="descricao-fundos">
-   Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
+    Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
   </div>
 
   <div class="main-wrapper">
@@ -277,36 +196,13 @@
     </div>
   </div>
 
-  <!-- Elemento que mostra o tipo de dispositivo -->
   <div class="device-info" id="deviceInfo"></div>
 
-  <!-- DETECÇÃO DE DISPOSITIVO -->
   <script>
-    function detectarDispositivo() {
-      const largura = window.innerWidth;
-      const altura = window.innerHeight;
-      const body = document.body;
-      const deviceInfo = document.getElementById('deviceInfo');
-      
-      // Critérios aprimorados de detecção
-      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-      const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
-      
-      if (isMobileSize && isTouchDevice) {
-        body.classList.remove('desktop');
-        body.classList.add('smartphone');
-        deviceInfo.textContent = 'Dispositivo detectado: Celular (Largura: ' + largura + 'px, Touch: Sim)';
-      } else {
-        body.classList.remove('smartphone');
-        body.classList.add('desktop');
-        deviceInfo.textContent = 'Dispositivo detectado: Computador (Largura: ' + largura + 'px, Touch: ' + (isTouchDevice ? 'Sim' : 'Não') + ')';
-      }
-    }
-
-    window.addEventListener('resize', detectarDispositivo);
-    window.addEventListener('orientationchange', detectarDispositivo);
-    detectarDispositivo();
+    // Sem diferenciação por dispositivo
+    document.body.classList.add('desktop');
   </script>
+
   <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
@@ -364,10 +260,6 @@
       carregarGrafico();
     }
 
-    function isSmartphone() {
-      return document.body.classList.contains('smartphone');
-    }
-
     async function carregarGrafico() {
       const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
       const resposta = await fetch(url);
@@ -407,12 +299,7 @@
 
       const ctx = document.getElementById("fundosChart").getContext("2d");
       if (window.chartFundos) window.chartFundos.destroy();
-      
-      // Configurações específicas para mobile
-      const mobileFontSize = 10;
-      const desktopFontSize = 14;
-      const currentFontSize = isSmartphone() ? mobileFontSize : desktopFontSize;
-      
+
       window.chartFundos = new Chart(ctx, {
         type: "line",
         data: {
@@ -424,7 +311,7 @@
             backgroundColor: cores[idx],
             tension: 0.3,
             borderWidth: espessuras[idx],
-            pointRadius: isSmartphone() ? 1 : 0, // Pontos menores em mobile
+            pointRadius: 0,
             fill: false
           }))
         },
@@ -436,22 +323,16 @@
               position: "top",
               labels: {
                 boxWidth: 12,
-                font: { 
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                },
+                font: { size: 14 },
                 color: '#000',
-                padding: isSmartphone() ? 10 : 20
+                padding: 20
               }
             },
             tooltip: {
               mode: "index",
               intersect: false,
-              bodyFont: {
-                size: isSmartphone() ? mobileFontSize : desktopFontSize
-              },
-              titleFont: {
-                size: isSmartphone() ? mobileFontSize : desktopFontSize
-              }
+              bodyFont: { size: 14 },
+              titleFont: { size: 14 }
             }
           },
           scales: {
@@ -461,16 +342,12 @@
                 display: true,
                 text: modoPercentual ? "% de Variação" : "Cota Normalizada",
                 color: "#000",
-                font: {
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                }
+                font: { size: 14 }
               },
               ticks: {
                 color: "#000",
-                font: {
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                },
-                padding: isSmartphone() ? 5 : 10
+                font: { size: 14 },
+                padding: 10
               },
               grid: {
                 color: 'rgba(0, 0, 0, 0.1)'
@@ -481,34 +358,20 @@
                 display: true,
                 text: "Data",
                 color: "#000",
-                font: {
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                }
+                font: { size: 14 }
               },
               grid: { display: false },
               ticks: {
                 color: "#000",
-                maxRotation: isSmartphone() ? 90 : 45,
-                minRotation: isSmartphone() ? 90 : 45,
-                font: {
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                },
-                padding: isSmartphone() ? 5 : 10
+                maxRotation: 45,
+                minRotation: 45,
+                font: { size: 14 },
+                padding: 10
               }
             }
           },
           layout: {
-            padding: isSmartphone() ? {
-              left: 10,
-              right: 10,
-              top: 10,
-              bottom: 10
-            } : {
-              left: 20,
-              right: 20,
-              top: 20,
-              bottom: 20
-            }
+            padding: { left: 20, right: 20, top: 20, bottom: 20 }
           }
         }
       });
