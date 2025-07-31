@@ -404,14 +404,12 @@
 
       const cores = headers.map((_, idx) => idx === 0 ? "#0E2841" : idx === 1 ? "#C00000" : "#20842E");
       const espessuras = headers.map((_, idx) => idx === 0 ? 3 : 2);
+      
+      // Configuração de tamanho para mobile
+      const fator = isSmartphone() ? 1.5 : 1;
 
       const ctx = document.getElementById("fundosChart").getContext("2d");
       if (window.chartFundos) window.chartFundos.destroy();
-      
-      // Configurações específicas para mobile
-      const mobileFontSize = 10;
-      const desktopFontSize = 14;
-      const currentFontSize = isSmartphone() ? mobileFontSize : desktopFontSize;
       
       window.chartFundos = new Chart(ctx, {
         type: "line",
@@ -424,34 +422,26 @@
             backgroundColor: cores[idx],
             tension: 0.3,
             borderWidth: espessuras[idx],
-            pointRadius: isSmartphone() ? 1 : 0, // Pontos menores em mobile
+            pointRadius: 0,
             fill: false
           }))
         },
         options: {
           responsive: true,
-          maintainAspectRatio: true,
           plugins: {
             legend: {
               position: "top",
               labels: {
                 boxWidth: 12,
-                font: { 
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                },
-                color: '#000',
-                padding: isSmartphone() ? 10 : 20
+                usePointStyle: false,
+                pointStyle: 'rect',
+                font: { size: 14 * fator },
+                color: '#000'
               }
             },
             tooltip: {
               mode: "index",
-              intersect: false,
-              bodyFont: {
-                size: isSmartphone() ? mobileFontSize : desktopFontSize
-              },
-              titleFont: {
-                size: isSmartphone() ? mobileFontSize : desktopFontSize
-              }
+              intersect: false
             }
           },
           scales: {
@@ -461,19 +451,11 @@
                 display: true,
                 text: modoPercentual ? "% de Variação" : "Cota Normalizada",
                 color: "#000",
-                font: {
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                }
+                font: { size: 14 * fator }
               },
               ticks: {
                 color: "#000",
-                font: {
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                },
-                padding: isSmartphone() ? 5 : 10
-              },
-              grid: {
-                color: 'rgba(0, 0, 0, 0.1)'
+                font: { size: 13 * fator }
               }
             },
             x: {
@@ -481,33 +463,15 @@
                 display: true,
                 text: "Data",
                 color: "#000",
-                font: {
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                }
+                font: { size: 14 * fator }
               },
               grid: { display: false },
               ticks: {
                 color: "#000",
-                maxRotation: isSmartphone() ? 90 : 45,
-                minRotation: isSmartphone() ? 90 : 45,
-                font: {
-                  size: isSmartphone() ? mobileFontSize : desktopFontSize
-                },
-                padding: isSmartphone() ? 5 : 10
+                font: { size: 13 * fator },
+                maxRotation: 45,
+                minRotation: 45
               }
-            }
-          },
-          layout: {
-            padding: isSmartphone() ? {
-              left: 10,
-              right: 10,
-              top: 10,
-              bottom: 10
-            } : {
-              left: 20,
-              right: 20,
-              top: 20,
-              bottom: 20
             }
           }
         }
