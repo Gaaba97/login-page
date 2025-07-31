@@ -160,7 +160,7 @@
 
     canvas {
       max-width: 100%;
-      height: auto;
+      height: auto !important; /* Força a altura a se ajustar ao container no celular */
     }
 
     .desktop .navbar {
@@ -229,6 +229,11 @@
       width: 28px;
       line-height: 28px;
       font-size: 12px;
+    }
+
+    .smartphone canvas {
+      height: 200px !important; /* Altura fixa ajustada para celular */
+      max-height: 200px; /* Limita a altura máxima */
     }
 
     .device-info {
@@ -418,6 +423,7 @@
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false, /* Garante que o gráfico se ajuste ao container */
           plugins: {
             legend: {
               position: "top",
