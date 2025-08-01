@@ -206,7 +206,7 @@
     <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
     <div class="links">
       <a href="dashboard.html">Dashboard</a>
-      <a href="#">Gráficos</a>
+      <a href="graficos.html">Gráficos</a>
       <a href="comparacao-fundos.html">Comparação com Fundos</a>
       <a href="#" id="logoutLink">Sair</a>
     </div>
@@ -254,7 +254,56 @@
     window.addEventListener('resize', detectarDispositivo);
     window.addEventListener('orientationchange', detectarDispositivo);
     detectarDispositivo();
+  </script>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+      authDomain: "login-site-9cbbd.firebaseapp.com",
+      projectId: "login-site-9cbbd",
+      storageBucket: "login-site-9cbbd.appspot.com",
+      messagingSenderId: "703993528666",
+      appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const docRef = doc(db, "usuarios", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            const nome = data.nome || "Usuário";
+            const genero = (data.genero || "masculino").toLowerCase();
+            const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
+            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+          } else {
+            document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
+          }
+        } catch {
+          document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
+        }
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    document.getElementById("logoutLink").addEventListener("click", (e) => {
+      e.preventDefault();
+      signOut(auth).then(() => window.location.href = "index.html")
+        .catch((error) => console.error("Erro ao deslogar:", error));
+    });
+  </script>
+
+  <script>
     let modoPercentual = false;
 
     function alternarModo() {
@@ -299,8 +348,7 @@
       const cores = headers.map((_, idx) => idx === 0 ? "#0E2841" : idx === 1 ? "#C00000" : "#20842E");
       const espessuras = headers.map((_, idx) => idx === 0 ? 3 : 2);
       const larguraTela = window.innerWidth;
-      const isSmartphone = document.body.classList.contains('smartphone');
-      const fator = isSmartphone ? 0.8 : 1;
+      const fator = larguraTela <= 768 ? 1.5 : 1;
 
       const ctx = document.getElementById("fundosChart").getContext("2d");
       if (window.chartFundos) window.chartFundos.destroy();
@@ -372,53 +420,6 @@
     }
 
     carregarGrafico();
-  </script>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
-      authDomain: "login-site-9cbbd.firebaseapp.com",
-      projectId: "login-site-9cbbd",
-      storageBucket: "login-site-9cbbd.appspot.com",
-      messagingSenderId: "703993528666",
-      appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const docRef = doc(db, "usuarios", user.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            const nome = data.nome || "Usuário";
-            const genero = (data.genero || "masculino").toLowerCase();
-            const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
-            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
-          } else {
-            document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
-          }
-        } catch {
-          document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
-        }
-      } else {
-        window.location.href = "index.html";
-      }
-    });
-
-    document.getElementById("logoutLink").addEventListener("click", (e) => {
-      e.preventDefault();
-      signOut(auth).then(() => window.location.href = "index.html")
-        .catch((error) => console.error("Erro ao deslogar:", error));
-    });
   </script>
 </body>
 </html>
