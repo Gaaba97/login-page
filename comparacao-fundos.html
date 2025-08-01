@@ -163,73 +163,28 @@
       height: auto;
     }
 
-    .desktop .navbar {
-      padding: 10px 20px;
+    /* CORREÇÃO CRUCIAL: Garante altura visível do gráfico no celular */
+    @media (max-width: 768px) {
+      canvas {
+        min-height: 300px;
+      }
     }
 
-    .desktop .navbar .welcome {
-      font-size: 16px;
-    }
+    .desktop .navbar { padding: 10px 20px; }
+    .desktop .navbar .welcome { font-size: 16px; }
+    .desktop .navbar .links a { font-size: 16px; }
+    .desktop .descricao-fundos { font-size: 20px; margin-top: 100px; margin-bottom: 30px; }
+    .desktop .chart-header h2 { font-size: 30px; }
+    .desktop .toggle-switch { width: 70px; height: 40px; }
+    .desktop .slider:before { height: 32px; width: 32px; line-height: 32px; font-size: 14px; }
 
-    .desktop .navbar .links a {
-      font-size: 16px;
-    }
-
-    .desktop .descricao-fundos {
-      font-size: 20px;
-      margin-top: 100px;
-      margin-bottom: 30px;
-    }
-
-    .desktop .chart-header h2 {
-      font-size: 30px;
-    }
-
-    .desktop .toggle-switch {
-      width: 70px;
-      height: 40px;
-    }
-
-    .desktop .slider:before {
-      height: 32px;
-      width: 32px;
-      line-height: 32px;
-      font-size: 14px;
-    }
-
-    .smartphone .navbar {
-      padding: 5px 10px;
-    }
-
-    .smartphone .navbar .welcome {
-      font-size: 8px;
-    }
-
-    .smartphone .navbar .links a {
-      font-size: 8px;
-    }
-
-    .smartphone .descricao-fundos {
-      font-size: 16px;
-      margin-top: 60px;
-      margin-bottom: 20px;
-    }
-
-    .smartphone .chart-header h2 {
-      font-size: 21px;
-    }
-
-    .smartphone .toggle-switch {
-      width: 60px;
-      height: 34px;
-    }
-
-    .smartphone .slider:before {
-      height: 28px;
-      width: 28px;
-      line-height: 28px;
-      font-size: 12px;
-    }
+    .smartphone .navbar { padding: 5px 10px; }
+    .smartphone .navbar .welcome { font-size: 8px; }
+    .smartphone .navbar .links a { font-size: 8px; }
+    .smartphone .descricao-fundos { font-size: 16px; margin-top: 60px; margin-bottom: 20px; }
+    .smartphone .chart-header h2 { font-size: 21px; }
+    .smartphone .toggle-switch { width: 60px; height: 34px; }
+    .smartphone .slider:before { height: 28px; width: 28px; line-height: 28px; font-size: 12px; }
 
     .device-info {
       text-align: center;
