@@ -347,7 +347,7 @@
 
     const cores = headers.map((_, idx) => idx === 0 ? "#0E2841" : idx === 1 ? "#C00000" : "#20842E");
     const espessuras = headers.map((_, idx) => idx === 0 ? 3 : 2);
-    const fator = 0.3; // versão desktop fixa
+    const fator = 1.5; // versão desktop fixa
 
     const ctx = document.getElementById("fundosChart").getContext("2d");
     if (window.chartFundos) window.chartFundos.destroy();
