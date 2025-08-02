@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Clube Morpheus</title>
-<link rel="icon" href="favicon.ico">
+  <link rel="icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
   <style>
     html, body {
@@ -38,13 +38,13 @@
       font-size: 16px;
     }
 
-.navbar .links {
-  display: flex;
-  gap: 20px;
-  flex-wrap: nowrap;
-  white-space: nowrap;
-  padding-left: 4px;
-}
+    .navbar .links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      padding-left: 4px;
+    }
 
     .navbar a {
       color: white;
@@ -115,7 +115,7 @@
       padding: 10px 14px;
       text-align: center;
       vertical-align: middle;
-      width: 33.33%;
+      width: 25%;
     }
 
     thead th {
@@ -158,11 +158,11 @@
 <body>
   <div class="navbar">
     <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
-  <div class="links">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="#">Gráficos</a>
-    <a href="comparacao-fundos.html">Comparação com Fundos</a>
-    <a href="#" id="logoutLink">Sair</a>
+    <div class="links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="#">Gráficos</a>
+      <a href="comparacao-fundos.html">Comparação com Fundos</a>
+      <a href="#" id="logoutLink">Sair</a>
     </div>
   </div>
 
@@ -175,6 +175,7 @@
             <th>Referência</th>
             <th id="dataReferencia">Dia</th>
             <th>Mês</th>
+            <th>Ano</th>
           </tr>
         </thead>
         <tbody>
@@ -182,22 +183,24 @@
             <td>Morpheus</td>
             <td id="morpheusDia">...</td>
             <td id="morpheusMes">...</td>
+            <td id="morpheusAno">...</td>
           </tr>
           <tr>
             <td>IBOV</td>
             <td id="ibovDia">...</td>
             <td id="ibovMes">...</td>
+            <td id="ibovAno">...</td>
           </tr>
           <tr class="highlight">
             <td>p.p. IBOV</td>
             <td id="ppDia">...</td>
             <td id="ppMes">...</td>
+            <td id="ppAno">...</td>
           </tr>
         </tbody>
       </table>
 
       <p id="cotaValor">Cota: ...</p>
-      
     </div>
   </div>
 
@@ -251,8 +254,7 @@
     });
 
     document.getElementById("logoutLink").addEventListener("click", (e) => {
-  e.preventDefault(); // impede o comportamento padrão do link
-
+      e.preventDefault();
       signOut(auth)
         .then(() => {
           window.location.href = "index.html";
@@ -275,19 +277,25 @@
         const dataReferencia = rows[2]?.[2] || "...";
         const morpheusDia = rows[3]?.[2] || "...";
         const morpheusMes = rows[3]?.[3] || "...";
+        const morpheusAno = rows[3]?.[4] || "...";
         const ibovDia = rows[4]?.[2] || "...";
         const ibovMes = rows[4]?.[3] || "...";
+        const ibovAno = rows[4]?.[4] || "...";
         const ppDia = rows[5]?.[2] || "...";
         const ppMes = rows[5]?.[3] || "...";
+        const ppAno = rows[5]?.[4] || "...";
         const cota = rows[8]?.[2] || "...";
 
         document.getElementById("dataReferencia").textContent = dataReferencia;
         document.getElementById("morpheusDia").textContent = morpheusDia;
         document.getElementById("morpheusMes").textContent = morpheusMes;
+        document.getElementById("morpheusAno").textContent = morpheusAno;
         document.getElementById("ibovDia").textContent = ibovDia;
         document.getElementById("ibovMes").textContent = ibovMes;
+        document.getElementById("ibovAno").textContent = ibovAno;
         document.getElementById("ppDia").textContent = ppDia;
         document.getElementById("ppMes").textContent = ppMes;
+        document.getElementById("ppAno").textContent = ppAno;
         document.getElementById("cotaValor").textContent = `Cota: ${cota}`;
       })
       .catch((err) => {
