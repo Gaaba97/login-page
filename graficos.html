@@ -387,5 +387,31 @@
 
   carregarGrafico();
 </script>
+
+  <script>
+    function detectarDispositivo() {
+      const largura = window.innerWidth;
+      const altura = window.innerHeight;
+      const body = document.body;
+      const deviceInfo = document.getElementById('deviceInfo');
+      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
+
+      if (isMobileSize && isTouchDevice) {
+        body.classList.remove('desktop');
+        body.classList.add('smartphone');
+        deviceInfo.textContent = 'Dispositivo detectado: Celular (Largura: ' + largura + 'px, Touch: Sim)';
+      } else {
+        body.classList.remove('smartphone');
+        body.classList.add('desktop');
+        deviceInfo.textContent = 'Dispositivo detectado: Computador (Largura: ' + largura + 'px, Touch: ' + (isTouchDevice ? 'Sim' : 'Não') + ')';
+      }
+    }
+
+    window.addEventListener('resize', detectarDispositivo);
+    window.addEventListener('orientationchange', detectarDispositivo);
+    detectarDispositivo();
+  </script>
 </body>
+
 </html>
