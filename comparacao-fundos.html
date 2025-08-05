@@ -2,7 +2,6 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Clube Morpheus</title>
   <link rel="icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
@@ -32,6 +31,7 @@
       z-index: 3;
       color: white;
       box-sizing: border-box;
+      height: auto;
     }
 
     .navbar .welcome {
@@ -45,6 +45,7 @@
       gap: 20px;
       flex-wrap: nowrap;
       white-space: nowrap;
+      padding-left: 4px;
     }
 
     .navbar a {
@@ -58,6 +59,7 @@
 
     .navbar a:hover {
       transform: scale(1.1);
+      color: white;
     }
 
     .descricao-fundos {
@@ -100,8 +102,8 @@
     .chart-header h2 {
       font-size: 30px;
       margin: 0;
-      flex-grow: 1;
       text-align: center;
+      flex-grow: 1;
     }
 
     .toggle-switch {
@@ -191,107 +193,82 @@
   </style>
 </head>
 <body>
-  <div class="navbar">
-    <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
-    <div class="links">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="graficos.html">Gráficos</a>
-      <a href="comparacao-fundos.html">Comparação com Fundos</a>
-      <a href="#" id="logoutLink">Sair</a>
+<div class="navbar">
+  <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
+  <div class="links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="#">Gráficos</a>
+    <a href="comparacao-fundos.html">Comparação com Fundos</a>
+    <a href="#" id="logoutLink">Sair</a>
+  </div>
+</div>
+
+<div class="descricao-fundos">
+  Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
+</div>
+
+<div class="main-wrapper">
+  <div class="content">
+    <div class="chart-header">
+      <h2>Comparação de Fundos</h2>
+      <label class="toggle-switch">
+        <input type="checkbox" onchange="alternarModo()" id="modoToggle">
+        <span class="slider" data-label-left="Cota" data-label-right="%"></span>
+      </label>
     </div>
+    <canvas id="fundosChart"></canvas>
   </div>
+</div>
 
-  <div class="descricao-fundos">
-    Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
-  </div>
+<!-- FIREBASE -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-  <div class="device-info" id="deviceInfo"></div>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+    authDomain: "login-site-9cbbd.firebaseapp.com",
+    projectId: "login-site-9cbbd",
+    storageBucket: "login-site-9cbbd.appspot.com",
+    messagingSenderId: "703993528666",
+    appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
+  };
 
-  <div class="main-wrapper">
-    <div class="content">
-      <div class="chart-header">
-        <h2>Comparação de Fundos</h2>
-        <label class="toggle-switch">
-          <input type="checkbox" onchange="alternarModo()" id="modoToggle">
-          <span class="slider" data-label-left="Cota" data-label-right="%"></span>
-        </label>
-      </div>
-      <canvas id="fundosChart"></canvas>
-    </div>
-  </div>
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  <script>
-    function detectarDispositivo() {
-      const largura = window.innerWidth;
-      const altura = window.innerHeight;
-      const body = document.body;
-      const deviceInfo = document.getElementById('deviceInfo');
-      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-      const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
-
-      if (isMobileSize && isTouchDevice) {
-        body.classList.remove('desktop');
-        body.classList.add('smartphone');
-        deviceInfo.textContent = 'Dispositivo detectado: Celular (Largura: ' + largura + 'px, Touch: Sim)';
-      } else {
-        body.classList.remove('smartphone');
-        body.classList.add('desktop');
-        deviceInfo.textContent = 'Dispositivo detectado: Computador (Largura: ' + largura + 'px, Touch: ' + (isTouchDevice ? 'Sim' : 'Não') + ')';
-      }
-    }
-
-    window.addEventListener('resize', detectarDispositivo);
-    window.addEventListener('orientationchange', detectarDispositivo);
-    detectarDispositivo();
-  </script>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
-      authDomain: "login-site-9cbbd.firebaseapp.com",
-      projectId: "login-site-9cbbd",
-      storageBucket: "login-site-9cbbd.appspot.com",
-      messagingSenderId: "703993528666",
-      appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const docRef = doc(db, "usuarios", user.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            const nome = data.nome || "Usuário";
-            const genero = (data.genero || "masculino").toLowerCase();
-            const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
-            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
-          } else {
-            document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
-          }
-        } catch {
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      try {
+        const docRef = doc(db, "usuarios", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const nome = data.nome || "Usuário";
+          const genero = (data.genero || "masculino").toLowerCase();
+          const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
+          document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+        } else {
           document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
         }
-      } else {
-        window.location.href = "index.html";
+      } catch {
+        document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
       }
-    });
+    } else {
+      window.location.href = "index.html";
+    }
+  });
 
-    document.getElementById("logoutLink").addEventListener("click", (e) => {
-      e.preventDefault();
-      signOut(auth).then(() => window.location.href = "index.html")
-        .catch((error) => console.error("Erro ao deslogar:", error));
-    });
-  </script>
+  document.getElementById("logoutLink").addEventListener("click", (e) => {
+    e.preventDefault();
+    signOut(auth).then(() => window.location.href = "index.html")
+      .catch((error) => console.error("Erro ao deslogar:", error));
+  });
+</script>
 
+<!-- CHART -->
 <script>
   let modoPercentual = false;
 
@@ -410,8 +387,31 @@
 
   carregarGrafico();
 </script>
+
+  <script>
+    function detectarDispositivo() {
+      const largura = window.innerWidth;
+      const altura = window.innerHeight;
+      const body = document.body;
+      const deviceInfo = document.getElementById('deviceInfo');
+      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
+
+      if (isMobileSize && isTouchDevice) {
+        body.classList.remove('desktop');
+        body.classList.add('smartphone');
+        deviceInfo.textContent = 'Dispositivo detectado: Celular (Largura: ' + largura + 'px, Touch: Sim)';
+      } else {
+        body.classList.remove('smartphone');
+        body.classList.add('desktop');
+        deviceInfo.textContent = 'Dispositivo detectado: Computador (Largura: ' + largura + 'px, Touch: ' + (isTouchDevice ? 'Sim' : 'Não') + ')';
+      }
+    }
+
+    window.addEventListener('resize', detectarDispositivo);
+    window.addEventListener('orientationchange', detectarDispositivo);
+    detectarDispositivo();
+  </script>
 </body>
+
 </html>
-
-
-
