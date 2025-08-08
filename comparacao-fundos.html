@@ -16,6 +16,14 @@
       color: black;
       display: flex;
       flex-direction: column;
+      transform-origin: top center;
+    }
+
+    /* Escala para ajustar telas menores proporcional a 1600x900 */
+    @media (max-width: 1599px) and (min-width: 1360px) {
+      body {
+        transform: scale(0.90);
+      }
     }
 
     .navbar {
@@ -162,6 +170,13 @@
       height: auto;
     }
 
+    #deviceInfo {
+      text-align: center;
+      font-size: 16px;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+
     @media (max-width: 1500px) {
       .navbar {
         padding: 15px 30px;
@@ -219,6 +234,9 @@
     <canvas id="fundosChart"></canvas>
   </div>
 </div>
+
+<!-- Mensagem de dispositivo -->
+<div id="deviceInfo"></div>
 
 <!-- FIREBASE -->
 <script type="module">
@@ -388,30 +406,25 @@
   carregarGrafico();
 </script>
 
-  <script>
-    function detectarDispositivo() {
-      const largura = window.innerWidth;
-      const altura = window.innerHeight;
-      const body = document.body;
-      const deviceInfo = document.getElementById('deviceInfo');
-      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-      const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
+<!-- DETECÇÃO DE DISPOSITIVO -->
+<script>
+  function detectarDispositivo() {
+    const largura = window.innerWidth;
+    const altura = window.innerHeight;
+    const deviceInfo = document.getElementById('deviceInfo');
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
 
-      if (isMobileSize && isTouchDevice) {
-        body.classList.remove('desktop');
-        body.classList.add('smartphone');
-        deviceInfo.textContent = 'Dispositivo detectado: Celular (Largura: ' + largura + 'px, Touch: Sim)';
-      } else {
-        body.classList.remove('smartphone');
-        body.classList.add('desktop');
-        deviceInfo.textContent = 'Dispositivo detectado: Computador (Largura: ' + largura + 'px, Touch: ' + (isTouchDevice ? 'Sim' : 'Não') + ')';
-      }
+    if (isMobileSize && isTouchDevice) {
+      deviceInfo.textContent = "Dispositivo atual: smartphone";
+    } else {
+      deviceInfo.textContent = "Dispositivo atual: computador";
     }
+  }
 
-    window.addEventListener('resize', detectarDispositivo);
-    window.addEventListener('orientationchange', detectarDispositivo);
-    detectarDispositivo();
-  </script>
+  window.addEventListener('resize', detectarDispositivo);
+  window.addEventListener('orientationchange', detectarDispositivo);
+  detectarDispositivo();
+</script>
 </body>
-
 </html>
