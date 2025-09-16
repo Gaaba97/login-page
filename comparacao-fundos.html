@@ -16,12 +16,11 @@
       color: black;
       display: flex;
       flex-direction: column;
-      transform-origin: top center;
     }
 
     /* Escala para ajustar telas menores proporcional a 1600x900 */
     @media (max-width: 1599px) and (min-width: 1360px) {
-      body {
+      .page-wrapper {
         transform: scale(0.90);
       }
     }
@@ -34,10 +33,9 @@
       background-color: rgba(0, 0, 0, 0.8);
       padding: 10px 20px;
       position: fixed;
-      /* força ocupação da largura da viewport (evita gaps quando o body tem transform) */
-      left: calc(50% - 50vw);
-      width: 100vw;
+      width: 100%;
       top: 0;
+      left: 0;
       z-index: 3;
       color: white;
       box-sizing: border-box;
@@ -89,6 +87,14 @@
       }
     }
     /* ===== FIM NAVBAR ===== */
+
+    /* wrapper para aplicar escala sem afetar a navbar */
+    .page-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      transform-origin: top center;
+    }
 
     .descricao-fundos {
       width: 90%;
@@ -209,25 +215,27 @@
   </div>
 </div>
 
-<div class="descricao-fundos">
-  Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
-</div>
-
-<div class="main-wrapper">
-  <div class="content">
-    <div class="chart-header">
-      <h2>Comparação de Fundos</h2>
-      <label class="toggle-switch">
-        <input type="checkbox" onchange="alternarModo()" id="modoToggle">
-        <span class="slider" data-label-left="Cota" data-label-right="%"></span>
-      </label>
-    </div>
-    <canvas id="fundosChart"></canvas>
+<div class="page-wrapper">
+  <div class="descricao-fundos">
+    Os números abaixo representam fundos já consolidados, com décadas de histórico consistente e desempenho significativamente superior ao Ibovespa. Juntos, esses fundos somam mais de R$ 9 bilhões sob gestão, enquanto suas gestoras administram mais de R$ 83 bilhões exclusivamente em fundos de investimento direto em ativos.
   </div>
-</div>
 
-<!-- Mensagem de dispositivo -->
-<div id="deviceInfo"></div>
+  <div class="main-wrapper">
+    <div class="content">
+      <div class="chart-header">
+        <h2>Comparação de Fundos</h2>
+        <label class="toggle-switch">
+          <input type="checkbox" onchange="alternarModo()" id="modoToggle">
+          <span class="slider" data-label-left="Cota" data-label-right="%"></span>
+        </label>
+      </div>
+      <canvas id="fundosChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Mensagem de dispositivo -->
+  <div id="deviceInfo"></div>
+</div>
 
 <!-- FIREBASE -->
 <script type="module">
