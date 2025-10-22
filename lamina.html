@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Clube Morpheus</title>
   <link rel="icon" href="favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wdth,wght@75,400;75,500;75,700&display=swap" rel="stylesheet" />
   <style>
     html, body {
       margin: 0;
@@ -32,11 +32,12 @@
       box-sizing: border-box;
     }
 
-    /* Ajuste: fonte mais leve na navbar */
+    /* Navbar com fontes mais finas e estreitas */
     .navbar .welcome {
       font-weight: 500;
       white-space: nowrap;
       font-size: 16px;
+      font-stretch: 75%; /* deixa a fonte 25% mais estreita */
     }
 
     .navbar .links {
@@ -50,11 +51,11 @@
     .navbar a {
       color: white;
       text-decoration: none;
-      font-weight: 500; /* antes era bold */
+      font-weight: 500;
       font-size: 16px;
       display: inline-block;
       transition: transform 0.2s ease-in-out;
-      letter-spacing: -0.5px;
+      font-stretch: 75%; /* também estreita os links */
     }
 
     .navbar a:hover {
@@ -69,6 +70,7 @@
 
       .navbar .welcome {
         font-size: 14px;
+        font-stretch: 75%;
       }
 
       .navbar .links {
@@ -77,7 +79,7 @@
 
       .navbar a {
         font-size: 14px;
-        letter-spacing: -0.4px;
+        font-stretch: 75%;
       }
     }
 
@@ -218,16 +220,8 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import {
-      getAuth,
-      onAuthStateChanged,
-      signOut,
-    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      getDoc,
-    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
@@ -247,7 +241,6 @@
         try {
           const docRef = doc(db, "usuarios", user.uid);
           const docSnap = await getDoc(docRef);
-
           if (docSnap.exists()) {
             const data = docSnap.data();
             const nome = data.nome || "Usuário";
@@ -257,7 +250,7 @@
           } else {
             document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
           }
-        } catch (error) {
+        } catch {
           document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
         }
       } else {
@@ -267,51 +260,28 @@
 
     document.getElementById("logoutLink").addEventListener("click", (e) => {
       e.preventDefault();
-      signOut(auth)
-        .then(() => {
-          window.location.href = "index.html";
-        })
-        .catch((error) => {
-          console.error("Erro ao deslogar:", error);
-        });
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
     });
 
-      // ====== DADOS GOOGLE SHEETS ======
     const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
     fetch(sheetURL)
-      .then((response) => {
-        if (!response.ok) throw new Error("Erro ao carregar planilha.");
-        return response.text();
-      })
+      .then((r) => r.text())
       .then((csvText) => {
-        const rows = csvText.trim().split("\n").map((row) => row.split(","));
-        const dataReferencia = rows[2]?.[2] || "...";
-        const morpheusDia = rows[3]?.[2] || "...";
-        const morpheusMes = rows[3]?.[3] || "...";
-        const morpheusAno = rows[3]?.[4] || "...";
-        const ibovDia = rows[4]?.[2] || "...";
-        const ibovMes = rows[4]?.[3] || "...";
-        const ibovAno = rows[4]?.[4] || "...";
-        const ppDia = rows[5]?.[2] || "...";
-        const ppMes = rows[5]?.[3] || "...";
-        const ppAno = rows[5]?.[4] || "...";
-        const cota = rows[8]?.[2] || "...";
-
-        document.getElementById("dataReferencia").textContent = dataReferencia;
-        document.getElementById("morpheusDia").textContent = morpheusDia;
-        document.getElementById("morpheusMes").textContent = morpheusMes;
-        document.getElementById("morpheusAno").textContent = morpheusAno;
-        document.getElementById("ibovDia").textContent = ibovDia;
-        document.getElementById("ibovMes").textContent = ibovMes;
-        document.getElementById("ibovAno").textContent = ibovAno;
-        document.getElementById("ppDia").textContent = ppDia;
-        document.getElementById("ppMes").textContent = ppMes;
-        document.getElementById("ppAno").textContent = ppAno;
-        document.getElementById("cotaValor").textContent = `Cota: ${cota}`;
-      })
-      .catch((err) => {
-        console.error("Erro ao carregar planilha:", err);
+        const rows = csvText.trim().split("\n").map((r) => r.split(","));
+        document.getElementById("dataReferencia").textContent = rows[2]?.[2] || "...";
+        document.getElementById("morpheusDia").textContent = rows[3]?.[2] || "...";
+        document.getElementById("morpheusMes").textContent = rows[3]?.[3] || "...";
+        document.getElementById("morpheusAno").textContent = rows[3]?.[4] || "...";
+        document.getElementById("ibovDia").textContent = rows[4]?.[2] || "...";
+        document.getElementById("ibovMes").textContent = rows[4]?.[3] || "...";
+        document.getElementById("ibovAno").textContent = rows[4]?.[4] || "...";
+        document.getElementById("ppDia").textContent = rows[5]?.[2] || "...";
+        document.getElementById("ppMes").textContent = rows[5]?.[3] || "...";
+        document.getElementById("ppAno").textContent = rows[5]?.[4] || "...";
+        document.getElementById("cotaValor").textContent = `Cota: ${rows[8]?.[2] || "..."}`;
       });
   </script>
 </body>
