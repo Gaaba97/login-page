@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Clube Morpheus</title>
   <link rel="icon" href="favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet" />
   <style>
     html, body {
       margin: 0;
@@ -32,8 +32,9 @@
       box-sizing: border-box;
     }
 
+    /* Ajuste: fonte mais leve na navbar */
     .navbar .welcome {
-      font-weight: bold;
+      font-weight: 500;
       white-space: nowrap;
       font-size: 16px;
     }
@@ -49,11 +50,11 @@
     .navbar a {
       color: white;
       text-decoration: none;
-      font-weight: bold;
+      font-weight: 500; /* antes era bold */
       font-size: 16px;
       display: inline-block;
       transition: transform 0.2s ease-in-out;
-      letter-spacing: -0.5px; /* <- DIMINUIU A LARGURA DAS LETRAS */
+      letter-spacing: -0.5px;
     }
 
     .navbar a:hover {
@@ -315,15 +316,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
