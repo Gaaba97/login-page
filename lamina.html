@@ -15,6 +15,14 @@
       color: black;
       display: flex;
       flex-direction: column;
+      transform: scaleX(0.7);         /* <-- achatamento global das fontes */
+      transform-origin: left center;  /* mantém alinhamento natural */
+    }
+
+    /* Compensa o achatamento visual ajustando o layout */
+    body * {
+      transform: scaleX(1.4286); /* 1 / 0.7 = 1.4286 para texto interno voltar ao normal de layout */
+      display: inline-block;
     }
 
     .navbar {
@@ -156,7 +164,7 @@
 
     #inicioCota {
       margin-top: 4px;
-      font-size: 13px;   /* menor que o texto da cota */
+      font-size: 13px;
       font-style: italic;
       font-weight: normal;
       text-align: left;
@@ -313,4 +321,3 @@
   </script>
 </body>
 </html>
-
