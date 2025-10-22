@@ -15,16 +15,9 @@
       color: black;
       display: flex;
       flex-direction: column;
-      transform: scaleX(0.7);         /* <-- achatamento global das fontes */
-      transform-origin: left center;  /* mantém alinhamento natural */
     }
 
-    /* Compensa o achatamento visual ajustando o layout */
-    body * {
-      transform: scaleX(1.4286); /* 1 / 0.7 = 1.4286 para texto interno voltar ao normal de layout */
-      display: inline-block;
-    }
-
+    /* --- Navbar --- */
     .navbar {
       display: flex;
       justify-content: space-between;
@@ -38,12 +31,14 @@
       z-index: 3;
       color: white;
       box-sizing: border-box;
+      letter-spacing: -0.02em; /* leve compressão */
     }
 
     .navbar .welcome {
       font-weight: bold;
       white-space: nowrap;
       font-size: 16px;
+      letter-spacing: -0.015em;
     }
 
     .navbar .links {
@@ -52,6 +47,7 @@
       flex-wrap: nowrap;
       white-space: nowrap;
       padding-left: 4px;
+      letter-spacing: -0.02em;
     }
 
     .navbar a {
@@ -61,6 +57,7 @@
       font-size: 16px;
       display: inline-block;
       transition: transform 0.2s ease-in-out;
+      letter-spacing: -0.02em;
     }
 
     .navbar a:hover {
@@ -86,11 +83,14 @@
       }
     }
 
+    /* --- Títulos --- */
     h2 {
       margin-bottom: 20px;
       text-align: center;
+      letter-spacing: -0.025em;
     }
 
+    /* --- Conteúdo central --- */
     .main-wrapper {
       flex: 1;
       display: flex;
@@ -109,14 +109,18 @@
       border: 1px solid #000;
       color: #000;
       box-sizing: border-box;
+      letter-spacing: -0.015em;
     }
 
+    /* --- Tabela --- */
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
       text-align: center;
       table-layout: fixed;
+      font-size: 15px;
+      letter-spacing: -0.02em;
     }
 
     th, td {
@@ -124,11 +128,13 @@
       text-align: center;
       vertical-align: middle;
       width: 25%;
+      letter-spacing: -0.02em;
     }
 
     thead th {
       background-color: black;
       color: white;
+      letter-spacing: -0.025em;
     }
 
     tr.highlight {
@@ -139,12 +145,24 @@
       opacity: 1;
     }
 
+    /* --- Textos gerais --- */
     p {
       margin-top: 20px;
       font-weight: bold;
       text-align: center;
+      letter-spacing: -0.02em;
     }
 
+    #inicioCota {
+      margin-top: 4px;
+      font-size: 13px;
+      font-style: italic;
+      font-weight: normal;
+      text-align: left;
+      letter-spacing: -0.015em;
+    }
+
+    /* --- Botões --- */
     button {
       display: block;
       margin: 30px auto 0;
@@ -156,18 +174,11 @@
       border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s;
+      letter-spacing: -0.02em;
     }
 
     button:hover {
       background-color: #999;
-    }
-
-    #inicioCota {
-      margin-top: 4px;
-      font-size: 13px;
-      font-style: italic;
-      font-weight: normal;
-      text-align: left;
     }
   </style>
 </head>
