@@ -23,7 +23,7 @@
       justify-content: space-between;
       align-items: center;
       background-color: rgba(0, 0, 0, 0.8);
-      padding: 10px 24px;
+      padding: 10px 20px;
       position: fixed;
       width: 100%;
       top: 0;
@@ -36,22 +36,22 @@
     .navbar .welcome {
       font-weight: bold;
       white-space: nowrap;
-      font-size: 17px;
+      font-size: 16px;
     }
 
     .navbar .links {
       display: flex;
-      gap: 26px;
+      gap: 20px;
       flex-wrap: nowrap;
       white-space: nowrap;
-      padding-left: 6px;
+      padding-left: 4px;
     }
 
     .navbar a {
       color: white;
       text-decoration: none;
       font-weight: bold;
-      font-size: 17px;
+      font-size: 16px;
       display: inline-block;
       transition: transform 0.2s ease-in-out;
     }
@@ -287,9 +287,8 @@
     const texto = await resposta.text();
     const linhas = texto.split("\n").map(l => l.split(","));
 
-    // Limite: colunas J (índice 9) até U (índice 20)
-    const headers = linhas[0].slice(9, 21);
     const datas = [];
+    const headers = linhas[0].slice(10, 21); // SOMENTE K até U
     const series = headers.map(() => []);
     const bases = headers.map(() => null);
     const variacoes = headers.map(() => []);
@@ -297,12 +296,12 @@
     for (let i = 1; i < linhas.length; i++) {
       const linha = linhas[i];
       if (!linha[9]) continue;
-      datas.push(linha[9]);
+      datas.push(linha[9]); // Coluna J = Data
 
-      for (let j = 9; j < 21; j++) {
+      for (let j = 10; j <= 20; j++) {
         const raw = linha[j]?.trim();
-        const idx = j - 9;
         let valor = parseFloat(raw?.replace(",", "."));
+        const idx = j - 10;
         if (isNaN(valor)) {
           series[idx].push(null);
           variacoes[idx].push(null);
@@ -343,11 +342,16 @@
             position: "top",
             labels: {
               boxWidth: 12,
+              usePointStyle: false,
+              pointStyle: 'rect',
               font: { size: 14 },
               color: '#000'
             }
           },
-          tooltip: { mode: "index", intersect: false }
+          tooltip: {
+            mode: "index",
+            intersect: false
+          }
         },
         scales: {
           y: {
@@ -358,7 +362,10 @@
               color: "#000",
               font: { size: 14 }
             },
-            ticks: { color: "#000", font: { size: 13 } }
+            ticks: {
+              color: "#000",
+              font: { size: 13 }
+            }
           },
           x: {
             title: {
@@ -391,9 +398,11 @@
     const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
     const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
 
-    deviceInfo.textContent = isMobileSize && isTouchDevice
-      ? "Dispositivo atual: smartphone"
-      : "Dispositivo atual: computador";
+    if (isMobileSize && isTouchDevice) {
+      deviceInfo.textContent = "Dispositivo atual: smartphone";
+    } else {
+      deviceInfo.textContent = "Dispositivo atual: computador";
+    }
   }
 
   window.addEventListener('resize', detectarDispositivo);
