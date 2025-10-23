@@ -2,9 +2,10 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Clube Morpheus</title>
+  <title>Comparação com Fundos – Clube Morpheus</title>
   <link rel="icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     html, body {
       margin: 0;
@@ -75,9 +76,16 @@
         font-size: 14px;
       }
     }
+
+    .chart-container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 100px auto 50px auto;
+    }
   </style>
 </head>
 <body>
+  <!-- NAVBAR -->
   <div class="navbar">
     <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
     <div class="links">
@@ -88,7 +96,13 @@
     </div>
   </div>
 
+  <!-- GRÁFICO -->
+  <div class="chart-container">
+    <canvas id="fundosChart"></canvas>
+  </div>
+
   <script type="module">
+    // ----- FIREBASE -----
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import {
       getAuth,
@@ -140,13 +154,83 @@
     document.getElementById("logoutLink").addEventListener("click", (e) => {
       e.preventDefault();
       signOut(auth)
-        .then(() => {
-          window.location.href = "index.html";
-        })
-        .catch((error) => {
-          console.error("Erro ao deslogar:", error);
-        });
+        .then(() => window.location.href = "index.html")
+        .catch((error) => console.error("Erro ao deslogar:", error));
     });
+
+    // ----- CHART -----
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
+
+    async function carregarDados() {
+      const response = await fetch(csvUrl);
+      const text = await response.text();
+
+      const linhas = text.split("\n").slice(1); // pula cabeçalho
+      const datas = [];
+      const serie1 = [];
+      const serie2 = [];
+      const serie3 = [];
+
+      for (let linha of linhas) {
+        const cols = linha.split(",");
+        if (cols.length < 12) continue;
+
+        const data = cols[9]; // Coluna J
+        const v1 = parseFloat(cols[10]) - 1; // K
+        const v2 = parseFloat(cols[11]) - 1; // L
+        const v3 = parseFloat(cols[12]) - 1; // M, se quiser usar (opcional)
+
+        if (!isNaN(v1) && !isNaN(v2)) {
+          datas.push(data);
+          serie1.push(v1 * 100);
+          serie2.push(v2 * 100);
+        }
+      }
+
+      const ctx = document.getElementById("fundosChart").getContext("2d");
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: datas,
+          datasets: [
+            {
+              label: "Fundo 1",
+              data: serie1,
+              borderWidth: 2,
+              borderColor: "rgba(0, 0, 0, 0.8)",
+              fill: false,
+            },
+            {
+              label: "Fundo 2",
+              data: serie2,
+              borderWidth: 2,
+              borderColor: "rgba(100, 100, 100, 0.8)",
+              fill: false,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              ticks: {
+                callback: (value) => value.toFixed(1) + "%",
+              },
+              title: {
+                display: true,
+                text: "Rentabilidade (%)",
+              },
+            },
+            x: {
+              display: true,
+              ticks: { maxTicksLimit: 10 },
+            },
+          },
+        },
+      });
+    }
+
+    carregarDados();
   </script>
 </body>
 </html>
