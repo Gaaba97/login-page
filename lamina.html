@@ -1,1 +1,152 @@
-    
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Clube Morpheus</title>
+  <link rel="icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "DM Sans", sans-serif;
+      background-color: white;
+      color: black;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 3;
+      color: white;
+      box-sizing: border-box;
+    }
+
+    .navbar .welcome {
+      font-weight: bold;
+      white-space: nowrap;
+      font-size: 16px;
+    }
+
+    .navbar .links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      padding-left: 4px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+      display: inline-block;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .navbar a:hover {
+      transform: scale(1.1);
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 8px 15px;
+      }
+
+      .navbar .welcome {
+        font-size: 14px;
+      }
+
+      .navbar .links {
+        gap: 10px;
+      }
+
+      .navbar a {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
+    <div class="links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="lamina.html">Lâmina</a>
+      <a href="comparacao-fundos.html">Comparação com Fundos</a>
+      <a href="#" id="logoutLink">Sair</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut,
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+      authDomain: "login-site-9cbbd.firebaseapp.com",
+      projectId: "login-site-9cbbd",
+      storageBucket: "login-site-9cbbd.appspot.com",
+      messagingSenderId: "703993528666",
+      appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const docRef = doc(db, "usuarios", user.uid);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            const nome = data.nome || "Usuário";
+            const genero = (data.genero || "masculino").toLowerCase();
+            const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
+            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+          } else {
+            document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
+          }
+        } catch (error) {
+          document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
+        }
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    document.getElementById("logoutLink").addEventListener("click", (e) => {
+      e.preventDefault();
+      signOut(auth)
+        .then(() => {
+          window.location.href = "index.html";
+        })
+        .catch((error) => {
+          console.error("Erro ao deslogar:", error);
+        });
+    });
+  </script>
+</body>
+</html>
