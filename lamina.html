@@ -2,90 +2,105 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Comparação com Fundos – Clube Morpheus</title>
+  <title>Comparação Morpheus x IBOV</title>
   <link rel="icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: "DM Sans", sans-serif;
-      background-color: white;
-      color: black;
+    :root{
+      --nav-bg: rgba(0,0,0,0.8);
+      --primary-blue: #0b51b7;
+      --primary-blue-dark: #052d6d;
+      --muted: #6b6b6b;
     }
 
+    html,body{
+      margin:0;
+      padding:0;
+      font-family: "DM Sans", sans-serif;
+      background: #fff;
+      color:#111;
+    }
+
+    /* NAVBAR (seu) */
     .navbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: rgba(0, 0, 0, 0.8);
+      background-color: var(--nav-bg);
       padding: 10px 20px;
       position: fixed;
       width: 100%;
       top: 0;
       left: 0;
-      z-index: 3;
+      z-index: 30;
       color: white;
       box-sizing: border-box;
     }
+    .navbar .welcome { font-weight: 700; white-space:nowrap; font-size:16px; }
+    .navbar .links { display:flex; gap:20px; flex-wrap:nowrap; white-space:nowrap; padding-left:4px; }
+    .navbar a { color:white; text-decoration:none; font-weight:700; font-size:16px; transition:transform .15s ease; }
+    .navbar a:hover{ transform:scale(1.06); }
 
-    .navbar .welcome {
-      font-weight: bold;
-      white-space: nowrap;
-      font-size: 16px;
+    /* Page layout */
+    .page {
+      max-width: 1180px;
+      margin: 110px auto 60px;
+      padding: 0 20px;
     }
 
-    .navbar .links {
-      display: flex;
-      gap: 20px;
-      flex-wrap: nowrap;
-      white-space: nowrap;
-      padding-left: 4px;
+    h1.title {
+      text-align:center;
+      font-size:20px;
+      letter-spacing:1px;
+      margin: 0 0 18px 0;
+      font-weight:700;
     }
 
-    .navbar a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 16px;
-      display: inline-block;
-      transition: transform 0.2s ease-in-out;
+    /* Buttons like the original */
+    .periods {
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      margin-bottom:18px;
     }
-
-    .navbar a:hover {
-      transform: scale(1.1);
-      color: white;
+    .periods button{
+      background: var(--primary-blue);
+      color:#fff;
+      border:0;
+      padding:8px 16px;
+      border-radius:18px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:none;
     }
+    .periods button.active { background: var(--primary-blue-dark); transform: translateY(-1px); }
 
-    @media (max-width: 768px) {
-      .navbar {
-        padding: 8px 15px;
-      }
-
-      .navbar .welcome {
-        font-size: 14px;
-      }
-
-      .navbar .links {
-        gap: 10px;
-      }
-
-      .navbar a {
-        font-size: 14px;
-      }
+    /* Chart frame */
+    .chart-wrap{
+      background: white;
+      border-radius:6px;
+      padding: 18px 8px 12px 8px;
+      box-sizing:border-box;
     }
+    canvas { display:block; width:100%; height:520px; }
 
-    .chart-container {
-      width: 90%;
-      max-width: 1000px;
-      margin: 100px auto 50px auto;
+    /* Legend tweaks for top-left style */
+    .chart-legend { text-align:left; margin-left:48px; margin-bottom:8px; color:var(--muted); font-weight:700; }
+    .chart-legend .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:8px; vertical-align:middle; }
+    .chart-legend .label { margin-right:14px; margin-left:8px; font-weight:700; color:#222; }
+
+    /* Small screens */
+    @media(max-width:720px){
+      .page { margin:80px 12px; }
+      canvas { height:420px; }
+      .navbar .welcome { font-size:14px; }
+      .navbar a { font-size:14px; }
     }
   </style>
 </head>
 <body>
-  <!-- NAVBAR -->
+  <!-- NAVBAR (seu) -->
   <div class="navbar">
     <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
     <div class="links">
@@ -96,24 +111,31 @@
     </div>
   </div>
 
-  <!-- GRÁFICO -->
-  <div class="chart-container">
-    <canvas id="fundosChart"></canvas>
+  <div class="page">
+    <h1 class="title">PERFORMANCE</h1>
+
+    <div class="periods">
+      <button class="active" data-range="all">DESDE O INÍCIO</button>
+      <button data-range="36m">36 MESES</button>
+      <button data-range="24m">24 MESES</button>
+      <button data-range="12m">12M</button>
+      <button data-range="ytd">ESTE ANO</button>
+    </div>
+
+    <div class="chart-wrap">
+      <div class="chart-legend">
+        <span class="dot" style="background:#0b51b7"></span><span class="label">Morpheus</span>
+        <span class="dot" style="background:#000; width:12px; height:2px; border-radius:0; display:inline-block; vertical-align:middle;"></span><span class="label">IBOV</span>
+      </div>
+      <canvas id="performanceChart"></canvas>
+    </div>
   </div>
 
   <script type="module">
-    // ----- FIREBASE -----
+    // ---------------- FIREBASE (seu) ----------------
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import {
-      getAuth,
-      onAuthStateChanged,
-      signOut,
-    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      getDoc,
-    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
@@ -123,7 +145,6 @@
       messagingSenderId: "703993528666",
       appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
     };
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
@@ -133,7 +154,6 @@
         try {
           const docRef = doc(db, "usuarios", user.uid);
           const docSnap = await getDoc(docRef);
-
           if (docSnap.exists()) {
             const data = docSnap.data();
             const nome = data.nome || "Usuário";
@@ -143,7 +163,7 @@
           } else {
             document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
           }
-        } catch (error) {
+        } catch (err) {
           document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
         }
       } else {
@@ -153,84 +173,254 @@
 
     document.getElementById("logoutLink").addEventListener("click", (e) => {
       e.preventDefault();
-      signOut(auth)
-        .then(() => window.location.href = "index.html")
-        .catch((error) => console.error("Erro ao deslogar:", error));
+      signOut(auth).then(() => window.location.href = "index.html").catch(console.error);
     });
 
-    // ----- CHART -----
+    // ---------------- Dados CSV (sua planilha) ----------------
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
-    async function carregarDados() {
-      const response = await fetch(csvUrl);
-      const text = await response.text();
+    // parse dd/mm/yyyy -> Date object (or ISO)
+    function parseBRDate(s){
+      if(!s) return null;
+      // accept dd/mm/yyyy or yyyy-mm-dd
+      if (s.includes("/")) {
+        const parts = s.split("/");
+        if(parts.length<3) return null;
+        const d = parts[0].padStart(2,"0");
+        const m = parts[1].padStart(2,"0");
+        const y = parts[2];
+        return `${y}-${m}-${d}`; // ISO date string
+      }
+      return s;
+    }
 
-      const linhas = text.split("\n").slice(1); // pula cabeçalho
-      const datas = [];
-      const serie1 = [];
-      const serie2 = [];
-      const serie3 = [];
+    async function fetchAndProcess(){
+      const res = await fetch(csvUrl);
+      const text = await res.text();
+      const lines = text.trim().split("\n").map(r => r.replace(/\r/g,""));
+      if(lines.length < 2) return [];
 
-      for (let linha of linhas) {
-        const cols = linha.split(",");
-        if (cols.length < 12) continue;
-
-        const data = cols[9]; // Coluna J
-        const v1 = parseFloat(cols[10]) - 1; // K
-        const v2 = parseFloat(cols[11]) - 1; // L
-        const v3 = parseFloat(cols[12]) - 1; // M, se quiser usar (opcional)
-
-        if (!isNaN(v1) && !isNaN(v2)) {
-          datas.push(data);
-          serie1.push(v1 * 100);
-          serie2.push(v2 * 100);
+      // We don't assume header position exact; find first line that contains a date in column J.
+      // But user said columns J-L, so we use indices 9,10,11 (0-based).
+      const data = [];
+      for(let i=1;i<lines.length;i++){
+        const cols = lines[i].split(",");
+        // ignore lines too short
+        if(cols.length <= 11) continue;
+        const rawDate = cols[9].trim();
+        const rawK = cols[10].trim(); // Morpheus (indexado 1)
+        const rawL = cols[11].trim(); // IBOV (indexado 1)
+        if(!rawDate) continue;
+        const dateISO = parseBRDate(rawDate);
+        const vK = parseFloat(rawK);
+        const vL = parseFloat(rawL);
+        if(Number.isFinite(vK) && Number.isFinite(vL)){
+          data.push({ date: dateISO, k: vK, l: vL });
         }
       }
 
-      const ctx = document.getElementById("fundosChart").getContext("2d");
-      new Chart(ctx, {
-        type: "line",
+      // sort by date ascending
+      data.sort((a,b)=> new Date(a.date) - new Date(b.date));
+
+      // convert index=1 values to % change from first available row
+      if(data.length === 0) return [];
+      const baseK = data[0].k;
+      const baseL = data[0].l;
+      const out = data.map(d => ({
+        date: d.date,
+        morpheus: (d.k / baseK - 1) * 100,
+        ibov: (d.l / baseL - 1) * 100
+      }));
+      return out;
+    }
+
+    // ---------------- Chart.js rendering with gradient + fill to baseline 0 ----------------
+    let chartRef = null;
+
+    function createGradientForFill(ctx, chartArea){
+      // gradient that is strong at top and fades to transparent at the zero line; we will clip via fill: 'origin'
+      const g = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+      // dark at top (above zero), lighter towards center
+      g.addColorStop(0, "rgba(11,81,183,0.85)");
+      g.addColorStop(0.45, "rgba(11,81,183,0.45)");
+      g.addColorStop(1, "rgba(11,81,183,0.06)");
+      return g;
+    }
+
+    function buildChart(data){
+      const ctx = document.getElementById("performanceChart").getContext("2d");
+
+      // prepare arrays
+      const labels = data.map(d => d.date);
+      const morpheusData = data.map(d => +d.morpheus.toFixed(4));
+      const ibovData = data.map(d => +d.ibov.toFixed(4));
+
+      // destroy old
+      if(chartRef) chartRef.destroy();
+
+      chartRef = new Chart(ctx, {
+        type: 'line',
         data: {
-          labels: datas,
+          labels,
           datasets: [
+            // MORPHEUS (area filled to 0)
             {
-              label: "Fundo 1",
-              data: serie1,
-              borderWidth: 2,
-              borderColor: "rgba(0, 0, 0, 0.8)",
-              fill: false,
+              label: 'Morpheus',
+              data: morpheusData,
+              borderColor: '#0b51b7',
+              borderWidth: 2.2,
+              tension: 0.32,
+              pointRadius: 2.4,
+              pointBorderColor: "rgba(255,255,255,0.9)",
+              pointBackgroundColor: "#0b51b7",
+              fill: true,
+              // backgroundColor will be set in plugin after layout so we can use chartArea
+              backgroundColor: (context) => {
+                // fallback: simple transparent if not yet calculated
+                const chart = context.chart;
+                const area = chart.chartArea;
+                if(!area) return 'rgba(11,81,183,0.25)';
+                return createGradientForFill(chart.ctx, area);
+              },
+              order: 2,
+              segment: {
+                // ensure fill to origin baseline
+              }
             },
+            // IBOV (black line)
             {
-              label: "Fundo 2",
-              data: serie2,
-              borderWidth: 2,
-              borderColor: "rgba(100, 100, 100, 0.8)",
+              label: 'IBOV',
+              data: ibovData,
+              borderColor: '#000',
+              borderWidth: 1.8,
+              tension: 0.28,
+              pointRadius: 0,
               fill: false,
+              order: 1,
             }
           ]
         },
         options: {
+          maintainAspectRatio: false,
           responsive: true,
-          scales: {
-            y: {
-              ticks: {
-                callback: (value) => value.toFixed(1) + "%",
-              },
-              title: {
-                display: true,
-                text: "Rentabilidade (%)",
-              },
-            },
-            x: {
-              display: true,
-              ticks: { maxTicksLimit: 10 },
-            },
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false }, // custom legend above canvas
+            tooltip: {
+              enabled: true,
+              callbacks: {
+                label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%`
+              }
+            }
           },
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                unit: 'month',
+                tooltipFormat: 'DD/MM/YYYY',
+                displayFormats: { month: 'MMM yy' }
+              },
+              grid: {
+                color: 'rgba(0,0,0,0.06)',
+                borderDash: [4,6]
+              },
+              ticks: { color: '#333' }
+            },
+            y: {
+              position: 'right',
+              grid: {
+                color: 'rgba(0,0,0,0.08)',
+                borderDash: [4,6]
+              },
+              ticks: {
+                callback: (v) => v + '%',
+                color: '#333'
+              },
+              // ensure 0 is visible and used as origin for fill
+              beginAtZero: false,
+            }
+          },
+          layout: { padding: { left: 10, right: 28, top: 6, bottom: 6 } },
+          elements: {
+            line: { capStyle: 'round' },
+            point: { hoverRadius: 6 }
+          }
         },
+        plugins: [
+          // plugin to force background gradient recalculation when chart area ready
+          {
+            id: 'gradientFillSetter',
+            beforeDatasetsDraw(chart, args, options) {
+              const ctx = chart.ctx;
+              const chartArea = chart.chartArea;
+              if(!chartArea) return;
+              // set backgroundColor for first dataset (Morpheus) to gradient built from chartArea
+              const grad = createGradientForFill(ctx, chartArea);
+              chart.data.datasets[0].backgroundColor = grad;
+            }
+          },
+          // plugin to ensure fill goes to 0 baseline (origin)
+          {
+            id: 'forceFillToZero',
+            beforeDatasetDraw(chart, args, options) {
+              // Chart.js fill:'origin' uses dataset baseline 0 of scale; make sure baseline exists
+              // nothing needed here; kept for future tweaks
+            }
+          }
+        ]
       });
+
+      // Ensure the Morpheus fill target is origin (0)
+      // Chart.js v4 will interpret 'origin' as baseline. We must set dataset.fill = 'origin'
+      chartRef.data.datasets[0].fill = 'origin';
+      chartRef.update();
     }
 
-    carregarDados();
+    // ---------------- Range filtering UI ----------------
+    function filterByRange(all, rangeKey){
+      if(rangeKey === 'all') return all;
+      const now = new Date();
+      if(rangeKey === 'ytd'){
+        const yy = now.getFullYear();
+        return all.filter(d => new Date(d.date).getFullYear() === yy);
+      }
+      // numeric months like "36m"
+      if(rangeKey.endsWith('m')){
+        const months = parseInt(rangeKey.replace('m',''));
+        // keep last N months: based on labels
+        // compute cutoff date = last date - months
+        const lastDate = new Date(all[all.length-1].date);
+        const cutoff = new Date(lastDate);
+        cutoff.setMonth(cutoff.getMonth() - months);
+        return all.filter(d => new Date(d.date) >= cutoff);
+      }
+      return all;
+    }
+
+    // ---------------- Boot sequence ----------------
+    (async function run(){
+      const raw = await fetchAndProcess();
+      if(!raw || raw.length === 0){
+        console.error("Sem dados ou formato inesperado da planilha.");
+        return;
+      }
+
+      // build initial chart with all data
+      buildChart(raw);
+
+      // buttons
+      const btns = document.querySelectorAll('.periods button');
+      btns.forEach(b => {
+        b.addEventListener('click', (ev) => {
+          btns.forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          const range = b.dataset.range;
+          const subset = filterByRange(raw, range);
+          buildChart(subset);
+        });
+      });
+    })();
   </script>
 </body>
 </html>
