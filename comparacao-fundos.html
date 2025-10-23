@@ -23,7 +23,7 @@
       justify-content: space-between;
       align-items: center;
       background-color: rgba(0, 0, 0, 0.8);
-      padding: 10px 20px;
+      padding: 10px 24px;
       position: fixed;
       width: 100%;
       top: 0;
@@ -36,22 +36,22 @@
     .navbar .welcome {
       font-weight: bold;
       white-space: nowrap;
-      font-size: 16px;
+      font-size: 17px;
     }
 
     .navbar .links {
       display: flex;
-      gap: 20px;
+      gap: 26px;
       flex-wrap: nowrap;
       white-space: nowrap;
-      padding-left: 4px;
+      padding-left: 6px;
     }
 
     .navbar a {
       color: white;
       text-decoration: none;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 17px;
       display: inline-block;
       transition: transform 0.2s ease-in-out;
     }
@@ -78,9 +78,7 @@
         font-size: 14px;
       }
     }
-    /* ===== FIM NAVBAR ===== */
 
-    /* wrapper para aplicar escala sem afetar a navbar */
     .page-wrapper {
       flex: 1;
       display: flex;
@@ -225,11 +223,9 @@
     </div>
   </div>
 
-  <!-- Mensagem de dispositivo -->
   <div id="deviceInfo"></div>
 </div>
 
-<!-- FIREBASE -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
@@ -277,7 +273,6 @@
   });
 </script>
 
-<!-- CHART -->
 <script>
   let modoPercentual = false;
 
@@ -292,7 +287,8 @@
     const texto = await resposta.text();
     const linhas = texto.split("\n").map(l => l.split(","));
 
-    const headers = linhas[0].slice(10);
+    // Limite: colunas J (índice 9) até U (índice 20)
+    const headers = linhas[0].slice(9, 21);
     const datas = [];
     const series = headers.map(() => []);
     const bases = headers.map(() => null);
@@ -303,10 +299,10 @@
       if (!linha[9]) continue;
       datas.push(linha[9]);
 
-      for (let j = 10; j < linha.length; j++) {
-        const raw = linha[j].trim();
-        let valor = parseFloat(raw.replace(",", "."));
-        const idx = j - 10;
+      for (let j = 9; j < 21; j++) {
+        const raw = linha[j]?.trim();
+        const idx = j - 9;
+        let valor = parseFloat(raw?.replace(",", "."));
         if (isNaN(valor)) {
           series[idx].push(null);
           variacoes[idx].push(null);
@@ -347,16 +343,11 @@
             position: "top",
             labels: {
               boxWidth: 12,
-              usePointStyle: false,
-              pointStyle: 'rect',
               font: { size: 14 },
               color: '#000'
             }
           },
-          tooltip: {
-            mode: "index",
-            intersect: false
-          }
+          tooltip: { mode: "index", intersect: false }
         },
         scales: {
           y: {
@@ -367,10 +358,7 @@
               color: "#000",
               font: { size: 14 }
             },
-            ticks: {
-              color: "#000",
-              font: { size: 13 }
-            }
+            ticks: { color: "#000", font: { size: 13 } }
           },
           x: {
             title: {
@@ -395,7 +383,6 @@
   carregarGrafico();
 </script>
 
-<!-- DETECÇÃO DE DISPOSITIVO -->
 <script>
   function detectarDispositivo() {
     const largura = window.innerWidth;
@@ -404,11 +391,9 @@
     const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
     const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
 
-    if (isMobileSize && isTouchDevice) {
-      deviceInfo.textContent = "Dispositivo atual: smartphone";
-    } else {
-      deviceInfo.textContent = "Dispositivo atual: computador";
-    }
+    deviceInfo.textContent = isMobileSize && isTouchDevice
+      ? "Dispositivo atual: smartphone"
+      : "Dispositivo atual: computador";
   }
 
   window.addEventListener('resize', detectarDispositivo);
@@ -417,6 +402,3 @@
 </script>
 </body>
 </html>
-
-
-
