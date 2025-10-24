@@ -15,7 +15,6 @@
       height: 100%;
     }
 
-    /* NAVBAR */
     .navbar {
       display: flex;
       justify-content: space-between;
@@ -68,7 +67,6 @@
       margin-bottom: 20px;
     }
 
-    /* Gráfico ocupa proporção idêntica */
     canvas {
       width: 78%;
       max-width: 900px;
@@ -89,7 +87,7 @@
 
   <div class="container">
     <h1>MORPHEUS FIA</h1>
-    <div class="subtitle">30/09/2025 — Comparativo com IBOV</div>
+    <div class="subtitle" id="subtitle">Data — Comparativo com IBOV</div>
     <canvas id="performanceChart"></canvas>
   </div>
 
@@ -141,24 +139,45 @@
       const data = await response.text();
       const rows = data.split("\n").slice(1);
 
-      const labels = [];
+      const allDates = [];
       const morpheus = [];
       const ibov = [];
 
       rows.forEach(row => {
         const cols = row.split(",");
-        const date = cols[9];
+        const date = cols[9]?.trim();
         const f1 = parseFloat(cols[10]);
         const f2 = parseFloat(cols[11]);
-        if (!isNaN(f1) && !isNaN(f2)) {
-          labels.push(date);
+        if (date && !isNaN(f1) && !isNaN(f2)) {
+          allDates.push(date);
           morpheus.push((f1 - 1) * 100);
           ibov.push((f2 - 1) * 100);
         }
       });
 
-      const ctx = document.getElementById("performanceChart").getContext("2d");
+      // Atualiza subtítulo com a última data
+      const lastDate = allDates[allDates.length - 1];
+      document.getElementById("subtitle").textContent = `${lastDate} — Comparativo com IBOV`;
 
+      // Filtra apenas uma data por mês
+      const uniqueLabels = [];
+      const monthTracker = new Set();
+      const filteredMorpheus = [];
+      const filteredIbov = [];
+
+      for (let i = 0; i < allDates.length; i++) {
+        const d = new Date(allDates[i].split("/").reverse().join("-"));
+        if (isNaN(d)) continue;
+        const key = `${d.getMonth()}-${d.getFullYear()}`;
+        if (!monthTracker.has(key)) {
+          monthTracker.add(key);
+          uniqueLabels.push(d);
+          filteredMorpheus.push(morpheus[i]);
+          filteredIbov.push(ibov[i]);
+        }
+      }
+
+      const ctx = document.getElementById("performanceChart").getContext("2d");
       const gradient = ctx.createLinearGradient(0, 0, 0, 350);
       gradient.addColorStop(0, "rgba(30,77,183,0.95)");
       gradient.addColorStop(1, "rgba(30,77,183,0.15)");
@@ -166,11 +185,11 @@
       new Chart(ctx, {
         type: "line",
         data: {
-          labels: labels,
+          labels: uniqueLabels,
           datasets: [
             {
               label: "Morpheus",
-              data: morpheus,
+              data: filteredMorpheus,
               borderColor: "#1E4DB7",
               borderWidth: 1.5,
               pointRadius: 0,
@@ -180,7 +199,7 @@
             },
             {
               label: "IBOV",
-              data: ibov,
+              data: filteredIbov,
               borderColor: "#000",
               borderWidth: 1,
               pointRadius: 0,
@@ -192,9 +211,6 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          layout: {
-            padding: { left: 10, right: 10, top: 10, bottom: 10 },
-          },
           plugins: {
             legend: {
               position: "top",
@@ -205,39 +221,32 @@
                 font: { size: 12 },
               },
             },
-            tooltip: {
-              mode: "index",
-              intersect: false,
-              backgroundColor: "rgba(255,255,255,0.95)",
-              titleColor: "#000",
-              bodyColor: "#000",
-              borderColor: "#ddd",
-              borderWidth: 1,
-            },
           },
-          interaction: { mode: "index", intersect: false },
           scales: {
             x: {
-              grid: { color: "rgba(0,0,0,0.06)" },
               ticks: {
                 color: "#444",
                 maxRotation: 45,
                 minRotation: 45,
                 font: { size: 11 },
-                callback: function(value, index, ticks) {
-                  const date = new Date(this.getLabelForValue(value));
-                  if (isNaN(date)) return this.getLabelForValue(value);
-                  return date.toLocaleDateString("pt-BR", { month: "short", year: "2-digit" }).replace(".", "");
+                callback: function(value) {
+                  const d = this.getLabelForValue(value);
+                  const date = new Date(d);
+                  return date.toLocaleDateString("pt-BR", {
+                    month: "short",
+                    year: "2-digit"
+                  }).replace(".", "").replace(" ", " - ");
                 },
               },
+              grid: { color: "rgba(0,0,0,0.06)" },
             },
             y: {
-              grid: { color: "rgba(0,0,0,0.06)" },
               ticks: {
                 color: "#444",
                 font: { size: 11 },
                 callback: (v) => `${v.toFixed(0)}%`,
               },
+              grid: { color: "rgba(0,0,0,0.06)" },
             },
           },
         },
