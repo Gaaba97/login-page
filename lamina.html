@@ -2,157 +2,257 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Desempenho Morpheus x IBOV</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-  <script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/locale/pt-BR/index.min.js"></script>
+  <title>Clube Morpheus</title>
+  <link rel="icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      height: 100%;
-      background-color: #fafafa;
+      background-color: #fff;
       font-family: "DM Sans", sans-serif;
+      color: #000;
+      height: 100%;
     }
 
     .navbar {
-      background-color: #111;
-      color: #fff;
-      padding: 12px 40px;
-      font-size: 20px;
-      font-weight: 600;
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      letter-spacing: 1px;
+      background-color: rgba(0, 0, 0, 0.9);
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      color: white;
+      box-sizing: border-box;
     }
 
-    .chart-container {
-      position: relative;
-      height: calc(100vh - 80px);
-      padding: 30px;
+    .navbar .welcome {
+      font-weight: bold;
+    }
+
+    .navbar .links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .navbar a:hover {
+      transform: scale(1.1);
+    }
+
+    .container {
+      margin-top: 100px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 22px;
+      color: #1E4DB7;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 20px;
     }
 
     canvas {
-      background-color: #fff;
-      border-radius: 16px;
-      box-shadow: 0 0 18px rgba(0,0,0,0.05);
+      width: 78%;
+      max-width: 900px;
+      height: 350px !important;
     }
   </style>
 </head>
 <body>
-  <div class="navbar">Desempenho Morpheus x IBOV</div>
-  <div class="chart-container">
-    <canvas id="chart"></canvas>
+  <div class="navbar">
+    <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
+    <div class="links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="lamina.html">Lâmina</a>
+      <a href="comparacao-fundos.html">Comparação com Fundos</a>
+      <a href="#" id="logoutLink">Sair</a>
+    </div>
   </div>
 
-  <script>
-    const ctx = document.getElementById("chart").getContext("2d");
+  <div class="container">
+    <h1>MORPHEUS</h1>
+    <div class="subtitle" id="subtitle">Data — Comparativo com IBOV</div>
+    <canvas id="performanceChart"></canvas>
+  </div>
 
-    const data = {
-      labels: [
-        "2024-01-02","2024-01-03","2024-01-04","2024-01-05",
-        "2024-01-08","2024-01-09","2024-01-10","2024-01-11",
-        "2024-01-12","2024-01-15","2024-01-16","2024-01-17",
-        "2024-01-18","2024-01-19","2024-01-22","2024-01-23",
-        "2024-01-24","2024-01-25","2024-01-26","2024-01-29",
-        "2024-01-30","2024-01-31","2024-02-01","2024-02-02",
-        "2024-02-05","2024-02-06","2024-02-07","2024-02-08",
-        "2024-02-09","2024-02-14","2024-02-15","2024-02-16",
-        "2024-02-19","2024-02-20","2024-02-21","2024-02-22",
-        "2024-02-23","2024-02-26","2024-02-27","2024-02-28",
-        "2024-02-29","2024-03-01","2024-03-04","2024-03-05",
-        "2024-03-06","2024-03-07","2024-03-08","2024-03-11",
-        "2024-03-12","2024-03-13","2024-03-14","2024-03-15",
-        "2024-03-18","2024-03-19","2024-03-20","2024-03-21",
-        "2024-03-22","2024-03-25","2024-03-26","2024-03-27",
-        "2024-03-28"
-      ],
-      datasets: [
-        {
-          label: "Morpheus",
-          data: [
-            100, 101, 103, 102, 104, 105, 106, 108, 107, 108, 109, 110,
-            112, 111, 113, 114, 115, 117, 118, 120, 119, 121, 122, 123,
-            125, 126, 128, 127, 129, 131, 130, 132, 133, 134, 136, 138,
-            139, 140, 142, 143, 145, 146, 148, 149, 150, 152, 153, 154,
-            155, 157, 158, 159, 160, 161, 163, 164, 165, 166, 168, 169
-          ],
-          borderColor: "#007aff",
-          backgroundColor: "rgba(0,122,255,0.08)",
-          fill: true,
-          tension: 0.35,
-          borderWidth: 2.2
-        },
-        {
-          label: "IBOV",
-          data: [
-            100, 99, 100, 101, 100, 99, 98, 99, 100, 99, 100, 100,
-            101, 100, 101, 102, 101, 102, 103, 104, 103, 104, 105, 105,
-            106, 106, 107, 106, 107, 107, 108, 108, 109, 110, 109, 110,
-            111, 111, 112, 112, 113, 113, 114, 113, 114, 115, 115, 115,
-            116, 116, 117, 116, 117, 118, 117, 118, 118, 118, 119, 119
-          ],
-          borderColor: "#ff3b30",
-          backgroundColor: "rgba(255,59,48,0.08)",
-          fill: true,
-          tension: 0.35,
-          borderWidth: 2.2
-        }
-      ]
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    import ptBR from 'https://cdn.jsdelivr.net/npm/date-fns@2.30.0/esm/locale/pt-BR/index.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+      authDomain: "login-site-9cbbd.firebaseapp.com",
+      projectId: "login-site-9cbbd",
+      storageBucket: "login-site-9cbbd.appspot.com",
+      messagingSenderId: "703993528666",
+      appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
     };
 
-    new Chart(ctx, {
-      type: "line",
-      data,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "top",
-            labels: {
-              usePointStyle: true,
-              pointStyle: "circle",
-              color: "#000",
-              font: { size: 13, weight: "bold" },
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const docRef = doc(db, "usuarios", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const nome = data.nome || "Usuário";
+          const genero = (data.genero || "masculino").toLowerCase();
+          const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
+          document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+        }
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    document.getElementById("logoutLink").addEventListener("click", (e) => {
+      e.preventDefault();
+      signOut(auth).then(() => window.location.href = "index.html");
+    });
+
+    // --- GRÁFICO ---
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
+
+    async function loadData() {
+      const response = await fetch(csvUrl);
+      const data = await response.text();
+      const rows = data.split("\n").slice(1);
+
+      const allDates = [];
+      const morpheus = [];
+      const ibov = [];
+
+      rows.forEach(row => {
+        const cols = row.split(",");
+        const date = cols[9]?.trim();
+        const f1 = parseFloat(cols[10]);
+        const f2 = parseFloat(cols[11]);
+        if (date && !isNaN(f1) && !isNaN(f2)) {
+          allDates.push(date);
+          morpheus.push((f1 - 1) * 100);
+          ibov.push((f2 - 1) * 100);
+        }
+      });
+
+      // Atualiza subtítulo com a última data
+      const lastDate = allDates[allDates.length - 1];
+      document.getElementById("subtitle").textContent = `${lastDate} — Comparativo com IBOV`;
+
+      // Prepara dados para o gráfico com datas diárias
+      const morpheusData = allDates.map((date, i) => ({
+        x: date.split("/").reverse().join("-"),
+        y: morpheus[i]
+      }));
+
+      const ibovData = allDates.map((date, i) => ({
+        x: date.split("/").reverse().join("-"),
+        y: ibov[i]
+      }));
+
+      const ctx = document.getElementById("performanceChart").getContext("2d");
+      const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+      gradient.addColorStop(0, "rgba(30,77,183,0.95)");
+      gradient.addColorStop(1, "rgba(30,77,183,0.15)");
+
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          datasets: [
+            {
+              label: "Morpheus",
+              data: morpheusData,
+              borderColor: "#1E4DB7",
+              borderWidth: 1.5,
+              pointRadius: 0,
+              tension: 0.15,
+              fill: true,
+              backgroundColor: gradient,
             },
-          },
+            {
+              label: "IBOV",
+              data: ibovData,
+              borderColor: "#000",
+              borderWidth: 1,
+              pointRadius: 0,
+              tension: 0.15,
+              fill: false,
+            },
+          ],
         },
-        scales: {
-          x: {
-            type: "time",
-            adapters: {
-              date: { locale: ptBR }
-            },
-            time: {
-              unit: "month",
-              displayFormats: { month: "MMM - yy" },
-              tooltipFormat: "dd/MM/yyyy"
-            },
-            ticks: {
-              color: "#000",
-              font: { size: 13, weight: "500" },
-              maxRotation: 45,
-              minRotation: 45,
-              callback: (val, i, ticks) => {
-                const label = ticks[i].label || "";
-                return label.charAt(0).toUpperCase() + label.slice(1);
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "top",
+              labels: {
+                usePointStyle: true,
+                pointStyle: "circle",
+                color: "#000",
+                font: { size: 12 },
               },
             },
-            grid: { color: "rgba(0,0,0,0.06)" },
           },
-          y: {
-            ticks: {
-              color: "#000",
-              font: { size: 13, weight: "500" },
-              callback: (v) => `${v.toFixed(0)}%`,
+          scales: {
+            x: {
+              type: "time",
+              adapters: {
+                date: {
+                  locale: ptBR
+                }
+              },
+              time: {
+                unit: "month",
+                displayFormats: {
+                  month: "MMM - yy"
+                },
+                tooltipFormat: "dd/MM/yyyy"
+              },
+              ticks: {
+                color: "#444",
+                maxRotation: 45,
+                minRotation: 45,
+                font: { size: 11 },
+              },
+              grid: { color: "rgba(0,0,0,0.06)" },
             },
-            grid: { color: "rgba(0,0,0,0.06)" },
+            y: {
+              ticks: {
+                color: "#444",
+                font: { size: 11 },
+                callback: (v) => `${v.toFixed(0)}%`,
+              },
+              grid: { color: "rgba(0,0,0,0.06)" },
+            },
           },
         },
-      },
-    });
+      });
+    }
+
+    loadData();
   </script>
 </body>
 </html>
