@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Morpheus FIA</title>
+  <title>Morpheus</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
@@ -38,7 +38,7 @@
   </style>
 </head>
 <body>
-  <header>MORPHEUS FIA</header>
+  <header>MORPHEUS</header>
   <main>
     <div class="subtitle">Comparativo com IBOV</div>
     <canvas id="grafico"></canvas>
@@ -57,6 +57,7 @@
         const datas = [];
         const morpheus = [];
         const ibov = [];
+        let ultimaData = "";
 
         linhas.forEach(l => {
           const cols = l.split(",");
@@ -67,6 +68,7 @@
             datas.push(data);
             morpheus.push((morpheusVal - 1) * 100);
             ibov.push((ibovVal - 1) * 100);
+            ultimaData = data; // Atualiza a última data válida
           }
         });
 
@@ -74,6 +76,9 @@
         const gradiente = ctx.createLinearGradient(0, 0, 0, 400);
         gradiente.addColorStop(0, "rgba(0, 60, 255, 0.6)");
         gradiente.addColorStop(1, "rgba(0, 60, 255, 0.0)");
+
+        // Conjunto para rastrear meses exibidos
+        const mesesExibidos = new Set();
 
         new Chart(ctx, {
           type: "line",
@@ -119,10 +124,19 @@
               x: {
                 ticks: {
                   callback: (val, i) => {
-                    const d = new Date(datas[i]);
-                    const mes = d.toLocaleString("pt-BR", { month: "short" });
-                    const ano = d.getFullYear().toString().slice(-2);
-                    return i % 21 === 0 ? `${mes} ${ano}` : "";
+                    const data = new Date(datas[i]);
+                    // Garante que a data seja válida e a partir de 01/07/2025
+                    if (data >= new Date("2025-07-01")) {
+                      const mes = data.toLocaleString("pt-BR", { month: "short" });
+                      const ano = data.getFullYear().toString().slice(-2);
+                      const chaveMes = `${mes}-${ano}`;
+                      if (!mesesExibidos.has(chaveMes)) {
+                        mesesExibidos.add(chaveMes);
+                        return `${mes} - ${ano}`;
+                      }
+                      return "";
+                    }
+                    return "";
                   },
                   maxRotation: 45,
                   minRotation: 45
@@ -138,6 +152,9 @@
             }
           }
         });
+
+        // Atualiza o subtítulo com a última data
+        document.querySelector(".subtitle").textContent = `Comparativo com IBOV - até ${ultimaData}`;
       } catch (err) {
         document.getElementById("erro").textContent = "Erro ao carregar dados — Comparativo com IBOV";
         console.error(err);
