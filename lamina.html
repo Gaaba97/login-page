@@ -1,167 +1,152 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Morpheus</title>
+  <title>Morpheus vs IBOV</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/date-fns@3.6.0/locale/pt-BR/index.min.js"></script>
   <style>
     body {
       margin: 0;
+      background: #fafafa;
       font-family: "DM Sans", sans-serif;
+      color: #222;
+    }
+    nav {
       background-color: #fff;
-      color: #1e1e1e;
-    }
-    header {
-      background: #0b1e52;
-      color: #fff;
-      text-align: center;
-      padding: 16px 0;
-      font-size: 22px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      padding: 12px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
       font-weight: 600;
-      letter-spacing: 1px;
-    }
-    main {
-      max-width: 1000px;
-      margin: 40px auto;
-      text-align: center;
     }
     canvas {
-      width: 100%;
-      height: 420px;
-    }
-    .subtitle {
-      color: #555;
-      font-size: 14px;
-      margin-top: 8px;
+      max-width: 100%;
+      height: 80vh;
+      display: block;
+      margin: 0 auto;
+      padding: 20px;
     }
   </style>
 </head>
 <body>
-  <header>MORPHEUS</header>
-  <main>
-    <div class="subtitle">Comparativo com IBOV</div>
-    <canvas id="grafico"></canvas>
-    <div id="erro" style="color:#777; margin-top:8px;"></div>
-  </main>
+
+  <nav>Morpheus Capital</nav>
+  <canvas id="grafico"></canvas>
 
   <script>
-    const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
     async function carregarDados() {
-      try {
-        const resp = await fetch(url);
-        const texto = await resp.text();
-        const linhas = texto.trim().split("\n").slice(1);
+      const resp = await fetch(csvUrl);
+      const texto = await resp.text();
+      const linhas = texto.trim().split("\n").slice(1);
 
-        const datas = [];
-        const morpheus = [];
-        const ibov = [];
-        let ultimaData = "";
+      const datas = [];
+      const morpheus = [];
+      const ibov = [];
 
-        linhas.forEach(l => {
-          const cols = l.split(",");
-          const data = cols[9]; // Coluna J
-          const morpheusVal = parseFloat(cols[10].replace(",", "."));
-          const ibovVal = parseFloat(cols[11].replace(",", "."));
-          if (data && !isNaN(morpheusVal) && !isNaN(ibovVal)) {
-            datas.push(data);
-            morpheus.push((morpheusVal - 1) * 100);
-            ibov.push((ibovVal - 1) * 100);
-            ultimaData = data; // Atualiza a última data válida
-          }
-        });
+      linhas.forEach(linha => {
+        const colunas = linha.split(",");
+        const data = colunas[9]; // Coluna J
+        const morpheusVal = parseFloat(colunas[10]);
+        const ibovVal = parseFloat(colunas[11]);
 
-        const ctx = document.getElementById("grafico").getContext("2d");
-        const gradiente = ctx.createLinearGradient(0, 0, 0, 400);
-        gradiente.addColorStop(0, "rgba(0, 60, 255, 0.6)");
-        gradiente.addColorStop(1, "rgba(0, 60, 255, 0.0)");
+        if (!isNaN(morpheusVal) && !isNaN(ibovVal) && data) {
+          datas.push(new Date(data));
+          morpheus.push((morpheusVal - 1) * 100);
+          ibov.push((ibovVal - 1) * 100);
+        }
+      });
 
-        // Conjunto para rastrear meses exibidos
-        const mesesExibidos = new Set();
-
-        new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: datas,
-            datasets: [
-              {
-                label: "Morpheus",
-                data: morpheus,
-                borderColor: "#003CFF",
-                borderWidth: 1.8,
-                backgroundColor: gradiente,
-                fill: true,
-                pointRadius: 0,
-                tension: 0.25,
-              },
-              {
-                label: "IBOV",
-                data: ibov,
-                borderColor: "#000000",
-                borderWidth: 1.5,
-                fill: false,
-                pointRadius: 0,
-                tension: 0.25,
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            interaction: { mode: "index", intersect: false },
-            plugins: {
-              legend: {
-                position: "top",
-                labels: { usePointStyle: true, pointStyle: "circle" }
-              },
-              tooltip: {
-                callbacks: {
-                  label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%`
-                }
-              }
-            },
-            scales: {
-              x: {
-                ticks: {
-                  callback: (val, i) => {
-                    const data = new Date(datas[i]);
-                    // Garante que a data seja válida e a partir de 01/07/2025
-                    if (data >= new Date("2025-07-01")) {
-                      const mes = data.toLocaleString("pt-BR", { month: "short" });
-                      const ano = data.getFullYear().toString().slice(-2);
-                      const chaveMes = `${mes}-${ano}`;
-                      if (!mesesExibidos.has(chaveMes)) {
-                        mesesExibidos.add(chaveMes);
-                        return `${mes} - ${ano}`;
-                      }
-                      return "";
-                    }
-                    return "";
-                  },
-                  maxRotation: 45,
-                  minRotation: 45
-                },
-                grid: { color: "rgba(0,0,0,0.08)" }
-              },
-              y: {
-                ticks: {
-                  callback: val => `${val.toFixed(0)}%`
-                },
-                grid: { color: "rgba(0,0,0,0.08)" }
-              }
-            }
-          }
-        });
-
-        // Atualiza o subtítulo com a última data
-        document.querySelector(".subtitle").textContent = `Comparativo com IBOV - até ${ultimaData}`;
-      } catch (err) {
-        document.getElementById("erro").textContent = "Erro ao carregar dados — Comparativo com IBOV";
-        console.error(err);
-      }
+      return { datas, morpheus, ibov };
     }
 
-    carregarDados();
+    async function criarGrafico() {
+      const { datas, morpheus, ibov } = await carregarDados();
+      const ctx = document.getElementById("grafico").getContext("2d");
+
+      const gradiente = ctx.createLinearGradient(0, 0, 0, 400);
+      gradiente.addColorStop(0, "rgba(33, 114, 243, 0.4)");
+      gradiente.addColorStop(1, "rgba(33, 114, 243, 0)");
+
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: datas,
+          datasets: [
+            {
+              label: "Morpheus",
+              data: morpheus,
+              borderColor: "#216ff3",
+              backgroundColor: gradiente,
+              fill: true,
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.25
+            },
+            {
+              label: "IBOV",
+              data: ibov,
+              borderColor: "#000",
+              fill: false,
+              borderWidth: 1.5,
+              pointRadius: 0,
+              tension: 0.25
+            }
+          ]
+        },
+        options: {
+          interaction: { mode: "index", intersect: false },
+          plugins: {
+            legend: {
+              position: "top",
+              labels: {
+                usePointStyle: true,
+                boxWidth: 8,
+                font: { size: 14 }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%`
+              }
+            }
+          },
+          scales: {
+            x: {
+              type: "time",
+              time: {
+                unit: "month",
+                displayFormats: { month: "MMM yy" }
+              },
+              ticks: {
+                autoSkip: true,
+                maxTicksLimit: 10,
+                font: { size: 12 }
+              },
+              grid: { display: false }
+            },
+            y: {
+              ticks: {
+                callback: v => v.toFixed(0) + "%",
+                font: { size: 12 }
+              },
+              grid: { color: "rgba(0,0,0,0.05)" }
+            }
+          },
+          elements: {
+            line: { tension: 0.3 }
+          },
+          maintainAspectRatio: false
+        }
+      });
+    }
+
+    criarGrafico();
   </script>
+
 </body>
 </html>
