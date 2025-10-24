@@ -92,10 +92,12 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    import ptBR from 'https://cdn.jsdelivr.net/npm/date-fns@2.30.0/esm/locale/pt-BR/index.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
@@ -159,23 +161,16 @@
       const lastDate = allDates[allDates.length - 1];
       document.getElementById("subtitle").textContent = `${lastDate} — Comparativo com IBOV`;
 
-      // Filtra apenas uma data por mês
-      const uniqueLabels = [];
-      const monthTracker = new Set();
-      const filteredMorpheus = [];
-      const filteredIbov = [];
+      // Prepara dados para o gráfico com datas diárias
+      const morpheusData = allDates.map((date, i) => ({
+        x: date.split("/").reverse().join("-"),
+        y: morpheus[i]
+      }));
 
-      for (let i = 0; i < allDates.length; i++) {
-        const d = new Date(allDates[i].split("/").reverse().join("-"));
-        if (isNaN(d)) continue;
-        const key = `${d.getMonth()}-${d.getFullYear()}`;
-        if (!monthTracker.has(key)) {
-          monthTracker.add(key);
-          uniqueLabels.push(d);
-          filteredMorpheus.push(morpheus[i]);
-          filteredIbov.push(ibov[i]);
-        }
-      }
+      const ibovData = allDates.map((date, i) => ({
+        x: date.split("/").reverse().join("-"),
+        y: ibov[i]
+      }));
 
       const ctx = document.getElementById("performanceChart").getContext("2d");
       const gradient = ctx.createLinearGradient(0, 0, 0, 350);
@@ -185,11 +180,10 @@
       new Chart(ctx, {
         type: "line",
         data: {
-          labels: uniqueLabels,
           datasets: [
             {
               label: "Morpheus",
-              data: filteredMorpheus,
+              data: morpheusData,
               borderColor: "#1E4DB7",
               borderWidth: 1.5,
               pointRadius: 0,
@@ -199,7 +193,7 @@
             },
             {
               label: "IBOV",
-              data: filteredIbov,
+              data: ibovData,
               borderColor: "#000",
               borderWidth: 1,
               pointRadius: 0,
@@ -224,19 +218,24 @@
           },
           scales: {
             x: {
+              type: "time",
+              adapters: {
+                date: {
+                  locale: ptBR
+                }
+              },
+              time: {
+                unit: "month",
+                displayFormats: {
+                  month: "MMM - yy"
+                },
+                tooltipFormat: "dd/MM/yyyy"
+              },
               ticks: {
                 color: "#444",
                 maxRotation: 45,
                 minRotation: 45,
                 font: { size: 11 },
-                callback: function(value) {
-                  const d = this.getLabelForValue(value);
-                  const date = new Date(d);
-                  return date.toLocaleDateString("pt-BR", {
-                    month: "short",
-                    year: "2-digit"
-                  }).replace(".", "").replace(" ", " - ");
-                },
               },
               grid: { color: "rgba(0,0,0,0.06)" },
             },
