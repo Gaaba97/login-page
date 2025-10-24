@@ -1,259 +1,152 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <title>Clube Morpheus</title>
-  <link rel="icon" href="favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Morpheus vs IBOV</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/date-fns@3.6.0/locale/pt-BR/index.min.js"></script>
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      background-color: #fff;
+      background: #fafafa;
       font-family: "DM Sans", sans-serif;
-      color: #000;
-      height: 100%;
+      color: #222;
     }
-
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: rgba(0, 0, 0, 0.9);
-      padding: 10px 20px;
-      position: fixed;
-      width: 100%;
+    nav {
+      background-color: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      padding: 12px 32px;
+      position: sticky;
       top: 0;
-      left: 0;
       z-index: 10;
-      color: white;
-      box-sizing: border-box;
+      font-weight: 600;
     }
-
-    .navbar .welcome {
-      font-weight: bold;
-    }
-
-    .navbar .links {
-      display: flex;
-      gap: 20px;
-    }
-
-    .navbar a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      transition: transform 0.2s ease-in-out;
-    }
-
-    .navbar a:hover {
-      transform: scale(1.1);
-    }
-
-    .container {
-      margin-top: 100px;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 22px;
-      color: #1E4DB7;
-      margin-bottom: 4px;
-    }
-
-    .subtitle {
-      font-size: 13px;
-      color: #555;
-      margin-bottom: 20px;
-    }
-
     canvas {
-      width: 78%;
-      max-width: 900px;
-      height: 350px !important;
+      max-width: 100%;
+      height: 80vh;
+      display: block;
+      margin: 0 auto;
+      padding: 20px;
     }
   </style>
 </head>
 <body>
-  <div class="navbar">
-    <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
-    <div class="links">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="lamina.html">Lâmina</a>
-      <a href="comparacao-fundos.html">Comparação com Fundos</a>
-      <a href="#" id="logoutLink">Sair</a>
-    </div>
-  </div>
 
-  <div class="container">
-    <h1>MORPHEUS FIA</h1>
-    <div class="subtitle" id="subtitle">Data — Comparativo com IBOV</div>
-    <canvas id="performanceChart"></canvas>
-  </div>
+  <nav>Morpheus Capital</nav>
+  <canvas id="grafico"></canvas>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
-      authDomain: "login-site-9cbbd.firebaseapp.com",
-      projectId: "login-site-9cbbd",
-      storageBucket: "login-site-9cbbd.appspot.com",
-      messagingSenderId: "703993528666",
-      appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const docRef = doc(db, "usuarios", user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          const nome = data.nome || "Usuário";
-          const genero = (data.genero || "masculino").toLowerCase();
-          const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
-          document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
-        }
-      } else {
-        window.location.href = "index.html";
-      }
-    });
-
-    document.getElementById("logoutLink").addEventListener("click", (e) => {
-      e.preventDefault();
-      signOut(auth).then(() => window.location.href = "index.html");
-    });
-
-    // --- GRÁFICO ---
+  <script>
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
-    async function loadData() {
-      const response = await fetch(csvUrl);
-      const data = await response.text();
-      const rows = data.split("\n").slice(1);
+    async function carregarDados() {
+      const resp = await fetch(csvUrl);
+      const texto = await resp.text();
+      const linhas = texto.trim().split("\n").slice(1);
 
-      const allDates = [];
+      const datas = [];
       const morpheus = [];
       const ibov = [];
 
-      rows.forEach(row => {
-        const cols = row.split(",");
-        const date = cols[9]?.trim();
-        const f1 = parseFloat(cols[10]);
-        const f2 = parseFloat(cols[11]);
-        if (date && !isNaN(f1) && !isNaN(f2)) {
-          allDates.push(date);
-          morpheus.push((f1 - 1) * 100);
-          ibov.push((f2 - 1) * 100);
+      linhas.forEach(linha => {
+        const colunas = linha.split(",");
+        const data = colunas[9]; // Coluna J
+        const morpheusVal = parseFloat(colunas[10]);
+        const ibovVal = parseFloat(colunas[11]);
+
+        if (!isNaN(morpheusVal) && !isNaN(ibovVal) && data) {
+          datas.push(new Date(data));
+          morpheus.push((morpheusVal - 1) * 100);
+          ibov.push((ibovVal - 1) * 100);
         }
       });
 
-      // Atualiza subtítulo com a última data
-      const lastDate = allDates[allDates.length - 1];
-      document.getElementById("subtitle").textContent = `${lastDate} — Comparativo com IBOV`;
+      return { datas, morpheus, ibov };
+    }
 
-      // Filtra apenas uma data por mês
-      const uniqueLabels = [];
-      const monthTracker = new Set();
-      const filteredMorpheus = [];
-      const filteredIbov = [];
+    async function criarGrafico() {
+      const { datas, morpheus, ibov } = await carregarDados();
+      const ctx = document.getElementById("grafico").getContext("2d");
 
-      for (let i = 0; i < allDates.length; i++) {
-        const d = new Date(allDates[i].split("/").reverse().join("-"));
-        if (isNaN(d)) continue;
-        const key = `${d.getMonth()}-${d.getFullYear()}`;
-        if (!monthTracker.has(key)) {
-          monthTracker.add(key);
-          uniqueLabels.push(d);
-          filteredMorpheus.push(morpheus[i]);
-          filteredIbov.push(ibov[i]);
-        }
-      }
-
-      const ctx = document.getElementById("performanceChart").getContext("2d");
-      const gradient = ctx.createLinearGradient(0, 0, 0, 350);
-      gradient.addColorStop(0, "rgba(30,77,183,0.95)");
-      gradient.addColorStop(1, "rgba(30,77,183,0.15)");
+      const gradiente = ctx.createLinearGradient(0, 0, 0, 400);
+      gradiente.addColorStop(0, "rgba(33, 114, 243, 0.4)");
+      gradiente.addColorStop(1, "rgba(33, 114, 243, 0)");
 
       new Chart(ctx, {
         type: "line",
         data: {
-          labels: uniqueLabels,
+          labels: datas,
           datasets: [
             {
               label: "Morpheus",
-              data: filteredMorpheus,
-              borderColor: "#1E4DB7",
-              borderWidth: 1.5,
-              pointRadius: 0,
-              tension: 0.15,
+              data: morpheus,
+              borderColor: "#216ff3",
+              backgroundColor: gradiente,
               fill: true,
-              backgroundColor: gradient,
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.25
             },
             {
               label: "IBOV",
-              data: filteredIbov,
+              data: ibov,
               borderColor: "#000",
-              borderWidth: 1,
-              pointRadius: 0,
-              tension: 0.15,
               fill: false,
-            },
-          ],
+              borderWidth: 1.5,
+              pointRadius: 0,
+              tension: 0.25
+            }
+          ]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
           plugins: {
             legend: {
               position: "top",
               labels: {
                 usePointStyle: true,
-                pointStyle: "circle",
-                color: "#000",
-                font: { size: 12 },
-              },
+                boxWidth: 8,
+                font: { size: 14 }
+              }
             },
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%`
+              }
+            }
           },
           scales: {
             x: {
-              ticks: {
-                color: "#444",
-                maxRotation: 45,
-                minRotation: 45,
-                font: { size: 11 },
-                callback: function(value) {
-                  const d = this.getLabelForValue(value);
-                  const date = new Date(d);
-                  return date.toLocaleDateString("pt-BR", {
-                    month: "short",
-                    year: "2-digit"
-                  }).replace(".", "").replace(" ", " - ");
-                },
+              type: "time",
+              time: {
+                unit: "month",
+                displayFormats: { month: "MMM yy" }
               },
-              grid: { color: "rgba(0,0,0,0.06)" },
+              ticks: {
+                autoSkip: true,
+                maxTicksLimit: 10,
+                font: { size: 12 }
+              },
+              grid: { display: false }
             },
             y: {
               ticks: {
-                color: "#444",
-                font: { size: 11 },
-                callback: (v) => `${v.toFixed(0)}%`,
+                callback: v => v.toFixed(0) + "%",
+                font: { size: 12 }
               },
-              grid: { color: "rgba(0,0,0,0.06)" },
-            },
+              grid: { color: "rgba(0,0,0,0.05)" }
+            }
           },
-        },
+          elements: {
+            line: { tension: 0.3 }
+          },
+          maintainAspectRatio: false
+        }
       });
     }
 
-    loadData();
+    criarGrafico();
   </script>
+
 </body>
 </html>
