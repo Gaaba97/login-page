@@ -212,7 +212,7 @@
                 usePointStyle: true,
                 pointStyle: "circle",
                 color: "#000",
-                font: { size: 12 },
+                font: { size: 20 },
               },
             },
           },
@@ -232,31 +232,17 @@
                 tooltipFormat: "dd/MM/yyyy"
               },
               ticks: {
-                color: "#000",
+                color: "#444",
                 maxRotation: 45,
                 minRotation: 45,
-                font: { 
-                  size: 13,
-                  weight: 'bold'
-                },
-                callback: function(value) {
-                  const label = this.getLabelForValue(value);
-                  // Capitaliza a primeira letra de cada mês
-                  if (label && typeof label === 'string') {
-                    return label.charAt(0).toUpperCase() + label.slice(1);
-                  }
-                  return label;
-                }
+                font: { size: 20 },
               },
               grid: { color: "rgba(0,0,0,0.06)" },
             },
             y: {
               ticks: {
-                color: "#000",
-                font: { 
-                  size: 13,
-                  weight: 'bold'
-                },
+                color: "#444",
+                font: { size: 20 },
                 callback: (v) => `${v.toFixed(0)}%`,
               },
               grid: { color: "rgba(0,0,0,0.06)" },
