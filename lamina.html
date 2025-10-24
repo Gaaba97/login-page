@@ -1,115 +1,268 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Morpheus vs IBOV</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
-  <script src="https://cdn.jsdelivr.net/npm/date-fns@3.6.0/locale/pt-BR/index.min.js"></script>
+  <meta charset="UTF-8" />
+  <title>Clube Morpheus</title>
+  <link rel="icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
+    html, body {
       margin: 0;
-      background: #fafafa;
-      font-family: "DM Sans", sans-serif;
-      color: #222;
-    }
-    nav {
+      padding: 0;
       background-color: #fff;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-      padding: 12px 32px;
-      position: sticky;
+      font-family: "DM Sans", sans-serif;
+      color: #000;
+      height: 100%;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.9);
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
       top: 0;
+      left: 0;
       z-index: 10;
-      font-weight: 600;
+      color: white;
+      box-sizing: border-box;
+    }
+
+    .navbar .welcome {
+      font-weight: bold;
+    }
+
+    .navbar .links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .navbar a:hover {
+      transform: scale(1.1);
+    }
+
+    .container {
+      margin-top: 100px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 22px;
+      color: #1E4DB7;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    /* Ajuste do canvas: ocupa largura parecida com o exemplo institucional */
+    .chart-frame {
+      display: flex;
+      justify-content: center;
     }
     canvas {
-      max-width: 100%;
-      height: 80vh;
-      display: block;
-      margin: 0 auto;
-      padding: 20px;
+      width: 78%;
+      max-width: 980px;
+      height: 380px !important;
     }
   </style>
 </head>
 <body>
+  <div class="navbar">
+    <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
+    <div class="links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="lamina.html">Lâmina</a>
+      <a href="comparacao-fundos.html">Comparação com Fundos</a>
+      <a href="#" id="logoutLink">Sair</a>
+    </div>
+  </div>
 
-  <nav>Morpheus Capital</nav>
-  <canvas id="grafico"></canvas>
+  <div class="container">
+    <h1>MORPHEUS FIA</h1>
+    <div class="subtitle" id="subtitle">Carregando data… — Comparativo com IBOV</div>
+    <div class="chart-frame">
+      <canvas id="performanceChart"></canvas>
+    </div>
+  </div>
 
-  <script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <script type="module">
+    // ===== FIREBASE (mantive seu bloco) =====
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+      authDomain: "login-site-9cbbd.firebaseapp.com",
+      projectId: "login-site-9cbbd",
+      storageBucket: "login-site-9cbbd.appspot.com",
+      messagingSenderId: "703993528666",
+      appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const docRef = doc(db, "usuarios", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            const nome = data.nome || "Usuário";
+            const genero = (data.genero || "masculino").toLowerCase();
+            const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
+            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+          }
+        } catch (e) {
+          // sem falha crítica aqui
+        }
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    document.getElementById("logoutLink").addEventListener("click", (e) => {
+      e.preventDefault();
+      signOut(auth).then(() => window.location.href = "index.html").catch(()=>{});
+    });
+
+    // ===== UTIL: parse dd/mm/yyyy to Date object =====
+    function parseBRDateToDate(s) {
+      // aceita "dd/mm/yyyy" ou ISO; retorna Date ou null
+      if (!s) return null;
+      s = s.trim();
+      if (s.includes("/")) {
+        const parts = s.split("/");
+        if (parts.length !== 3) return null;
+        const d = parseInt(parts[0], 10);
+        const m = parseInt(parts[1], 10) - 1;
+        const y = parseInt(parts[2], 10);
+        return new Date(y, m, d);
+      }
+      // tenta ISO
+      const d = new Date(s);
+      return isNaN(d) ? null : d;
+    }
+
+    // ===== CSV URL (sua planilha) =====
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
-    async function carregarDados() {
+    async function fetchCsvData() {
       const resp = await fetch(csvUrl);
-      const texto = await resp.text();
-      const linhas = texto.trim().split("\n").slice(1);
-
-      const datas = [];
+      if (!resp.ok) throw new Error("Erro ao buscar CSV");
+      const txt = await resp.text();
+      const lines = txt.trim().split(/\r?\n/);
+      // se houver cabeçalho, detectamos na prática — vamos percorrer todas as linhas e tentar parsear
+      const dates = [];
       const morpheus = [];
       const ibov = [];
 
-      linhas.forEach(linha => {
-        const colunas = linha.split(",");
-        const data = colunas[9]; // Coluna J
-        const morpheusVal = parseFloat(colunas[10]);
-        const ibovVal = parseFloat(colunas[11]);
-
-        if (!isNaN(morpheusVal) && !isNaN(ibovVal) && data) {
-          datas.push(new Date(data));
-          morpheus.push((morpheusVal - 1) * 100);
-          ibov.push((ibovVal - 1) * 100);
+      for (let i = 0; i < lines.length; i++) {
+        const cols = lines[i].split(",");
+        // protegendo caso a linha seja curta
+        if (cols.length < 12) continue;
+        const rawDate = cols[9]?.trim();
+        const rawK = cols[10]?.trim();
+        const rawL = cols[11]?.trim();
+        const d = parseBRDateToDate(rawDate);
+        const k = parseFloat(rawK);
+        const l = parseFloat(rawL);
+        if (d && Number.isFinite(k) && Number.isFinite(l)) {
+          dates.push(d);
+          morpheus.push((k / 1 - 1) * 100); // (index 1 -> %); mantido assim caso queira alterar base
+          ibov.push((l / 1 - 1) * 100);
         }
-      });
+      }
 
-      return { datas, morpheus, ibov };
+      return { dates, morpheus, ibov };
     }
 
-    async function criarGrafico() {
-      const { datas, morpheus, ibov } = await carregarDados();
-      const ctx = document.getElementById("grafico").getContext("2d");
+    // ===== month name pt-BR short em maiúscula inicial (Jan, Fev, Mar...) =====
+    const MONTH_NAMES = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
 
-      const gradiente = ctx.createLinearGradient(0, 0, 0, 400);
-      gradiente.addColorStop(0, "rgba(33, 114, 243, 0.4)");
-      gradiente.addColorStop(1, "rgba(33, 114, 243, 0)");
+    // ===== construir gráfico: dados diários, ticks mensais =====
+    async function buildChart() {
+      const { dates, morpheus, ibov } = await fetchCsvData();
+      if (!dates.length) {
+        document.getElementById("subtitle").textContent = "Sem dados — Comparativo com IBOV";
+        return;
+      }
 
-      new Chart(ctx, {
+      // atualizar subtítulo com última data (formato DD/MM/YYYY)
+      const last = dates[dates.length - 1];
+      const pad = n => n.toString().padStart(2, "0");
+      document.getElementById("subtitle").textContent = `${pad(last.getDate())}/${pad(last.getMonth()+1)}/${last.getFullYear()} — Comparativo com IBOV`;
+
+      const ctx = document.getElementById("performanceChart").getContext("2d");
+
+      // gradiente mais parecido com original (mais forte na faixa superior, suave ao final)
+      const gradient = ctx.createLinearGradient(0, 0, 0, 380);
+      gradient.addColorStop(0, "rgba(11,81,183,0.95)");
+      gradient.addColorStop(0.5, "rgba(11,81,183,0.45)");
+      gradient.addColorStop(1, "rgba(11,81,183,0.06)");
+
+      // Chart.js: usamos escala temporal com unit 'month' para que ticks apareçam mensalmente,
+      // mas o dataset contém pontos diários -> gráfico contínuo preservado
+      const chart = new Chart(ctx, {
         type: "line",
         data: {
-          labels: datas,
+          // datas objetos Date — Chart.js aceita diretamente
+          labels: dates,
           datasets: [
             {
               label: "Morpheus",
               data: morpheus,
-              borderColor: "#216ff3",
-              backgroundColor: gradiente,
-              fill: true,
-              borderWidth: 2,
+              borderColor: "#0b51b7",
+              borderWidth: 1.6,
               pointRadius: 0,
-              tension: 0.25
+              tension: 0.25,
+              fill: true,
+              backgroundColor: gradient,
+              spanGaps: true,
             },
             {
               label: "IBOV",
               data: ibov,
-              borderColor: "#000",
-              fill: false,
-              borderWidth: 1.5,
+              borderColor: "#000000",
+              borderWidth: 1.4,
               pointRadius: 0,
-              tension: 0.25
+              tension: 0.25,
+              fill: false,
+              spanGaps: true,
             }
           ]
         },
         options: {
+          responsive: true,
+          maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
           plugins: {
             legend: {
               position: "top",
-              labels: {
-                usePointStyle: true,
-                boxWidth: 8,
-                font: { size: 14 }
-              }
+              labels: { usePointStyle: true, pointStyle: "circle", color: "#222", font: { size: 12 } }
             },
             tooltip: {
+              mode: "index",
+              intersect: false,
               callbacks: {
                 label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%`
               }
@@ -119,34 +272,52 @@
             x: {
               type: "time",
               time: {
-                unit: "month",
-                displayFormats: { month: "MMM yy" }
+                unit: "month",        // determina que os ticks serão mensais
+                displayFormats: { month: "MMM - yy" },
+                tooltipFormat: "dd/MM/yyyy"
               },
               ticks: {
                 autoSkip: true,
-                maxTicksLimit: 10,
-                font: { size: 12 }
+                maxRotation: 45,
+                minRotation: 45,
+                callback: function(value) {
+                  // value aqui é timestamp numérico -> criamos Date e formatamos custom
+                  const d = new Date(+value);
+                  if (isNaN(d)) return "";
+                  return `${MONTH_NAMES[d.getMonth()]} - ${String(d.getFullYear()).slice(-2)}`;
+                },
+                color: "#444",
+                font: { size: 11 }
               },
-              grid: { display: false }
+              grid: { color: "rgba(0,0,0,0.06)" }
             },
             y: {
+              position: "right",
               ticks: {
-                callback: v => v.toFixed(0) + "%",
-                font: { size: 12 }
+                callback: v => `${parseFloat(v).toFixed(0)}%`,
+                color: "#444",
+                font: { size: 11 }
               },
-              grid: { color: "rgba(0,0,0,0.05)" }
+              grid: { color: "rgba(0,0,0,0.06)" }
             }
           },
+          layout: { padding: { left: 8, right: 24, top: 8, bottom: 8 } },
           elements: {
-            line: { tension: 0.3 }
-          },
-          maintainAspectRatio: false
+            line: { borderCapStyle: 'round' },
+            point: { hoverRadius: 5 }
+          }
         }
       });
+
+      // força redraw caso o canvas mude de tamanho pra recalcular o gradiente
+      window.addEventListener("resize", () => chart.update());
     }
 
-    criarGrafico();
+    // iniciar
+    buildChart().catch(err => {
+      console.error("Erro ao montar gráfico:", err);
+      document.getElementById("subtitle").textContent = "Erro ao carregar dados — Comparativo com IBOV";
+    });
   </script>
-
 </body>
 </html>
