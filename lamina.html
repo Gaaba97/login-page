@@ -1,47 +1,158 @@
-options: {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      position: "top",
-      labels: {
-        usePointStyle: true,
-        pointStyle: "circle",
-        color: "#000",
-        font: { size: 13, weight: "bold" },
-      },
-    },
-  },
-  scales: {
-    x: {
-      type: "time",
-      adapters: {
-        date: { locale: ptBR }
-      },
-      time: {
-        unit: "month",
-        displayFormats: { month: "MMM - yy" },
-        tooltipFormat: "dd/MM/yyyy"
-      },
-      ticks: {
-        color: "#000",                   // cor preta
-        font: { size: 13, weight: "500" }, // fonte maior
-        maxRotation: 45,
-        minRotation: 45,
-        callback: (val, i, ticks) => {
-          const label = ticks[i].label || "";
-          return label.charAt(0).toUpperCase() + label.slice(1); // inicial maiúscula
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Desempenho Morpheus x IBOV</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/locale/pt-BR/index.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #fafafa;
+      font-family: "DM Sans", sans-serif;
+    }
+
+    .navbar {
+      background-color: #111;
+      color: #fff;
+      padding: 12px 40px;
+      font-size: 20px;
+      font-weight: 600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      letter-spacing: 1px;
+    }
+
+    .chart-container {
+      position: relative;
+      height: calc(100vh - 80px);
+      padding: 30px;
+    }
+
+    canvas {
+      background-color: #fff;
+      border-radius: 16px;
+      box-shadow: 0 0 18px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">Desempenho Morpheus x IBOV</div>
+  <div class="chart-container">
+    <canvas id="chart"></canvas>
+  </div>
+
+  <script>
+    const ctx = document.getElementById("chart").getContext("2d");
+
+    const data = {
+      labels: [
+        "2024-01-02","2024-01-03","2024-01-04","2024-01-05",
+        "2024-01-08","2024-01-09","2024-01-10","2024-01-11",
+        "2024-01-12","2024-01-15","2024-01-16","2024-01-17",
+        "2024-01-18","2024-01-19","2024-01-22","2024-01-23",
+        "2024-01-24","2024-01-25","2024-01-26","2024-01-29",
+        "2024-01-30","2024-01-31","2024-02-01","2024-02-02",
+        "2024-02-05","2024-02-06","2024-02-07","2024-02-08",
+        "2024-02-09","2024-02-14","2024-02-15","2024-02-16",
+        "2024-02-19","2024-02-20","2024-02-21","2024-02-22",
+        "2024-02-23","2024-02-26","2024-02-27","2024-02-28",
+        "2024-02-29","2024-03-01","2024-03-04","2024-03-05",
+        "2024-03-06","2024-03-07","2024-03-08","2024-03-11",
+        "2024-03-12","2024-03-13","2024-03-14","2024-03-15",
+        "2024-03-18","2024-03-19","2024-03-20","2024-03-21",
+        "2024-03-22","2024-03-25","2024-03-26","2024-03-27",
+        "2024-03-28"
+      ],
+      datasets: [
+        {
+          label: "Morpheus",
+          data: [
+            100, 101, 103, 102, 104, 105, 106, 108, 107, 108, 109, 110,
+            112, 111, 113, 114, 115, 117, 118, 120, 119, 121, 122, 123,
+            125, 126, 128, 127, 129, 131, 130, 132, 133, 134, 136, 138,
+            139, 140, 142, 143, 145, 146, 148, 149, 150, 152, 153, 154,
+            155, 157, 158, 159, 160, 161, 163, 164, 165, 166, 168, 169
+          ],
+          borderColor: "#007aff",
+          backgroundColor: "rgba(0,122,255,0.08)",
+          fill: true,
+          tension: 0.35,
+          borderWidth: 2.2
+        },
+        {
+          label: "IBOV",
+          data: [
+            100, 99, 100, 101, 100, 99, 98, 99, 100, 99, 100, 100,
+            101, 100, 101, 102, 101, 102, 103, 104, 103, 104, 105, 105,
+            106, 106, 107, 106, 107, 107, 108, 108, 109, 110, 109, 110,
+            111, 111, 112, 112, 113, 113, 114, 113, 114, 115, 115, 115,
+            116, 116, 117, 116, 117, 118, 117, 118, 118, 118, 119, 119
+          ],
+          borderColor: "#ff3b30",
+          backgroundColor: "rgba(255,59,48,0.08)",
+          fill: true,
+          tension: 0.35,
+          borderWidth: 2.2
+        }
+      ]
+    };
+
+    new Chart(ctx, {
+      type: "line",
+      data,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "top",
+            labels: {
+              usePointStyle: true,
+              pointStyle: "circle",
+              color: "#000",
+              font: { size: 13, weight: "bold" },
+            },
+          },
+        },
+        scales: {
+          x: {
+            type: "time",
+            adapters: {
+              date: { locale: ptBR }
+            },
+            time: {
+              unit: "month",
+              displayFormats: { month: "MMM - yy" },
+              tooltipFormat: "dd/MM/yyyy"
+            },
+            ticks: {
+              color: "#000",
+              font: { size: 13, weight: "500" },
+              maxRotation: 45,
+              minRotation: 45,
+              callback: (val, i, ticks) => {
+                const label = ticks[i].label || "";
+                return label.charAt(0).toUpperCase() + label.slice(1);
+              },
+            },
+            grid: { color: "rgba(0,0,0,0.06)" },
+          },
+          y: {
+            ticks: {
+              color: "#000",
+              font: { size: 13, weight: "500" },
+              callback: (v) => `${v.toFixed(0)}%`,
+            },
+            grid: { color: "rgba(0,0,0,0.06)" },
+          },
         },
       },
-      grid: { color: "rgba(0,0,0,0.06)" },
-    },
-    y: {
-      ticks: {
-        color: "#000",                   // cor preta
-        font: { size: 13, weight: "500" }, // fonte maior
-        callback: (v) => `${v.toFixed(0)}%`,
-      },
-      grid: { color: "rgba(0,0,0,0.06)" },
-    },
-  },
-}
+    });
+  </script>
+</body>
+</html>
