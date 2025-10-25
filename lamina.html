@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Clube Morpheus</title>
   <link rel="icon" href="favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     html, body {
       margin: 0;
@@ -236,7 +236,11 @@
                 usePointStyle: true,
                 pointStyle: "circle",
                 color: "#000000",
-                font: { size: 13 },
+                font: {
+                  family: "Montserrat",
+                  size: 13,
+                  weight: "500"
+                },
               },
             },
           },
@@ -255,14 +259,20 @@
                 color: "#000000",
                 maxRotation: 45,
                 minRotation: 45,
-                font: { size: 20 },
+                font: {
+                  family: "Montserrat",
+                  size: 12
+                },
               },
               grid: { color: "rgba(0,0,0,0.05)" },
             },
             y: {
               ticks: {
                 color: "#000000",
-                font: { size: 20 },
+                font: {
+                  family: "Montserrat",
+                  size: 12
+                },
                 callback: (v) => `${v.toFixed(0)}%`,
               },
               grid: { color: "rgba(0,0,0,0.05)" },
