@@ -71,6 +71,7 @@
       width: 78%;
       max-width: 900px;
       height: 350px !important;
+      image-rendering: crisp-edges;
     }
   </style>
 </head>
@@ -157,11 +158,9 @@
         }
       });
 
-      // Atualiza subtítulo com a última data
       const lastDate = allDates[allDates.length - 1];
       document.getElementById("subtitle").textContent = `${lastDate} — Comparativo com IBOV`;
 
-      // Prepara dados para o gráfico com datas diárias
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
@@ -188,11 +187,15 @@
 
       const canvas = document.getElementById("performanceChart");
       const ctx = canvas.getContext("2d");
+
+      // 🔧 Correção de nitidez (alta definição em qualquer tela)
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
       ctx.scale(dpr, dpr);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
 
       const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
       gradient.addColorStop(0, "rgba(30,77,183,0.95)");
