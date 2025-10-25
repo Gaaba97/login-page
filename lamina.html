@@ -134,7 +134,6 @@
       signOut(auth).then(() => window.location.href = "index.html");
     });
 
-    // --- GRÁFICO ---
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
     async function loadData() {
@@ -196,11 +195,11 @@
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
 
-      // Gradiente personalizado para Morpheus
+      // Gradiente para a área do Morpheus
       const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, "#164CAD"); // ponto mais alto
-      gradient.addColorStop(0.5, "#8EA8D7"); // ponto médio
-      gradient.addColorStop(1, "#F6F8FC"); // ponto mais baixo
+      gradient.addColorStop(0, "#164CAD");  // topo
+      gradient.addColorStop(0.5, "#8EA8D7"); // meio
+      gradient.addColorStop(1, "#F6F8FC");   // base
 
       new Chart(ctx, {
         type: "line",
@@ -209,21 +208,23 @@
             {
               label: "Morpheus",
               data: morpheusData,
-              borderColor: "#1E4DB7",
+              borderColor: "#164CAD",
               borderWidth: 1.5,
               pointRadius: 0,
               tension: 0.15,
               fill: true,
               backgroundColor: gradient,
+              order: 1, // renderiza antes da IBOV
             },
             {
               label: "IBOV",
               data: ibovData,
               borderColor: "#000000",
-              borderWidth: 1,
+              borderWidth: 2,
               pointRadius: 0,
               tension: 0.15,
               fill: false,
+              order: 2, // renderiza por cima
             },
           ],
         },
