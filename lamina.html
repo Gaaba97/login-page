@@ -186,8 +186,15 @@
         }
       };
 
-      const ctx = document.getElementById("performanceChart").getContext("2d");
-      const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+      const canvas = document.getElementById("performanceChart");
+      const ctx = canvas.getContext("2d");
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
       gradient.addColorStop(0, "rgba(30,77,183,0.95)");
       gradient.addColorStop(1, "rgba(30,77,183,0.15)");
 
