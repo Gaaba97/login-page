@@ -197,7 +197,7 @@
       ctx.imageSmoothingQuality = "high";
 
       // Gradiente personalizado para Morpheus
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      const gradient = ctx.createLinearGradient(0, 0, 0, rect.height);
       gradient.addColorStop(0, "#164CAD"); // ponto mais alto
       gradient.addColorStop(0.5, "#8EA8D7"); // ponto médio
       gradient.addColorStop(1, "#F6F8FC"); // ponto mais baixo
@@ -207,20 +207,28 @@
         data: {
           datasets: [
             {
-              label: "Morpheus",
+              label: "Morpheus Area",
               data: morpheusData,
-              borderColor: "#1E4DB7",
-              borderWidth: 1.5,
-              pointRadius: 0,
-              tension: 0.15,
               fill: true,
               backgroundColor: gradient,
+              borderWidth: 0,
+              pointRadius: 0,
+              tension: 0.15,
             },
             {
               label: "IBOV",
               data: ibovData,
               borderColor: "#000000",
               borderWidth: 1,
+              pointRadius: 0,
+              tension: 0.15,
+              fill: false,
+            },
+            {
+              label: "Morpheus",
+              data: morpheusData,
+              borderColor: "#164CAD",
+              borderWidth: 1.5,
               pointRadius: 0,
               tension: 0.15,
               fill: false,
@@ -241,6 +249,9 @@
                   family: "Montserrat",
                   size: 17,
                   weight: "300",
+                },
+                filter: function(legendItem) {
+                  return legendItem.datasetIndex !== 0;
                 },
               },
             },
