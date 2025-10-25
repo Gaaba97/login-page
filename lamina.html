@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Clube Morpheus</title>
   <link rel="icon" href="favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
   <style>
     html, body {
       margin: 0;
@@ -188,7 +188,6 @@
       const canvas = document.getElementById("performanceChart");
       const ctx = canvas.getContext("2d");
 
-      // alta definição
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width * dpr;
@@ -237,9 +236,9 @@
                 pointStyle: "circle",
                 color: "#000000",
                 font: {
-                  family: "Montserrat",
+                  family: "DM Sans",
                   size: 13,
-                  weight: "500"
+                  weight: "500",
                 },
               },
             },
@@ -260,8 +259,9 @@
                 maxRotation: 45,
                 minRotation: 45,
                 font: {
-                  family: "Montserrat",
-                  size: 12
+                  family: "DM Sans",
+                  size: 13,
+                  weight: "500",
                 },
               },
               grid: { color: "rgba(0,0,0,0.05)" },
@@ -270,8 +270,9 @@
               ticks: {
                 color: "#000000",
                 font: {
-                  family: "Montserrat",
-                  size: 12
+                  family: "DM Sans",
+                  size: 13,
+                  weight: "500",
                 },
                 callback: (v) => `${v.toFixed(0)}%`,
               },
