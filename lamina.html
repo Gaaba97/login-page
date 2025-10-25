@@ -157,11 +157,9 @@
         }
       });
 
-      // Atualiza subtítulo com a última data
       const lastDate = allDates[allDates.length - 1];
       document.getElementById("subtitle").textContent = `${lastDate} — Comparativo com IBOV`;
 
-      // Prepara dados para o gráfico com datas diárias
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
@@ -236,6 +234,10 @@
                 maxRotation: 45,
                 minRotation: 45,
                 font: { size: 20 },
+                callback: (value, index, ticks) => {
+                  const label = ticks[index].label;
+                  return label.charAt(0).toUpperCase() + label.slice(1);
+                },
               },
               grid: { color: "rgba(0,0,0,0.06)" },
             },
