@@ -207,16 +207,6 @@
         data: {
           datasets: [
             {
-              label: "IBOV",
-              data: ibovData,
-              borderColor: "#000000",
-              borderWidth: 1.5,
-              pointRadius: 0,
-              tension: 0.15,
-              fill: false,
-              order: 1, // IBOV sobrepõe Morpheus
-            },
-            {
               label: "Morpheus",
               data: morpheusData,
               borderColor: "#164CAD", // Linha na cor #164CAD
@@ -225,7 +215,17 @@
               tension: 0.15,
               fill: true,
               backgroundColor: gradient,
-              order: 2, // Morpheus fica atrás do IBOV
+              order: 2, // Morpheus fica atrás do IBOV (ordem visual)
+            },
+            {
+              label: "IBOV",
+              data: ibovData,
+              borderColor: "#000000",
+              borderWidth: 1.5,
+              pointRadius: 0,
+              tension: 0.15,
+              fill: false,
+              order: 1, // IBOV sobrepõe Morpheus (ordem visual)
             },
           ],
         },
@@ -245,6 +245,8 @@
                   weight: "300",
                 },
               },
+              // Força a ordem da legenda conforme a ordem dos datasets
+              reverse: false
             },
           },
           scales: {
