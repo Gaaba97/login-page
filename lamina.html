@@ -196,9 +196,11 @@
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
 
+      // Gradiente personalizado para Morpheus
       const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, "rgba(30,77,183,0.95)");
-      gradient.addColorStop(1, "rgba(30,77,183,0.15)");
+      gradient.addColorStop(0, "#164CAD"); // ponto mais alto
+      gradient.addColorStop(0.5, "#8EA8D7"); // ponto médio
+      gradient.addColorStop(1, "#F6F8FC"); // ponto mais baixo
 
       new Chart(ctx, {
         type: "line",
@@ -238,7 +240,7 @@
                 font: {
                   family: "Montserrat",
                   size: 17,
-                  weight: "400",
+                  weight: "300",
                 },
               },
             },
@@ -261,7 +263,7 @@
                 font: {
                   family: "Montserrat",
                   size: 17,
-                  weight: "400",
+                  weight: "300",
                 },
               },
               grid: { color: "rgba(0,0,0,0.05)" },
@@ -272,7 +274,7 @@
                 font: {
                   family: "Montserrat",
                   size: 17,
-                  weight: "400",
+                  weight: "300",
                 },
                 callback: (v) => `${v.toFixed(0)}%`,
               },
@@ -287,4 +289,3 @@
   </script>
 </body>
 </html>
-
