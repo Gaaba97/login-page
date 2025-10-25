@@ -215,7 +215,7 @@
               tension: 0.15,
               fill: true,
               backgroundColor: gradient,
-              order: 2, 
+              order: 2, // Morpheus fica atrás do IBOV (ordem visual)
             },
             {
               label: "IBOV",
@@ -225,7 +225,7 @@
               pointRadius: 0,
               tension: 0.15,
               fill: false,
-              order: 1, 
+              order: 1, // IBOV sobrepõe Morpheus (ordem visual)
             },
           ],
         },
@@ -245,8 +245,8 @@
                   weight: "300",
                 },
               },
-              // Força a ordem da legenda conforme a ordem dos datasets
-              reverse: false
+              // Esta configuração força a legenda a mostrar na ordem inversa
+              reverse: true
             },
           },
           scales: {
@@ -293,5 +293,3 @@
   </script>
 </body>
 </html>
-
-
