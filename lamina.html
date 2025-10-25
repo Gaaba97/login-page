@@ -197,7 +197,7 @@
       ctx.imageSmoothingQuality = "high";
 
       // Gradiente personalizado para Morpheus
-      const gradient = ctx.createLinearGradient(0, 0, 0, rect.height);
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
       gradient.addColorStop(0, "#164CAD"); // ponto mais alto
       gradient.addColorStop(0.5, "#8EA8D7"); // ponto médio
       gradient.addColorStop(1, "#F6F8FC"); // ponto mais baixo
@@ -207,31 +207,25 @@
         data: {
           datasets: [
             {
-              label: "Morpheus Area",
-              data: morpheusData,
-              fill: true,
-              backgroundColor: gradient,
-              borderWidth: 0,
-              pointRadius: 0,
-              tension: 0.15,
-            },
-            {
-              label: "Morpheus",
-              data: morpheusData,
-              borderColor: "#164CAD",
+              label: "IBOV",
+              data: ibovData,
+              borderColor: "#000000",
               borderWidth: 1.5,
               pointRadius: 0,
               tension: 0.15,
               fill: false,
+              order: 1, // IBOV sobrepõe Morpheus
             },
             {
-              label: "IBOV",
-              data: ibovData,
-              borderColor: "#000000",
-              borderWidth: 1,
+              label: "Morpheus",
+              data: morpheusData,
+              borderColor: "#164CAD", // Linha na cor #164CAD
+              borderWidth: 1.5,
               pointRadius: 0,
               tension: 0.15,
-              fill: false,
+              fill: true,
+              backgroundColor: gradient,
+              order: 2, // Morpheus fica atrás do IBOV
             },
           ],
         },
@@ -249,9 +243,6 @@
                   family: "Montserrat",
                   size: 17,
                   weight: "300",
-                },
-                filter: function(legendItem) {
-                  return legendItem.datasetIndex !== 0;
                 },
               },
             },
