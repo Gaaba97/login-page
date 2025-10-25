@@ -157,9 +157,11 @@
         }
       });
 
+      // Atualiza subtítulo com a última data
       const lastDate = allDates[allDates.length - 1];
       document.getElementById("subtitle").textContent = `${lastDate} — Comparativo com IBOV`;
 
+      // Prepara dados para o gráfico com datas diárias
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
@@ -217,22 +219,23 @@
           scales: {
             x: {
               type: "time",
-              adapters: { date: { locale: ptBR } },
+              adapters: {
+                date: {
+                  locale: ptBR
+                }
+              },
               time: {
                 unit: "month",
-                displayFormats: { month: "MMM - yy" },
-                tooltipFormat: "dd/MM/yyyy",
+                displayFormats: {
+                  month: "MMM - yy"
+                },
+                tooltipFormat: "dd/MM/yyyy"
               },
               ticks: {
                 color: "#444",
                 maxRotation: 45,
                 minRotation: 45,
                 font: { size: 20 },
-                callback: function(value) {
-                  // Converte a label e capitaliza a primeira letra
-                  const label = this.getLabelForValue(value);
-                  return label.charAt(0).toUpperCase() + label.slice(1);
-                }
               },
               grid: { color: "rgba(0,0,0,0.06)" },
             },
