@@ -53,6 +53,11 @@
     .container {
       margin-top: 100px;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 100px); /* Ocupa a altura total menos a navbar */
     }
 
     h1 {
@@ -67,10 +72,17 @@
       margin-bottom: 20px;
     }
 
+    .chart-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
     canvas {
-      width: 70%; /* Diminuído de 78% para 70% */
-      max-width: 800px; /* Diminuído de 900px para 800px */
-      height: 280px !important; /* Diminuído de 350px para 280px */
+      width: 70%;
+      max-width: 800px;
+      height: 280px !important;
       image-rendering: crisp-edges;
     }
   </style>
@@ -89,7 +101,9 @@
   <div class="container">
     <h1>MORPHEUS</h1>
     <div class="subtitle" id="subtitle">Data — Comparativo com IBOV</div>
-    <canvas id="performanceChart"></canvas>
+    <div class="chart-container">
+      <canvas id="performanceChart"></canvas>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
