@@ -172,6 +172,20 @@
         y: ibov[i]
       }));
 
+      const customPtBR = {
+        ...ptBR,
+        localize: {
+          ...ptBR.localize,
+          month: function (month, options) {
+            const original = ptBR.localize.month(month, options);
+            if (options.width === 'abbreviated') {
+              return original.charAt(0).toUpperCase() + original.slice(1);
+            }
+            return original;
+          }
+        }
+      };
+
       const ctx = document.getElementById("performanceChart").getContext("2d");
       const gradient = ctx.createLinearGradient(0, 0, 0, 350);
       gradient.addColorStop(0, "rgba(30,77,183,0.95)");
@@ -221,7 +235,7 @@
               type: "time",
               adapters: {
                 date: {
-                  locale: ptBR
+                  locale: customPtBR
                 }
               },
               time: {
