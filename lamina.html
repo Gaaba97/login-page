@@ -188,7 +188,7 @@
       const canvas = document.getElementById("performanceChart");
       const ctx = canvas.getContext("2d");
 
-      // 🔧 Correção de nitidez (alta definição em qualquer tela)
+      // alta definição
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width * dpr;
@@ -218,7 +218,7 @@
             {
               label: "IBOV",
               data: ibovData,
-              borderColor: "#000",
+              borderColor: "#000000",
               borderWidth: 1,
               pointRadius: 0,
               tension: 0.15,
@@ -235,7 +235,7 @@
               labels: {
                 usePointStyle: true,
                 pointStyle: "circle",
-                color: "#000",
+                color: "#000000",
                 font: { size: 13 },
               },
             },
@@ -244,32 +244,28 @@
             x: {
               type: "time",
               adapters: {
-                date: {
-                  locale: customPtBR
-                }
+                date: { locale: customPtBR }
               },
               time: {
                 unit: "month",
-                displayFormats: {
-                  month: "MMM - yy"
-                },
+                displayFormats: { month: "MMM - yy" },
                 tooltipFormat: "dd/MM/yyyy"
               },
               ticks: {
-                color: "#444",
+                color: "#000000",
                 maxRotation: 45,
                 minRotation: 45,
                 font: { size: 20 },
               },
-              grid: { color: "rgba(0,0,0,0.06)" },
+              grid: { color: "rgba(0,0,0,0.05)" },
             },
             y: {
               ticks: {
-                color: "#444",
+                color: "#000000",
                 font: { size: 20 },
                 callback: (v) => `${v.toFixed(0)}%`,
               },
-              grid: { color: "rgba(0,0,0,0.06)" },
+              grid: { color: "rgba(0,0,0,0.05)" },
             },
           },
         },
