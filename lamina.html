@@ -200,6 +200,15 @@
         }
       };
 
+      // CORREÇÃO: Criar o gradiente dentro do contexto do Chart.js
+      const createGradient = (ctx, chartArea) => {
+        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+        gradient.addColorStop(0, "#F6F8FC");
+        gradient.addColorStop(0.5, "#8EA8D7");
+        gradient.addColorStop(1, "#164CAD");
+        return gradient;
+      };
+
       const canvas = document.getElementById("performanceChart");
       const ctx = canvas.getContext("2d");
 
@@ -211,12 +220,6 @@
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
 
-      // Gradiente personalizado para Morpheus
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, "#164CAD"); // ponto mais alto
-      gradient.addColorStop(0.5, "#8EA8D7"); // ponto médio
-      gradient.addColorStop(1, "#F6F8FC"); // ponto mais baixo
-
       new Chart(ctx, {
         type: "line",
         data: {
@@ -224,13 +227,20 @@
             {
               label: "Morpheus",
               data: morpheusData,
-              borderColor: "#164CAD", // Linha na cor #164CAD
+              borderColor: "#164CAD",
               borderWidth: 1.5,
               pointRadius: 0,
               tension: 0.15,
               fill: true,
-              backgroundColor: gradient,
-              order: 2, // Morpheus fica atrás do IBOV (ordem visual)
+              backgroundColor: function(context) {
+                const chart = context.chart;
+                const {ctx, chartArea} = chart;
+                if (!chartArea) {
+                  return null;
+                }
+                return createGradient(ctx, chartArea);
+              },
+              order: 2,
             },
             {
               label: "IBOV",
@@ -240,7 +250,7 @@
               pointRadius: 0,
               tension: 0.15,
               fill: false,
-              order: 1, // IBOV sobrepõe Morpheus (ordem visual)
+              order: 1,
             },
           ],
         },
@@ -256,11 +266,10 @@
                 color: "#000000",
                 font: {
                   family: "Montserrat",
-                  size: 15, // Alterado de 17 para 15
+                  size: 15,
                   weight: "300",
                 },
               },
-              // Esta configuração força a legenda a mostrar na ordem inversa
               reverse: true
             },
           },
@@ -281,7 +290,7 @@
                 minRotation: 45,
                 font: {
                   family: "Montserrat",
-                  size: 15, // Alterado de 17 para 15
+                  size: 15,
                   weight: "300",
                 },
               },
@@ -295,13 +304,13 @@
                   size: 15,
                   weight: "300",
                 },
-                callback: (v) => `${v.toFixed(0)}`, // Removido o % dos números
-                stepSize: 5 // Adicionado: valores de 5 em 5
+                callback: (v) => `${v.toFixed(0)}`,
+                stepSize: 5
               },
               grid: { color: "rgba(0,0,0,0.05)" },
               title: {
                 display: true,
-                text: '%', // Adicionado % como título do eixo
+                text: '%',
                 color: "#000000",
                 font: {
                   family: "Montserrat",
