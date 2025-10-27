@@ -141,7 +141,24 @@
     /* Linha separadora entre antepenúltima e penúltima coluna */
     .data-table th:nth-last-child(3),
     .data-table td:nth-last-child(3) {
-      border-right: 2px solid #164CAD;
+      border-right: 2px solid #a3a3a3; /* Cor alterada para #a3a3a3 */
+    }
+
+    /* Célula mesclada para W3, W4, W5 */
+    .data-table .merged-cell {
+      vertical-align: middle;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Largura padronizada para colunas Y até AL (colunas 3 a 16) */
+    .data-table th:nth-child(n+4),
+    .data-table td:nth-child(n+4) {
+      width: 60px; /* Largura fixa para colunas Y até AL */
+      min-width: 60px;
+      max-width: 60px;
     }
   </style>
 </head>
@@ -350,8 +367,8 @@
               },
               ticks: {
                 color: "#000000",
-                maxRotation: 45,
-                minRotation: 45,
+                maxRotation: 45;
+                minRotation: 45;
                 font: {
                   family: "Montserrat",
                   size: 15,
@@ -441,12 +458,17 @@
           // Extrair dados das colunas W a AL para esta linha
           const rowCells = rowData.slice(22, 38);
           
-          // Primeira célula (coluna W) - apenas dados, sem destaque
-          const firstCell = document.createElement("td");
-          firstCell.textContent = rowCells[0].trim();
-          dataRowElement.appendChild(firstCell);
+          // Para a primeira linha (linha 3), criar célula mesclada
+          if (rowIndex === 0) {
+            const mergedCell = document.createElement("td");
+            mergedCell.className = "merged-cell";
+            mergedCell.rowSpan = 3; // Mescla 3 linhas
+            mergedCell.textContent = rowCells[0].trim(); // Valor de W3
+            dataRowElement.appendChild(mergedCell);
+          }
           
-          // Adicionar os dados das demais colunas
+          // Adicionar os dados das demais colunas (X até AL)
+          // Começamos do índice 1 para pular a coluna W
           rowCells.slice(1).forEach((cellData, cellIndex) => {
             const td = document.createElement("td");
             td.textContent = cellData.trim();
