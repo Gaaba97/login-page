@@ -51,25 +51,26 @@
     }
 
     .container {
-      margin-top: 30px; /* Reduzido significativamente */
+      margin-top: 60px;
       text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       align-items: center;
-      padding: 5px 0; /* Reduzido ao mínimo */
+      padding: 20px 0;
+      min-height: calc(100vh - 80px);
     }
 
     h1 {
       font-size: 22px;
       color: #1E4DB7;
-      margin-bottom: 2px; /* Reduzido */
+      margin-bottom: 5px;
     }
 
     .subtitle {
       font-size: 13px;
       color: #555;
-      margin-bottom: 10px; /* Reduzido */
+      margin-bottom: 20px;
     }
 
     .chart-container {
@@ -78,13 +79,13 @@
       align-items: center;
       width: 100%;
       height: 300px;
+      margin-bottom: 30px;
     }
 
     canvas {
       width: 70%;
       max-width: 800px;
       height: 280px !important;
-      image-rendering: crisp-edges;
     }
 
     /* Estilos para a tabela */
@@ -101,7 +102,7 @@
       font-family: "Montserrat", sans-serif;
       font-size: 14px;
       margin-bottom: 20px;
-      border: none; /* Remove borda da tabela */
+      border: none;
     }
 
     .data-table th {
@@ -110,13 +111,13 @@
       padding: 10px 8px;
       text-align: center;
       font-weight: bold;
-      border: none; /* Remove bordas das células */
+      border: none;
     }
 
     .data-table td {
       padding: 8px;
       text-align: center;
-      border: none; /* Remove bordas das células */
+      border: none;
     }
 
     .data-table tr:nth-child(even) {
@@ -141,24 +142,33 @@
     /* Linha separadora entre antepenúltima e penúltima coluna */
     .data-table th:nth-last-child(3),
     .data-table td:nth-last-child(3) {
-      border-right: 2px solid #a3a3a3; /* Cor alterada para #a3a3a3 */
+      border-right: 2px solid #a3a3a3;
     }
 
     /* Célula mesclada para W3, W4, W5 */
     .data-table .merged-cell {
       vertical-align: middle;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
-    /* Largura padronizada para colunas Y até AL (colunas 3 a 16) */
+    /* Largura padronizada para colunas Y até AL */
     .data-table th:nth-child(n+4),
     .data-table td:nth-child(n+4) {
-      width: 60px; /* Largura fixa para colunas Y até AL */
+      width: 60px;
       min-width: 60px;
       max-width: 60px;
+    }
+
+    .loading {
+      color: #666;
+      font-style: italic;
+    }
+
+    .error {
+      color: #ff0000;
+      background-color: #ffe6e6;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
     }
   </style>
 </head>
@@ -175,14 +185,15 @@
 
   <div class="container">
     <h1>MORPHEUS</h1>
-    <div class="subtitle" id="subtitle">Data — Comparativo com IBOV</div>
+    <div class="subtitle" id="subtitle">Carregando dados...</div>
     <div class="chart-container">
       <canvas id="performanceChart"></canvas>
     </div>
     
     <!-- Container para a tabela -->
     <div class="data-table-container">
-      <table class="data-table" id="dataTable">
+      <div class="loading" id="tableLoading">Carregando tabela...</div>
+      <table class="data-table" id="dataTable" style="display: none;">
         <!-- A tabela será preenchida dinamicamente via JavaScript -->
       </table>
     </div>
@@ -194,7 +205,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-    import ptBR from 'https://cdn.jsdelivr.net/npm/date-fns@2.30.0/esm/locale/pt-BR/index.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
@@ -230,33 +240,73 @@
       signOut(auth).then(() => window.location.href = "index.html");
     });
 
-    // --- GRÁFICO ---
+    // --- GRÁFICO E TABELA ---
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
     async function loadData() {
-      const response = await fetch(csvUrl);
-      const data = await response.text();
-      const rows = data.split("\n").slice(1);
-
-      const allDates = [];
-      const morpheus = [];
-      const ibov = [];
-
-      rows.forEach(row => {
-        const cols = row.split(",");
-        const date = cols[9]?.trim();
-        const f1 = parseFloat(cols[10]);
-        const f2 = parseFloat(cols[11]);
-        if (date && !isNaN(f1) && !isNaN(f2)) {
-          allDates.push(date);
-          morpheus.push((f1 - 1) * 100);
-          ibov.push((f2 - 1) * 100);
+      try {
+        console.log("Iniciando carregamento de dados...");
+        
+        const response = await fetch(csvUrl);
+        if (!response.ok) {
+          throw new Error(`Erro HTTP: ${response.status}`);
         }
-      });
+        
+        const data = await response.text();
+        console.log("Dados CSV carregados:", data.substring(0, 200));
+        
+        const rows = data.split("\n").filter(row => row.trim() !== '');
+        console.log("Número de linhas:", rows.length);
 
-      const lastDate = allDates[allDates.length - 1];
-      document.getElementById("subtitle").textContent = `${lastDate} — Comparativo com IBOV`;
+        if (rows.length < 2) {
+          throw new Error("Dados insuficientes no CSV");
+        }
 
+        // Processar dados para o gráfico
+        const allDates = [];
+        const morpheus = [];
+        const ibov = [];
+
+        // Pular cabeçalho e processar linhas de dados
+        for (let i = 1; i < rows.length; i++) {
+          const cols = rows[i].split(",");
+          if (cols.length >= 12) {
+            const date = cols[9]?.trim();
+            const f1 = parseFloat(cols[10]);
+            const f2 = parseFloat(cols[11]);
+            
+            if (date && !isNaN(f1) && !isNaN(f2)) {
+              allDates.push(date);
+              morpheus.push((f1 - 1) * 100);
+              ibov.push((f2 - 1) * 100);
+            }
+          }
+        }
+
+        console.log("Dados processados - Datas:", allDates.length, "Morpheus:", morpheus.length, "IBOV:", ibov.length);
+
+        if (allDates.length === 0) {
+          throw new Error("Nenhum dado válido encontrado para o gráfico");
+        }
+
+        const lastDate = allDates[allDates.length - 1];
+        document.getElementById("subtitle").textContent = `${lastDate} — Comparativo com IBOV`;
+
+        // Criar gráfico
+        createChart(allDates, morpheus, ibov);
+        
+        // Carregar tabela
+        loadTableData(rows);
+
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+        document.getElementById("subtitle").textContent = "Erro ao carregar dados";
+        document.getElementById("tableLoading").textContent = `Erro: ${error.message}`;
+        document.getElementById("tableLoading").className = "error";
+      }
+    }
+
+    function createChart(allDates, morpheus, ibov) {
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
@@ -267,21 +317,17 @@
         y: ibov[i]
       }));
 
-      const customPtBR = {
-        ...ptBR,
-        localize: {
-          ...ptBR.localize,
-          month: function (month, options) {
-            const original = ptBR.localize.month(month, options);
-            if (options.width === 'abbreviated') {
-              return original.charAt(0).toUpperCase() + original.slice(1);
-            }
-            return original;
-          }
-        }
-      };
+      const canvas = document.getElementById("performanceChart");
+      const ctx = canvas.getContext("2d");
 
-      // CORREÇÃO: Criar o gradiente dentro do contexto do Chart.js
+      // Configurar canvas para alta resolução
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      // Criar gradiente
       const createGradient = (ctx, chartArea) => {
         const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
         gradient.addColorStop(0, "#F6F8FC");
@@ -289,17 +335,6 @@
         gradient.addColorStop(1, "#164CAD");
         return gradient;
       };
-
-      const canvas = document.getElementById("performanceChart");
-      const ctx = canvas.getContext("2d");
-
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
 
       new Chart(ctx, {
         type: "line",
@@ -357,9 +392,6 @@
           scales: {
             x: {
               type: "time",
-              adapters: {
-                date: { locale: customPtBR }
-              },
               time: {
                 unit: "month",
                 displayFormats: { month: "MMM - yy" },
@@ -367,8 +399,8 @@
               },
               ticks: {
                 color: "#000000",
-                maxRotation: 45;
-                minRotation: 45;
+                maxRotation: 45,
+                minRotation: 45,
                 font: {
                   family: "Montserrat",
                   size: 15,
@@ -385,51 +417,46 @@
                   size: 15,
                   weight: "300",
                 },
-                callback: (v) => `${v.toFixed(0)}`,
+                callback: (v) => `${v.toFixed(0)}%`,
                 stepSize: 5
               },
               grid: { color: "rgba(0,0,0,0.05)" },
-              title: {
-                display: true,
-                text: '%',
-                color: "#000000",
-                font: {
-                  family: "Montserrat",
-                  size: 15,
-                  weight: "300",
-                },
-                padding: { top: 0, left: 0, right: 0, bottom: 10 }
-              },
             },
           },
         },
       });
 
-      // Carregar dados para a tabela
-      loadTableData();
+      console.log("Gráfico criado com sucesso");
     }
 
-    // Função para carregar dados da tabela
-    async function loadTableData() {
+    function loadTableData(rows) {
       try {
-        const response = await fetch(csvUrl);
-        const data = await response.text();
-        const rows = data.split("\n");
-        
+        console.log("Carregando dados da tabela...");
+
+        if (rows.length < 5) {
+          throw new Error("Dados insuficientes para a tabela");
+        }
+
         // Extrair os dados das linhas 2 a 5 (índices 1 a 4) e das colunas W até AL
-        // W = coluna 22, AL = coluna 37 (índices base 0)
         const headerRow = rows[1].split(",");
         const dataRows = [
           rows[2].split(","), // Linha 3
           rows[3].split(","), // Linha 4
           rows[4].split(",")  // Linha 5
         ];
-        
+
+        console.log("Cabeçalhos:", headerRow.slice(22, 38));
+        console.log("Dados linha 3:", dataRows[0].slice(22, 38));
+        console.log("Dados linha 4:", dataRows[1].slice(22, 38));
+        console.log("Dados linha 5:", dataRows[2].slice(22, 38));
+
         // Extrair os dados das colunas W a AL (índices 22 a 37)
         const tableHeaders = headerRow.slice(22, 38);
         
         // Criar a tabela
         const table = document.getElementById("dataTable");
+        const tableLoading = document.getElementById("tableLoading");
+        
         table.innerHTML = "";
         
         // Criar linha de cabeçalho
@@ -438,14 +465,14 @@
         
         // Primeira célula com o cabeçalho da coluna W
         const firstHeader = document.createElement("th");
-        firstHeader.textContent = tableHeaders[0].trim();
+        firstHeader.textContent = tableHeaders[0]?.trim() || "W";
         firstHeader.className = "column-w";
         headerRowElement.appendChild(firstHeader);
         
         // Adicionar os demais cabeçalhos
         tableHeaders.slice(1).forEach((header, index) => {
           const th = document.createElement("th");
-          th.textContent = header.trim();
+          th.textContent = header?.trim() || `Col ${index + 24}`;
           headerRowElement.appendChild(th);
         });
         
@@ -462,29 +489,35 @@
           if (rowIndex === 0) {
             const mergedCell = document.createElement("td");
             mergedCell.className = "merged-cell";
-            mergedCell.rowSpan = 3; // Mescla 3 linhas
-            mergedCell.textContent = rowCells[0].trim(); // Valor de W3
+            mergedCell.rowSpan = 3;
+            mergedCell.textContent = rowCells[0]?.trim() || "";
             dataRowElement.appendChild(mergedCell);
           }
           
           // Adicionar os dados das demais colunas (X até AL)
-          // Começamos do índice 1 para pular a coluna W
           rowCells.slice(1).forEach((cellData, cellIndex) => {
             const td = document.createElement("td");
-            td.textContent = cellData.trim();
+            td.textContent = cellData?.trim() || "";
             dataRowElement.appendChild(td);
           });
           
           table.appendChild(dataRowElement);
         });
+
+        // Mostrar tabela e esconder loading
+        table.style.display = "table";
+        tableLoading.style.display = "none";
         
+        console.log("Tabela criada com sucesso");
+
       } catch (error) {
-        console.error("Erro ao carregar dados da tabela:", error);
-        document.getElementById("dataTable").innerHTML = 
-          "<tr><td colspan='13'>Erro ao carregar dados da tabela</td></tr>";
+        console.error("Erro ao criar tabela:", error);
+        document.getElementById("tableLoading").textContent = `Erro na tabela: ${error.message}`;
+        document.getElementById("tableLoading").className = "error";
       }
     }
 
+    // Iniciar carregamento
     loadData();
   </script>
 </body>
