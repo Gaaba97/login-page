@@ -61,16 +61,33 @@
       min-height: calc(100vh - 80px);
     }
 
-    h1 {
+    /* NOVO: Estilos para o título e informações */
+    .header-info {
+      width: 95%;
+      max-width: 1200px;
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .header-info h1 {
       font-size: 22px;
       color: #1E4DB7;
-      margin-bottom: 5px;
+      margin: 0 0 2px 0;
+      text-align: left;
+    }
+
+    .cnpj {
+      font-size: 13px;
+      color: #555;
+      margin: 0 0 2px 0;
+      text-align: left;
     }
 
     .subtitle {
       font-size: 13px;
       color: #555;
-      margin-bottom: 20px;
+      margin: 0;
+      text-align: left;
     }
 
     /* NOVO: Container principal dos gráficos */
@@ -97,7 +114,7 @@
       justify-content: center;
       align-items: center;
       width: 100%;
-      height: 300px;
+      height: 350px; /* AUMENTADO de 300px para 350px */
       background-color: #fff;
       border-radius: 8px;
       padding: 10px;
@@ -106,7 +123,7 @@
 
     canvas {
       width: 100%;
-      height: 280px !important;
+      height: 330px !important; /* AUMENTADO para acompanhar o container */
     }
 
     /* Container dos gráficos laterais */
@@ -331,10 +348,14 @@
   </div>
 
   <div class="container">
-    <h1>MORPHEUS</h1>
-    <div class="subtitle" id="subtitle">Carregando dados...</div>
+    <!-- NOVO: Header com informações alinhadas à esquerda -->
+    <div class="header-info">
+      <h1>Morpheus Clube de Investimentos</h1>
+      <div class="cnpj">61.043.820/0001-55</div>
+      <div class="subtitle" id="subtitle">Carregando dados...</div>
+    </div>
     
-    <!-- NOVO: Container principal dos gráficos -->
+    <!-- Container principal dos gráficos -->
     <div class="charts-main-container">
       <!-- Gráfico principal -->
       <div class="main-chart-container">
@@ -462,7 +483,7 @@
         }
 
         const lastDate = allDates[allDates.length - 1];
-        document.getElementById("subtitle").textContent = `${lastDate} — Comparativo com IBOV`;
+        document.getElementById("subtitle").textContent = lastDate; // REMOVIDO " — Comparativo com IBOV"
 
         // Criar gráfico principal
         createMainChart(allDates, morpheus, ibov);
@@ -557,7 +578,7 @@
                 color: "#000000",
                 font: {
                   family: "Montserrat",
-                  size: 15,
+                  size: 12, // DIMINUÍDO de 15 para 12
                   weight: "300",
                 },
               },
@@ -867,4 +888,3 @@
   </script>
 </body>
 </html>
-
