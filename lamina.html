@@ -392,14 +392,18 @@
         const data = await response.text();
         const rows = data.split("\n");
         
-        // Extrair os dados da linha 2 (índice 1) e das colunas W até AL
+        // Extrair os dados das linhas 2 a 5 (índices 1 a 4) e das colunas W até AL
         // W = coluna 22, AL = coluna 37 (índices base 0)
         const headerRow = rows[1].split(",");
-        const dataRow = rows[2].split(",");
+        const dataRows = [
+          rows[1].split(","), // Linha 2
+          rows[2].split(","), // Linha 3
+          rows[3].split(","), // Linha 4
+          rows[4].split(",")  // Linha 5
+        ];
         
         // Extrair os dados das colunas W a AL (índices 22 a 37)
         const tableHeaders = headerRow.slice(22, 38);
-        const tableData = dataRow.slice(22, 38);
         
         // Criar a tabela
         const table = document.getElementById("dataTable");
@@ -423,23 +427,30 @@
         
         table.appendChild(headerRowElement);
         
-        // Criar linha de dados
-        const dataRowElement = document.createElement("tr");
-        
-        // Primeira célula (coluna W) com destaque
-        const firstCell = document.createElement("td");
-        firstCell.className = "column-w";
-        firstCell.textContent = tableHeaders[0].trim();
-        dataRowElement.appendChild(firstCell);
-        
-        // Adicionar os dados
-        tableData.forEach((cellData, index) => {
-          const td = document.createElement("td");
-          td.textContent = cellData.trim();
-          dataRowElement.appendChild(td);
+        // Criar linhas de dados (linhas 2 a 5)
+        dataRows.forEach((rowData, rowIndex) => {
+          const dataRowElement = document.createElement("tr");
+          
+          // Extrair dados das colunas W a AL para esta linha
+          const rowCells = rowData.slice(22, 38);
+          
+          // Primeira célula (coluna W) com destaque apenas na primeira linha
+          const firstCell = document.createElement("td");
+          if (rowIndex === 0) {
+            firstCell.className = "column-w";
+          }
+          firstCell.textContent = rowCells[0].trim();
+          dataRowElement.appendChild(firstCell);
+          
+          // Adicionar os dados das demais colunas
+          rowCells.forEach((cellData, cellIndex) => {
+            const td = document.createElement("td");
+            td.textContent = cellData.trim();
+            dataRowElement.appendChild(td);
+          });
+          
+          table.appendChild(dataRowElement);
         });
-        
-        table.appendChild(dataRowElement);
         
       } catch (error) {
         console.error("Erro ao carregar dados da tabela:", error);
