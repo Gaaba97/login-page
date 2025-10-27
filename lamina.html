@@ -729,9 +729,10 @@
               '#164CAD',
               '#1E4DB7'
             ],
-            borderWidth: 1,
+            borderWidth: 0.8, // Reduzido de 1 para 0.8
             borderRadius: 4,
             borderSkipped: false,
+            barPercentage: 0.7, // Reduz a largura das barras
           }]
         },
         options: {
@@ -752,29 +753,17 @@
           },
           scales: {
             x: {
-              beginAtZero: true,
-              max: 100,
-              ticks: {
-                color: '#000',
-                font: {
-                  family: 'Montserrat',
-                  size: 10
-                },
-                callback: function(value) {
-                  return value + '%';
-                }
-              },
-              grid: {
-                color: 'rgba(0,0,0,0.05)'
-              }
+              display: false, // Remove o eixo horizontal
             },
             y: {
               ticks: {
                 color: '#000',
                 font: {
                   family: 'Montserrat',
-                  size: 11
-                }
+                  size: 11, // Mesma fonte do título, mas um pouco menor
+                  weight: '400' // Um pouco mais fino que o título (600)
+                },
+                padding: 5
               },
               grid: {
                 display: false
