@@ -114,7 +114,7 @@
       justify-content: center;
       align-items: center;
       width: 100%;
-      height: 400px; /* AUMENTADO de 300px para 350px */
+      height: 400px;
       background-color: #fff;
       border-radius: 8px;
       padding: 10px;
@@ -123,7 +123,7 @@
 
     canvas {
       width: 100%;
-      height: 380px !important; /* AUMENTADO para acompanhar o container */
+      height: 380px !important;
     }
 
     /* Container dos gráficos laterais */
@@ -251,45 +251,72 @@
 
     /* ESTILOS PARA COMPUTADOR */
     .desktop-device .data-table {
-      font-size: 14px; /* Fonte maior para computador */
+      font-size: 14px;
     }
 
     .desktop-device .data-table th,
     .desktop-device .data-table td {
-      padding: 10px 6px; /* Padding maior para computador */
+      padding: 10px 6px;
     }
 
-    /* ESTILOS PARA SMARTPHONE */
+    /* ESTILOS PARA SMARTPHONE - AJUSTES ESPECÍFICOS */
     .mobile-device .charts-main-container {
       flex-direction: column;
-      gap: 15px;
+      gap: 20px;
+      width: 98%;
+      max-width: none;
+    }
+
+    .mobile-device .main-chart-container {
+      flex: none;
+      width: 100%;
+    }
+
+    .mobile-device .chart-container {
+      width: 100%;
+      height: 350px;
+    }
+
+    .mobile-device .main-chart-container canvas {
+      height: 330px !important;
     }
 
     .mobile-device .side-charts-container {
+      flex: none;
       flex-direction: row;
       gap: 15px;
+      width: 100%;
     }
 
     .mobile-device .side-chart {
       flex: 1;
+      width: 50%;
+    }
+
+    .mobile-device .side-chart h3 {
+      font-size: 16px; /* AUMENTADO de 14px para 16px */
+    }
+
+    .mobile-device .side-chart canvas {
+      height: 140px !important; /* AUMENTADO para acompanhar a fonte maior */
     }
 
     .mobile-device .data-table-container {
-      width: 98%; /* Mais largura no smartphone */
-      max-width: none; /* Remove limite máximo */
-      padding: 0 10px; /* Padding lateral */
+      width: 98%;
+      max-width: none;
+      padding: 0 10px;
       margin-left: auto;
       margin-right: auto;
     }
 
     .mobile-device .data-table {
-      font-size: 11px; /* Fonte menor para caber melhor */
-      margin: 0 auto; /* Centraliza a tabela */
+      font-size: 11px;
+      margin: 0 auto;
     }
 
     .mobile-device .data-table th,
     .mobile-device .data-table td {
-      padding: 4px 2px; /* Padding menor no smartphone */
+      padding: 4px 2px;
     }
 
     /* Ajustes específicos de largura para mobile */
@@ -485,7 +512,7 @@
         }
 
         const lastDate = allDates[allDates.length - 1];
-        document.getElementById("subtitle").textContent = lastDate; // REMOVIDO " — Comparativo com IBOV"
+        document.getElementById("subtitle").textContent = lastDate;
 
         // Criar gráfico principal
         createMainChart(allDates, morpheus, ibov);
@@ -580,7 +607,7 @@
                 color: "#000000",
                 font: {
                   family: "Montserrat",
-                  size: 12, // DIMINUÍDO de 15 para 12
+                  size: 12,
                   weight: "300",
                 },
               },
@@ -890,10 +917,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
