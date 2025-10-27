@@ -193,6 +193,15 @@
       border-radius: 5px;
       margin: 10px 0;
     }
+
+    /* Estilo para informação do dispositivo */
+    #deviceInfo {
+      text-align: center;
+      font-size: 16px;
+      margin: 20px 0;
+      font-weight: bold;
+      color: #333;
+    }
   </style>
 </head>
 <body>
@@ -220,6 +229,9 @@
         <!-- A tabela será preenchida dinamicamente via JavaScript -->
       </table>
     </div>
+
+    <!-- Elemento para exibir informação do dispositivo -->
+    <div id="deviceInfo"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -552,6 +564,27 @@
 
     // Iniciar carregamento
     loadData();
+  </script>
+
+  <!-- Script de detecção de dispositivo -->
+  <script>
+    function detectarDispositivo() {
+      const largura = window.innerWidth;
+      const altura = window.innerHeight;
+      const deviceInfo = document.getElementById('deviceInfo');
+      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
+
+      if (isMobileSize && isTouchDevice) {
+        deviceInfo.textContent = "Dispositivo atual: smartphone";
+      } else {
+        deviceInfo.textContent = "Dispositivo atual: computador";
+      }
+    }
+
+    window.addEventListener('resize', detectarDispositivo);
+    window.addEventListener('orientationchange', detectarDispositivo);
+    detectarDispositivo();
   </script>
 </body>
 </html>
