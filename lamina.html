@@ -19,7 +19,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: rgba(0, 0, 0, 0.9);
+      background-color: #0E2841;
       padding: 10px 20px;
       position: fixed;
       width: 100%;
@@ -73,19 +73,69 @@
       margin-bottom: 20px;
     }
 
+    /* NOVO: Container principal dos gráficos */
+    .charts-main-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 20px;
+      width: 95%;
+      max-width: 1200px;
+      margin-bottom: 30px;
+    }
+
+    /* Container do gráfico principal */
+    .main-chart-container {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     .chart-container {
       display: flex;
       justify-content: center;
       align-items: center;
       width: 100%;
       height: 300px;
-      margin-bottom: 30px;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 10px;
+      box-sizing: border-box;
     }
 
     canvas {
-      width: 70%;
-      max-width: 800px;
+      width: 100%;
       height: 280px !important;
+    }
+
+    /* Container dos gráficos laterais */
+    .side-charts-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-width: 250px;
+    }
+
+    /* Gráficos laterais */
+    .side-chart {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .side-chart h3 {
+      font-size: 14px;
+      color: #164CAD;
+      margin: 0 0 15px 0;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .side-chart canvas {
+      height: 120px !important;
     }
 
     /* Estilos para a tabela - BASE */
@@ -191,6 +241,20 @@
     }
 
     /* ESTILOS PARA SMARTPHONE */
+    .mobile-device .charts-main-container {
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .mobile-device .side-charts-container {
+      flex-direction: row;
+      gap: 15px;
+    }
+
+    .mobile-device .side-chart {
+      flex: 1;
+    }
+
     .mobile-device .data-table-container {
       width: 98%; /* Mais largura no smartphone */
       max-width: none; /* Remove limite máximo */
@@ -269,8 +333,30 @@
   <div class="container">
     <h1>MORPHEUS</h1>
     <div class="subtitle" id="subtitle">Carregando dados...</div>
-    <div class="chart-container">
-      <canvas id="performanceChart"></canvas>
+    
+    <!-- NOVO: Container principal dos gráficos -->
+    <div class="charts-main-container">
+      <!-- Gráfico principal -->
+      <div class="main-chart-container">
+        <div class="chart-container">
+          <canvas id="performanceChart"></canvas>
+        </div>
+      </div>
+      
+      <!-- Gráficos laterais -->
+      <div class="side-charts-container">
+        <!-- Primeiro gráfico lateral -->
+        <div class="side-chart">
+          <h3>Concentração da Carteira</h3>
+          <canvas id="concentracaoChart"></canvas>
+        </div>
+        
+        <!-- Segundo gráfico lateral -->
+        <div class="side-chart">
+          <h3>Concentração da Carteira Ex Nasdaq-100</h3>
+          <canvas id="concentracaoExNasdaqChart"></canvas>
+        </div>
+      </div>
     </div>
     
     <!-- Container para a tabela -->
@@ -348,7 +434,7 @@
           throw new Error("Dados insuficientes no CSV");
         }
 
-        // Processar dados para o gráfico
+        // Processar dados para o gráfico principal
         const allDates = [];
         const morpheus = [];
         const ibov = [];
@@ -378,8 +464,11 @@
         const lastDate = allDates[allDates.length - 1];
         document.getElementById("subtitle").textContent = `${lastDate} — Comparativo com IBOV`;
 
-        // Criar gráfico
-        createChart(allDates, morpheus, ibov);
+        // Criar gráfico principal
+        createMainChart(allDates, morpheus, ibov);
+        
+        // Criar gráficos de barras laterais
+        createSideCharts(rows);
         
         // Carregar tabela
         loadTableData(rows);
@@ -392,7 +481,7 @@
       }
     }
 
-    function createChart(allDates, morpheus, ibov) {
+    function createMainChart(allDates, morpheus, ibov) {
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
@@ -512,7 +601,138 @@
         },
       });
 
-      console.log("Gráfico criado com sucesso");
+      console.log("Gráfico principal criado com sucesso");
+    }
+
+    // NOVA FUNÇÃO: Criar gráficos de barras laterais
+    function createSideCharts(rows) {
+      try {
+        // Extrair dados para o primeiro gráfico lateral (B12 até C14)
+        const concentracaoLabels = [];
+        const concentracaoData = [];
+        
+        // Linhas 12 a 14 (índices 11 a 13)
+        for (let i = 11; i <= 13; i++) {
+          if (rows[i] && rows[i].length > 2) {
+            const cols = rows[i].split(",");
+            if (cols[1] && cols[2]) {
+              concentracaoLabels.push(cols[1].trim());
+              concentracaoData.push(parseFloat(cols[2].replace(",", ".")) || 0);
+            }
+          }
+        }
+
+        // Extrair dados para o segundo gráfico lateral (B16 até C18)
+        const concentracaoExNasdaqLabels = [];
+        const concentracaoExNasdaqData = [];
+        
+        // Linhas 16 a 18 (índices 15 a 17)
+        for (let i = 15; i <= 17; i++) {
+          if (rows[i] && rows[i].length > 2) {
+            const cols = rows[i].split(",");
+            if (cols[1] && cols[2]) {
+              concentracaoExNasdaqLabels.push(cols[1].trim());
+              concentracaoExNasdaqData.push(parseFloat(cols[2].replace(",", ".")) || 0);
+            }
+          }
+        }
+
+        console.log("Dados Concentração:", concentracaoLabels, concentracaoData);
+        console.log("Dados Concentração Ex Nasdaq:", concentracaoExNasdaqLabels, concentracaoExNasdaqData);
+
+        // Criar primeiro gráfico lateral
+        createBarChart('concentracaoChart', concentracaoLabels, concentracaoData, 'Concentração da Carteira');
+        
+        // Criar segundo gráfico lateral
+        createBarChart('concentracaoExNasdaqChart', concentracaoExNasdaqLabels, concentracaoExNasdaqData, 'Concentração da Carteira Ex Nasdaq-100');
+
+      } catch (error) {
+        console.error("Erro ao criar gráficos laterais:", error);
+      }
+    }
+
+    // FUNÇÃO AUXILIAR: Criar gráfico de barras horizontal
+    function createBarChart(canvasId, labels, data, title) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext("2d");
+
+      // Configurar canvas para alta resolução
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: [
+              '#164CAD',
+              '#1E4DB7', 
+              '#2A5FC9'
+            ],
+            borderColor: [
+              '#0E2841',
+              '#164CAD',
+              '#1E4DB7'
+            ],
+            borderWidth: 1,
+            borderRadius: 4,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `${context.parsed.x}%`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              max: 100,
+              ticks: {
+                color: '#000',
+                font: {
+                  family: 'Montserrat',
+                  size: 10
+                },
+                callback: function(value) {
+                  return value + '%';
+                }
+              },
+              grid: {
+                color: 'rgba(0,0,0,0.05)'
+              }
+            },
+            y: {
+              ticks: {
+                color: '#000',
+                font: {
+                  family: 'Montserrat',
+                  size: 11
+                }
+              },
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
     }
 
     function loadTableData(rows) {
