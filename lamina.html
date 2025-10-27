@@ -88,28 +88,27 @@
       height: 280px !important;
     }
 
-    /* Estilos para a tabela */
+    /* Estilos para a tabela - BASE */
     .data-table-container {
       margin-top: 30px;
-      width: 95%; /* Aumentado para usar mais espaço */
-      max-width: 1200px; /* Aumentado para caber mais colunas */
-      overflow: visible; /* Removido overflow para evitar barra de rolagem */
+      width: 95%;
+      max-width: 1200px;
+      overflow: visible;
     }
 
     .data-table {
       width: 100%;
       border-collapse: collapse;
       font-family: "Montserrat", sans-serif;
-      font-size: 12px; /* Reduzido para caber mais conteúdo */
       margin-bottom: 20px;
       border: none;
-      table-layout: fixed; /* Força largura fixa das colunas */
+      table-layout: fixed;
     }
 
     .data-table th {
       background-color: #164CAD;
       color: white;
-      padding: 8px 4px; /* Reduzido padding */
+      padding: 8px 4px;
       text-align: center;
       font-weight: bold;
       border: none;
@@ -119,7 +118,7 @@
     }
 
     .data-table td {
-      padding: 6px 4px; /* Reduzido padding */
+      padding: 6px 4px;
       text-align: center;
       border: none;
       overflow: hidden;
@@ -160,7 +159,7 @@
     /* Largura padronizada para colunas Y até AL - mais estreitas */
     .data-table th:nth-child(n+4),
     .data-table td:nth-child(n+4) {
-      width: 50px; /* Reduzido para caber mais colunas */
+      width: 50px;
       min-width: 50px;
       max-width: 50px;
     }
@@ -168,17 +167,69 @@
     /* Largura específica para colunas W e X */
     .data-table th:nth-child(1),
     .data-table td:nth-child(1) {
-      width: 80px; /* Coluna W mais larga */
+      width: 80px;
     }
 
     .data-table th:nth-child(2),
     .data-table td:nth-child(2) {
-      width: 70px; /* Coluna X */
+      width: 70px;
     }
 
     .data-table th:nth-child(3),
     .data-table td:nth-child(3) {
-      width: 60px; /* Coluna Y */
+      width: 60px;
+    }
+
+    /* ESTILOS PARA COMPUTADOR */
+    .desktop-device .data-table {
+      font-size: 14px; /* Fonte maior para computador */
+    }
+
+    .desktop-device .data-table th,
+    .desktop-device .data-table td {
+      padding: 10px 6px; /* Padding maior para computador */
+    }
+
+    /* ESTILOS PARA SMARTPHONE */
+    .mobile-device .data-table-container {
+      width: 98%; /* Mais largura no smartphone */
+      max-width: none; /* Remove limite máximo */
+      padding: 0 10px; /* Padding lateral */
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .mobile-device .data-table {
+      font-size: 11px; /* Fonte menor para caber melhor */
+      margin: 0 auto; /* Centraliza a tabela */
+    }
+
+    .mobile-device .data-table th,
+    .mobile-device .data-table td {
+      padding: 4px 2px; /* Padding menor no smartphone */
+    }
+
+    /* Ajustes específicos de largura para mobile */
+    .mobile-device .data-table th:nth-child(n+4),
+    .mobile-device .data-table td:nth-child(n+4) {
+      width: 45px;
+      min-width: 45px;
+      max-width: 45px;
+    }
+
+    .mobile-device .data-table th:nth-child(1),
+    .mobile-device .data-table td:nth-child(1) {
+      width: 70px;
+    }
+
+    .mobile-device .data-table th:nth-child(2),
+    .mobile-device .data-table td:nth-child(2) {
+      width: 60px;
+    }
+
+    .mobile-device .data-table th:nth-child(3),
+    .mobile-device .data-table td:nth-child(3) {
+      width: 50px;
     }
 
     .loading {
@@ -566,7 +617,7 @@
     loadData();
   </script>
 
-  <!-- Script de detecção de dispositivo -->
+  <!-- Script de detecção de dispositivo com classes CSS -->
   <script>
     function detectarDispositivo() {
       const largura = window.innerWidth;
@@ -575,15 +626,23 @@
       const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
       const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
 
+      // Remover classes anteriores
+      document.body.classList.remove('desktop-device', 'mobile-device');
+
       if (isMobileSize && isTouchDevice) {
         deviceInfo.textContent = "Dispositivo atual: smartphone";
+        document.body.classList.add('mobile-device');
       } else {
         deviceInfo.textContent = "Dispositivo atual: computador";
+        document.body.classList.add('desktop-device');
       }
     }
 
     window.addEventListener('resize', detectarDispositivo);
     window.addEventListener('orientationchange', detectarDispositivo);
+    
+    // Executar imediatamente e após um pequeno delay para garantir que o DOM esteja pronto
+    setTimeout(detectarDispositivo, 100);
     detectarDispositivo();
   </script>
 </body>
