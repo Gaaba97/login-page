@@ -101,6 +101,7 @@
       font-family: "Montserrat", sans-serif;
       font-size: 14px;
       margin-bottom: 20px;
+      border: none; /* Remove borda da tabela */
     }
 
     .data-table th {
@@ -109,13 +110,13 @@
       padding: 10px 8px;
       text-align: center;
       font-weight: bold;
-      border: 1px solid #ddd;
+      border: none; /* Remove bordas das células */
     }
 
     .data-table td {
       padding: 8px;
       text-align: center;
-      border: 1px solid #ddd;
+      border: none; /* Remove bordas das células */
     }
 
     .data-table tr:nth-child(even) {
@@ -135,6 +136,12 @@
       background-color: #164CAD;
       color: white;
       font-weight: bold;
+    }
+
+    /* Linha separadora entre antepenúltima e penúltima coluna */
+    .data-table th:nth-last-child(3),
+    .data-table td:nth-last-child(3) {
+      border-right: 2px solid #164CAD;
     }
   </style>
 </head>
@@ -396,7 +403,6 @@
         // W = coluna 22, AL = coluna 37 (índices base 0)
         const headerRow = rows[1].split(",");
         const dataRows = [
-          rows[1].split(","), // Linha 2
           rows[2].split(","), // Linha 3
           rows[3].split(","), // Linha 4
           rows[4].split(",")  // Linha 5
@@ -413,13 +419,14 @@
         const headerRowElement = document.createElement("tr");
         headerRowElement.className = "header-row";
         
-        // Primeira célula vazia (para a coluna W que será destacada)
-        const emptyHeader = document.createElement("th");
-        emptyHeader.textContent = "";
-        headerRowElement.appendChild(emptyHeader);
+        // Primeira célula com o cabeçalho da coluna W
+        const firstHeader = document.createElement("th");
+        firstHeader.textContent = tableHeaders[0].trim();
+        firstHeader.className = "column-w";
+        headerRowElement.appendChild(firstHeader);
         
-        // Adicionar os cabeçalhos
-        tableHeaders.forEach((header, index) => {
+        // Adicionar os demais cabeçalhos
+        tableHeaders.slice(1).forEach((header, index) => {
           const th = document.createElement("th");
           th.textContent = header.trim();
           headerRowElement.appendChild(th);
@@ -427,23 +434,20 @@
         
         table.appendChild(headerRowElement);
         
-        // Criar linhas de dados (linhas 2 a 5)
+        // Criar linhas de dados (linhas 3 a 5)
         dataRows.forEach((rowData, rowIndex) => {
           const dataRowElement = document.createElement("tr");
           
           // Extrair dados das colunas W a AL para esta linha
           const rowCells = rowData.slice(22, 38);
           
-          // Primeira célula (coluna W) com destaque apenas na primeira linha
+          // Primeira célula (coluna W) - apenas dados, sem destaque
           const firstCell = document.createElement("td");
-          if (rowIndex === 0) {
-            firstCell.className = "column-w";
-          }
           firstCell.textContent = rowCells[0].trim();
           dataRowElement.appendChild(firstCell);
           
           // Adicionar os dados das demais colunas
-          rowCells.forEach((cellData, cellIndex) => {
+          rowCells.slice(1).forEach((cellData, cellIndex) => {
             const td = document.createElement("td");
             td.textContent = cellData.trim();
             dataRowElement.appendChild(td);
