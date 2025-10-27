@@ -741,12 +741,8 @@
               '#1E4DB7', 
               '#2A5FC9'
             ],
-            borderColor: [
-              '#0E2841',
-              '#164CAD',
-              '#1E4DB7'
-            ],
-            borderWidth: 1.2, // Aumentado ligeiramente para melhor definição
+            // REMOVIDO: borderColor e borderWidth para eliminar contornos pretos
+            borderWidth: 0, // ZERADO para remover completamente qualquer borda
             borderRadius: 4,
             borderSkipped: false,
             barPercentage: 0.65, // Ajustado para barras mais definidas
@@ -763,12 +759,15 @@
           },
           layout: {
             padding: {
-              right: 25 // ADICIONADO: Espaço extra à direita para o eixo
+              left: 10, // Espaço à esquerda
+              right: 35, // MAIS espaço à direita para o eixo
+              top: 5,
+              bottom: 5
             }
           },
           elements: {
             bar: {
-              borderWidth: 1.2,
+              borderWidth: 0, // REMOVIDO: Garante que não haja borda nas barras
               borderSkipped: false,
             }
           },
@@ -810,6 +809,10 @@
             // Eixo vertical à direita - CORRIGIDO
             xRight: {
               position: 'right',
+              // REMOVIDO: A linha vertical do eixo
+              border: {
+                display: false // REMOVIDO: Remove completamente a linha do eixo
+              },
               ticks: {
                 color: '#000',
                 font: {
@@ -822,15 +825,15 @@
                   return data[index] + '%';
                 },
                 padding: 8, // Aumentado o padding para melhor espaçamento
-                mirror: true, // ADICIONADO: Mostra ticks dentro do gráfico
-                z: 10 // ADICIONADO: Garante que fique acima de outros elementos
+                crossAlign: 'far', // Alinha os ticks longe da linha do eixo
+                z: 10 // Garante que fique acima de outros elementos
               },
               grid: {
-                display: false
+                display: false // REMOVIDO: Remove linhas de grid
               },
               // ADICIONADO: Garantir que o eixo tenha espaço suficiente
               afterFit: function(scale) {
-                scale.width = 40; // Largura adequada para os ticks
+                scale.width = 45; // Largura adequada para os ticks
               }
             }
           }
