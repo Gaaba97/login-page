@@ -552,6 +552,11 @@
       canvas.height = rect.height * dpr;
       ctx.scale(dpr, dpr);
 
+      // Verificar se é dispositivo móvel para ajustar tamanhos de fonte
+      const isMobile = document.body.classList.contains('mobile-device');
+      const axisFontSize = isMobile ? 17 : 15; // Aumenta de 15 para 17 no mobile
+      const legendFontSize = isMobile ? 14 : 12; // Aumenta de 12 para 14 no mobile
+
       // Criar gradiente
       const createGradient = (ctx, chartArea) => {
         const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
@@ -607,7 +612,7 @@
                 color: "#000000",
                 font: {
                   family: "Montserrat",
-                  size: 12,
+                  size: legendFontSize, // Usa tamanho dinâmico
                   weight: "300",
                 },
               },
@@ -628,7 +633,7 @@
                 minRotation: 45,
                 font: {
                   family: "Montserrat",
-                  size: 15,
+                  size: axisFontSize, // Usa tamanho dinâmico
                   weight: "300",
                 },
               },
@@ -639,7 +644,7 @@
                 color: "#000000",
                 font: {
                   family: "Montserrat",
-                  size: 15,
+                  size: axisFontSize, // Usa tamanho dinâmico
                   weight: "300",
                 },
                 callback: (v) => `${v.toFixed(0)}%`,
@@ -713,6 +718,10 @@
       canvas.height = rect.height * dpr;
       ctx.scale(dpr, dpr);
 
+      // Verificar se é dispositivo móvel para ajustar tamanhos de fonte
+      const isMobile = document.body.classList.contains('mobile-device');
+      const axisFontSize = isMobile ? 17 : 15; // Aumenta de 15 para 17 no mobile
+
       new Chart(ctx, {
         type: "bar",
         data: {
@@ -761,8 +770,8 @@
                 color: '#000',
                 font: {
                   family: 'Montserrat',
-                  size: 15, // 
-                  weight: '300' // 
+                  size: axisFontSize, // Usa tamanho dinâmico
+                  weight: '300'
                 },
                 padding: 5
               },
@@ -777,8 +786,8 @@
                 color: '#000',
                 font: {
                   family: 'Montserrat',
-                  size: 15, // 
-                  weight: '300' // 
+                  size: axisFontSize, // Usa tamanho dinâmico
+                  weight: '300'
                 },
                 callback: function(value, index) {
                   // Exibir o valor percentual correspondente a cada barra
@@ -926,4 +935,3 @@
   </script>
 </body>
 </html>
-
