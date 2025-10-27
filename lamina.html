@@ -19,7 +19,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: #0E2841;
+      background-color: rgba(0, 0, 0, 0.9);
       padding: 10px 20px;
       position: fixed;
       width: 100%;
@@ -106,7 +106,7 @@
     }
 
     .data-table th {
-      background-color: #0E2841;
+      background-color: #164CAD;
       color: white;
       padding: 8px 4px;
       text-align: center;
@@ -135,12 +135,12 @@
     }
 
     .data-table .header-row {
-      background-color: #0E2841;
+      background-color: #164CAD;
       color: white;
     }
 
     .data-table .column-w {
-      background-color: #0E2841;
+      background-color: #164CAD;
       color: white;
       font-weight: bold;
     }
@@ -418,7 +418,7 @@
         const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
         gradient.addColorStop(0, "#F6F8FC");
         gradient.addColorStop(0.5, "#8EA8D7");
-        gradient.addColorStop(1, "#0E2841");
+        gradient.addColorStop(1, "#164CAD");
         return gradient;
       };
 
@@ -429,7 +429,7 @@
             {
               label: "Morpheus",
               data: morpheusData,
-              borderColor: "#0E2841",
+              borderColor: "#164CAD",
               borderWidth: 1.5,
               pointRadius: 0,
               tension: 0.15,
@@ -647,5 +647,3 @@
   </script>
 </body>
 </html>
-
-
