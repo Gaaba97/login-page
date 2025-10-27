@@ -711,11 +711,18 @@
       const canvas = document.getElementById(canvasId);
       const ctx = canvas.getContext("2d");
 
-      // Configurar canvas para alta resolução
+      // Configurar canvas para alta resolução com otimizações
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
+      
+      // Aumentar a resolução para melhor qualidade
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(rect.height * dpr);
+      
+      // Forçar estilo CSS para manter o tamanho visual
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      
       ctx.scale(dpr, dpr);
 
       // Verificar se é dispositivo móvel para ajustar tamanhos de fonte
@@ -738,16 +745,27 @@
               '#164CAD',
               '#1E4DB7'
             ],
-            borderWidth: 0.8, // Reduzido de 1 para 0.8
+            borderWidth: 1.2, // Aumentado ligeiramente para melhor definição
             borderRadius: 4,
             borderSkipped: false,
-            barPercentage: 0.7, // Reduz a largura das barras
+            barPercentage: 0.65, // Ajustado para barras mais definidas
+            categoryPercentage: 0.8, // Controla o espaçamento entre categorias
           }]
         },
         options: {
           indexAxis: 'y',
           responsive: true,
           maintainAspectRatio: false,
+          // Otimizações de renderização
+          animation: {
+            duration: 0 // Remove animação para renderização mais limpa
+          },
+          elements: {
+            bar: {
+              borderWidth: 1.2,
+              borderSkipped: false,
+            }
+          },
           plugins: {
             legend: {
               display: false
@@ -773,10 +791,14 @@
                   size: axisFontSize, // Usa tamanho dinâmico
                   weight: '300'
                 },
-                padding: 5
+                padding: 8 // Aumentado o padding para melhor espaçamento
               },
               grid: {
                 display: false
+              },
+              // Otimização para melhor renderização
+              afterFit: function(scale) {
+                scale.width = 80; // Garante largura consistente
               }
             },
             // NOVO: Eixo vertical à direita
@@ -792,15 +814,28 @@
                 callback: function(value, index) {
                   // Exibir o valor percentual correspondente a cada barra
                   return data[index] + '%';
-                }
+                },
+                padding: 8 // Aumentado o padding para melhor espaçamento
               },
               grid: {
                 display: false
+              },
+              // Otimização para melhor renderização
+              afterFit: function(scale) {
+                scale.width = 50; // Garante largura consistente
               }
             }
           }
         }
       });
+
+      // Forçar redesenho para melhor qualidade
+      setTimeout(() => {
+        const chart = Chart.getChart(canvasId);
+        if (chart) {
+          chart.render();
+        }
+      }, 100);
     }
 
     function loadTableData(rows) {
