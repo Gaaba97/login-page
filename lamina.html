@@ -91,33 +91,40 @@
     /* Estilos para a tabela */
     .data-table-container {
       margin-top: 30px;
-      width: 90%;
-      max-width: 1000px;
-      overflow-x: auto;
+      width: 95%; /* Aumentado para usar mais espaço */
+      max-width: 1200px; /* Aumentado para caber mais colunas */
+      overflow: visible; /* Removido overflow para evitar barra de rolagem */
     }
 
     .data-table {
       width: 100%;
       border-collapse: collapse;
       font-family: "Montserrat", sans-serif;
-      font-size: 14px;
+      font-size: 12px; /* Reduzido para caber mais conteúdo */
       margin-bottom: 20px;
       border: none;
+      table-layout: fixed; /* Força largura fixa das colunas */
     }
 
     .data-table th {
       background-color: #164CAD;
       color: white;
-      padding: 10px 8px;
+      padding: 8px 4px; /* Reduzido padding */
       text-align: center;
       font-weight: bold;
       border: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .data-table td {
-      padding: 8px;
+      padding: 6px 4px; /* Reduzido padding */
       text-align: center;
       border: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .data-table tr:nth-child(even) {
@@ -150,12 +157,28 @@
       vertical-align: middle;
     }
 
-    /* Largura padronizada para colunas Y até AL */
+    /* Largura padronizada para colunas Y até AL - mais estreitas */
     .data-table th:nth-child(n+4),
     .data-table td:nth-child(n+4) {
-      width: 60px;
-      min-width: 60px;
-      max-width: 60px;
+      width: 50px; /* Reduzido para caber mais colunas */
+      min-width: 50px;
+      max-width: 50px;
+    }
+
+    /* Largura específica para colunas W e X */
+    .data-table th:nth-child(1),
+    .data-table td:nth-child(1) {
+      width: 80px; /* Coluna W mais larga */
+    }
+
+    .data-table th:nth-child(2),
+    .data-table td:nth-child(2) {
+      width: 70px; /* Coluna X */
+    }
+
+    .data-table th:nth-child(3),
+    .data-table td:nth-child(3) {
+      width: 60px; /* Coluna Y */
     }
 
     .loading {
@@ -463,16 +486,15 @@
         const headerRowElement = document.createElement("tr");
         headerRowElement.className = "header-row";
         
-        // Primeira célula com o cabeçalho da coluna W
-        const firstHeader = document.createElement("th");
-        firstHeader.textContent = tableHeaders[0]?.trim() || "W";
-        firstHeader.className = "column-w";
-        headerRowElement.appendChild(firstHeader);
-        
-        // Adicionar os demais cabeçalhos
-        tableHeaders.slice(1).forEach((header, index) => {
+        // Adicionar todos os cabeçalhos (W até AL)
+        tableHeaders.forEach((header, index) => {
           const th = document.createElement("th");
-          th.textContent = header?.trim() || `Col ${index + 24}`;
+          // Se não tiver conteúdo na planilha, deixar vazio
+          th.textContent = header?.trim() || "";
+          // Destacar apenas a primeira coluna (W)
+          if (index === 0) {
+            th.className = "column-w";
+          }
           headerRowElement.appendChild(th);
         });
         
@@ -485,21 +507,32 @@
           // Extrair dados das colunas W a AL para esta linha
           const rowCells = rowData.slice(22, 38);
           
-          // Para a primeira linha (linha 3), criar célula mesclada
+          // Para a primeira linha (linha 3), criar célula mesclada para a coluna W
           if (rowIndex === 0) {
             const mergedCell = document.createElement("td");
             mergedCell.className = "merged-cell";
             mergedCell.rowSpan = 3;
+            // Se não tiver conteúdo na planilha, deixar vazio
             mergedCell.textContent = rowCells[0]?.trim() || "";
             dataRowElement.appendChild(mergedCell);
+            
+            // Adicionar as demais colunas (X até AL) para a primeira linha
+            rowCells.slice(1).forEach((cellData, cellIndex) => {
+              const td = document.createElement("td");
+              // Se não tiver conteúdo na planilha, deixar vazio
+              td.textContent = cellData?.trim() || "";
+              dataRowElement.appendChild(td);
+            });
+          } else {
+            // Para as linhas 4 e 5, adicionar apenas as colunas X até AL
+            // (a coluna W já está mesclada)
+            rowCells.slice(1).forEach((cellData, cellIndex) => {
+              const td = document.createElement("td");
+              // Se não tiver conteúdo na planilha, deixar vazio
+              td.textContent = cellData?.trim() || "";
+              dataRowElement.appendChild(td);
+            });
           }
-          
-          // Adicionar os dados das demais colunas (X até AL)
-          rowCells.slice(1).forEach((cellData, cellIndex) => {
-            const td = document.createElement("td");
-            td.textContent = cellData?.trim() || "";
-            dataRowElement.appendChild(td);
-          });
           
           table.appendChild(dataRowElement);
         });
