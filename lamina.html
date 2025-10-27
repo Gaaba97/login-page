@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-br">////
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <title>Clube Morpheus</title>
   <link rel="icon" href="favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Montserrat:wght@300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     html, body {
       margin: 0;
@@ -310,7 +310,7 @@
     }
 
     .mobile-device .data-table {
-      font-size: 14px;
+      font-size: 11px;
       margin: 0 auto;
     }
 
@@ -756,14 +756,34 @@
               display: false, // Remove o eixo horizontal
             },
             y: {
+              position: 'left',
               ticks: {
                 color: '#000',
                 font: {
                   family: 'Montserrat',
-                  size: 11, // Mesma fonte do título, mas um pouco menor
-                  weight: '400' // Um pouco mais fino que o título (600)
+                  size: 14, // Tamanho 14 conforme solicitado
+                  weight: '500' // Peso 500 conforme solicitado
                 },
                 padding: 5
+              },
+              grid: {
+                display: false
+              }
+            },
+            // NOVO: Eixo vertical à direita
+            xRight: {
+              position: 'right',
+              ticks: {
+                color: '#000',
+                font: {
+                  family: 'Montserrat',
+                  size: 14, // Tamanho 14 conforme solicitado
+                  weight: '500' // Peso 500 conforme solicitado
+                },
+                callback: function(value, index) {
+                  // Exibir o valor percentual correspondente a cada barra
+                  return data[index] + '%';
+                }
               },
               grid: {
                 display: false
@@ -906,5 +926,3 @@
   </script>
 </body>
 </html>
-
-
