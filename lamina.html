@@ -119,6 +119,7 @@
       border-radius: 8px;
       padding: 10px;
       box-sizing: border-box;
+      position: relative; /* Para posicionar a legenda interna */
     }
 
     canvas {
@@ -571,18 +572,21 @@
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              position: "top",
+              position: 'top',
+              align: 'start',
               labels: {
                 usePointStyle: true,
-                pointStyle: "circle",
-                color: "#000000",
+                pointStyle: 'line',
+                padding: 15,
+                boxWidth: 40,
+                boxHeight: 2,
+                color: '#000000',
                 font: {
                   family: "Montserrat",
-                  size: 12, // DIMINUÍDO de 15 para 12
+                  size: 11, // Fonte menor
                   weight: "300",
                 },
               },
-              reverse: true
             },
           },
           scales: {
@@ -599,7 +603,7 @@
                 minRotation: 45,
                 font: {
                   family: "Montserrat",
-                  size: 15,
+                  size: 12,
                   weight: "300",
                 },
               },
@@ -610,7 +614,7 @@
                 color: "#000000",
                 font: {
                   family: "Montserrat",
-                  size: 15,
+                  size: 12,
                   weight: "300",
                 },
                 callback: (v) => `${v.toFixed(0)}%`,
@@ -619,6 +623,14 @@
               grid: { color: "rgba(0,0,0,0.05)" },
             },
           },
+          layout: {
+            padding: {
+              top: 10, // Espaço para a legenda interna
+              right: 10,
+              bottom: 10,
+              left: 10
+            }
+          }
         },
       });
 
