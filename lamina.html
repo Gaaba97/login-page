@@ -86,6 +86,56 @@
       height: 280px !important;
       image-rendering: crisp-edges;
     }
+
+    /* Estilos para a tabela */
+    .data-table-container {
+      margin-top: 30px;
+      width: 90%;
+      max-width: 1000px;
+      overflow-x: auto;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: "Montserrat", sans-serif;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .data-table th {
+      background-color: #164CAD;
+      color: white;
+      padding: 10px 8px;
+      text-align: center;
+      font-weight: bold;
+      border: 1px solid #ddd;
+    }
+
+    .data-table td {
+      padding: 8px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    .data-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .data-table tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .data-table .header-row {
+      background-color: #164CAD;
+      color: white;
+    }
+
+    .data-table .column-w {
+      background-color: #164CAD;
+      color: white;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -104,6 +154,13 @@
     <div class="subtitle" id="subtitle">Data — Comparativo com IBOV</div>
     <div class="chart-container">
       <canvas id="performanceChart"></canvas>
+    </div>
+    
+    <!-- Container para a tabela -->
+    <div class="data-table-container">
+      <table class="data-table" id="dataTable">
+        <!-- A tabela será preenchida dinamicamente via JavaScript -->
+      </table>
     </div>
   </div>
 
@@ -323,10 +380,75 @@
           },
         },
       });
+
+      // Carregar dados para a tabela
+      loadTableData();
+    }
+
+    // Função para carregar dados da tabela
+    async function loadTableData() {
+      try {
+        const response = await fetch(csvUrl);
+        const data = await response.text();
+        const rows = data.split("\n");
+        
+        // Extrair os dados da linha 2 (índice 1) e das colunas W até AL
+        // W = coluna 22, AL = coluna 37 (índices base 0)
+        const headerRow = rows[1].split(",");
+        const dataRow = rows[2].split(",");
+        
+        // Extrair os dados das colunas W a AL (índices 22 a 37)
+        const tableHeaders = headerRow.slice(22, 38);
+        const tableData = dataRow.slice(22, 38);
+        
+        // Criar a tabela
+        const table = document.getElementById("dataTable");
+        table.innerHTML = "";
+        
+        // Criar linha de cabeçalho
+        const headerRowElement = document.createElement("tr");
+        headerRowElement.className = "header-row";
+        
+        // Primeira célula vazia (para a coluna W que será destacada)
+        const emptyHeader = document.createElement("th");
+        emptyHeader.textContent = "";
+        headerRowElement.appendChild(emptyHeader);
+        
+        // Adicionar os cabeçalhos
+        tableHeaders.forEach((header, index) => {
+          const th = document.createElement("th");
+          th.textContent = header.trim();
+          headerRowElement.appendChild(th);
+        });
+        
+        table.appendChild(headerRowElement);
+        
+        // Criar linha de dados
+        const dataRowElement = document.createElement("tr");
+        
+        // Primeira célula (coluna W) com destaque
+        const firstCell = document.createElement("td");
+        firstCell.className = "column-w";
+        firstCell.textContent = tableHeaders[0].trim();
+        dataRowElement.appendChild(firstCell);
+        
+        // Adicionar os dados
+        tableData.forEach((cellData, index) => {
+          const td = document.createElement("td");
+          td.textContent = cellData.trim();
+          dataRowElement.appendChild(td);
+        });
+        
+        table.appendChild(dataRowElement);
+        
+      } catch (error) {
+        console.error("Erro ao carregar dados da tabela:", error);
+        document.getElementById("dataTable").innerHTML = 
+          "<tr><td colspan='13'>Erro ao carregar dados da tabela</td></tr>";
+      }
     }
 
     loadData();
   </script>
 </body>
 </html>
-
