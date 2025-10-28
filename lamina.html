@@ -565,7 +565,6 @@
       <a href="dashboard.html">Dashboard</a>
       <a href="lamina.html">Lâmina</a>
       <a href="comparacao-fundos.html">Comparação com Fundos</a>
-      <a href="#" id="logoutLink">Sair</a>
     </div>
   </div>
 
@@ -610,7 +609,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -640,11 +639,6 @@
       } else {
         window.location.href = "index.html";
       }
-    });
-
-    document.getElementById("logoutLink").addEventListener("click", (e) => {
-      e.preventDefault();
-      signOut(auth).then(() => window.location.href = "index.html");
     });
 
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
