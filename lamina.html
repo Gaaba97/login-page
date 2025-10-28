@@ -512,6 +512,10 @@
     // --- GRÁFICO E TABELA ---
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
+    // VARIÁVEIS GLOBAIS para armazenar os dados dos gráficos laterais
+    let concentracaoData = [];
+    let concentracaoExNasdaqData = [];
+
     async function loadData() {
       try {
         console.log("Iniciando carregamento de dados...");
@@ -711,7 +715,7 @@
       try {
         // Extrair dados para o primeiro gráfico lateral (B12 até C14)
         const concentracaoLabels = [];
-        const concentracaoData = [];
+        concentracaoData = []; // ATUALIZA a variável global
         
         // Linhas 12 a 14 (índices 11 a 13)
         for (let i = 11; i <= 13; i++) {
@@ -726,7 +730,7 @@
 
         // Extrair dados para o segundo gráfico lateral (B16 até C18)
         const concentracaoExNasdaqLabels = [];
-        const concentracaoExNasdaqData = [];
+        concentracaoExNasdaqData = []; // ATUALIZA a variável global
         
         // Linhas 16 a 18 (índices 15 a 17)
         for (let i = 15; i <= 17; i++) {
@@ -747,6 +751,10 @@
         
         // Criar segundo gráfico lateral
         createBarChart('concentracaoExNasdaqChart', concentracaoExNasdaqLabels, concentracaoExNasdaqData, 'axisConcentracaoExNasdaq');
+
+        // AGORA SIM: Criar os eixos direitos com os dados reais
+        createCustomRightAxis('axisConcentracao', concentracaoData);
+        createCustomRightAxis('axisConcentracaoExNasdaq', concentracaoExNasdaqData);
 
       } catch (error) {
         console.error("Erro ao criar gráficos laterais:", error);
@@ -773,9 +781,6 @@
       // Verificar se é dispositivo móvel para ajustar tamanhos de fonte
       const isMobile = document.body.classList.contains('mobile-device');
       const axisFontSize = isMobile ? 17 : 15;
-
-      // CRIAR EIXO DIREITO CUSTOMIZADO
-      createCustomRightAxis(axisId, data, isMobile);
 
       new Chart(ctx, {
         type: "bar",
@@ -863,17 +868,26 @@
       }, 100);
     }
 
-    // FUNÇÃO PARA CRIAR EIXO DIREITO CUSTOMIZADO
-    function createCustomRightAxis(axisId, data, isMobile) {
+    // FUNÇÃO PARA CRIAR EIXO DIREITO CUSTOMIZADO - AGORA COM DADOS REAIS
+    function createCustomRightAxis(axisId, data) {
       const axisContainer = document.getElementById(axisId);
       axisContainer.innerHTML = '';
       
-      // Criar valores do eixo (um para cada barra)
+      // Verificar se é dispositivo móvel para ajustar tamanhos de fonte
+      const isMobile = document.body.classList.contains('mobile-device');
+      const axisFontSize = isMobile ? 17 : 15;
+      
+      console.log(`Criando eixo ${axisId} com dados:`, data);
+      
+      // Criar valores do eixo (um para cada barra) - AGORA COM OS DADOS REAIS
       data.forEach((value, index) => {
         const axisValue = document.createElement('div');
         axisValue.className = 'axis-value';
-        axisValue.textContent = value + '%';
-        axisValue.style.fontSize = isMobile ? '17px' : '15px';
+        axisValue.textContent = value.toFixed(1) + '%'; // Formata com 1 casa decimal
+        axisValue.style.fontSize = axisFontSize + 'px';
+        axisValue.style.fontFamily = 'Montserrat, sans-serif';
+        axisValue.style.fontWeight = '300';
+        axisValue.style.color = '#000';
         axisContainer.appendChild(axisValue);
       });
     }
