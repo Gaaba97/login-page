@@ -61,7 +61,6 @@
       min-height: calc(100vh - 80px);
     }
 
-    /* NOVO: Estilos para o título e informações */
     .header-info {
       width: 95%;
       max-width: 1200px;
@@ -90,7 +89,6 @@
       text-align: left;
     }
 
-    /* NOVO: Container principal dos gráficos */
     .charts-main-container {
       display: flex;
       justify-content: center;
@@ -101,7 +99,6 @@
       margin-bottom: 30px;
     }
 
-    /* Container do gráfico principal */
     .main-chart-container {
       flex: 2;
       display: flex;
@@ -126,7 +123,6 @@
       height: 380px !important;
     }
 
-    /* Container dos gráficos laterais */
     .side-charts-container {
       flex: 1;
       display: flex;
@@ -135,12 +131,11 @@
       min-width: 250px;
     }
 
-    /* Gráficos laterais */
     .side-chart {
       background-color: #fff;
-      border-radius: 0; /* ✅ REMOVIDO: era 8px */
+      border-radius: 0;
       padding: 15px;
-      box-shadow: none; /* ✅ REMOVIDO: era 0 2px 4px rgba(0,0,0,0.1) */
+      box-shadow: none;
     }
 
     .side-chart h3 {
@@ -157,7 +152,6 @@
       height: 120px !important;
     }
 
-    /* Estilos para a tabela - BASE */
     .data-table-container {
       margin-top: 30px;
       width: 95%;
@@ -214,18 +208,15 @@
       font-weight: bold;
     }
 
-    /* Linha separadora entre antepenúltima e penúltima coluna */
     .data-table th:nth-last-child(3),
     .data-table td:nth-last-child(3) {
       border-right: 2px solid #a3a3a3;
     }
 
-    /* Célula mesclada para W3, W4, W5 */
     .data-table .merged-cell {
       vertical-align: middle;
     }
 
-    /* Largura padronizada para colunas Y até AL - mais estreitas */
     .data-table th:nth-child(n+4),
     .data-table td:nth-child(n+4) {
       width: 50px;
@@ -233,7 +224,6 @@
       max-width: 50px;
     }
 
-    /* Largura específica para colunas W e X */
     .data-table th:nth-child(1),
     .data-table td:nth-child(1) {
       width: 80px;
@@ -249,7 +239,6 @@
       width: 60px;
     }
 
-    /* ESTILOS PARA COMPUTADOR */
     .desktop-device .data-table {
       font-size: 14px;
     }
@@ -259,7 +248,7 @@
       padding: 10px 6px;
     }
 
-    /* ESTILOS PARA SMARTPHONE - AJUSTES ESPECÍFICOS */
+    /* ESTILOS PARA SMARTPHONE VERTICAL */
     .mobile-device .charts-main-container {
       flex-direction: column;
       gap: 20px;
@@ -294,11 +283,11 @@
     }
 
     .mobile-device .side-chart h3 {
-      font-size: 16px; /* AUMENTADO de 14px para 16px */
+      font-size: 16px;
     }
 
     .mobile-device .side-chart canvas {
-      height: 140px !important; /* AUMENTADO para acompanhar a fonte maior */
+      height: 140px !important;
     }
 
     .mobile-device .data-table-container {
@@ -319,7 +308,6 @@
       padding: 4px 2px;
     }
 
-    /* Ajustes específicos de largura para mobile */
     .mobile-device .data-table th:nth-child(n+4),
     .mobile-device .data-table td:nth-child(n+4) {
       width: 45px;
@@ -342,6 +330,43 @@
       width: 50px;
     }
 
+    /* ESTILOS PARA MOBILE LANDSCAPE */
+    .mobile-landscape .charts-main-container {
+      flex-direction: row;
+      gap: 15px;
+      width: 98%;
+    }
+
+    .mobile-landscape .main-chart-container {
+      flex: 1.8;
+    }
+
+    .mobile-landscape .side-charts-container {
+      flex: 1;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .mobile-landscape .side-chart {
+      width: 100%;
+    }
+
+    .mobile-landscape .side-chart h3 {
+      font-size: 14px;
+    }
+
+    .mobile-landscape .side-chart canvas {
+      height: 100px !important;
+    }
+
+    .mobile-landscape .chart-container {
+      height: 300px;
+    }
+
+    .mobile-landscape .main-chart-container canvas {
+      height: 280px !important;
+    }
+
     .loading {
       color: #666;
       font-style: italic;
@@ -355,7 +380,6 @@
       margin: 10px 0;
     }
 
-    /* Estilo para informação do dispositivo */
     #deviceInfo {
       text-align: center;
       font-size: 16px;
@@ -377,31 +401,25 @@
   </div>
 
   <div class="container">
-    <!-- NOVO: Header com informações alinhadas à esquerda -->
     <div class="header-info">
       <h1>Morpheus Clube de Investimentos</h1>
       <div class="cnpj">61.043.820/0001-55</div>
       <div class="subtitle" id="subtitle">Carregando dados...</div>
     </div>
     
-    <!-- Container principal dos gráficos -->
     <div class="charts-main-container">
-      <!-- Gráfico principal -->
       <div class="main-chart-container">
         <div class="chart-container">
           <canvas id="performanceChart"></canvas>
         </div>
       </div>
       
-      <!-- Gráficos laterais -->
       <div class="side-charts-container">
-        <!-- Primeiro gráfico lateral -->
         <div class="side-chart">
           <h3>Concentração da Carteira</h3>
           <canvas id="concentracaoChart"></canvas>
         </div>
         
-        <!-- Segundo gráfico lateral -->
         <div class="side-chart">
           <h3>Concentração da Carteira Ex Nasdaq-100</h3>
           <canvas id="concentracaoExNasdaqChart"></canvas>
@@ -409,15 +427,12 @@
       </div>
     </div>
     
-    <!-- Container para a tabela -->
     <div class="data-table-container">
       <div class="loading" id="tableLoading">Carregando tabela...</div>
       <table class="data-table" id="dataTable" style="display: none;">
-        <!-- A tabela será preenchida dinamicamente via JavaScript -->
       </table>
     </div>
 
-    <!-- Elemento para exibir informação do dispositivo -->
     <div id="deviceInfo"></div>
   </div>
 
@@ -462,7 +477,6 @@
       signOut(auth).then(() => window.location.href = "index.html");
     });
 
-    // --- GRÁFICO E TABELA ---
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
     async function loadData() {
@@ -484,12 +498,10 @@
           throw new Error("Dados insuficientes no CSV");
         }
 
-        // Processar dados para o gráfico principal
         const allDates = [];
         const morpheus = [];
         const ibov = [];
 
-        // Pular cabeçalho e processar linhas de dados
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
           if (cols.length >= 12) {
@@ -514,13 +526,8 @@
         const lastDate = allDates[allDates.length - 1];
         document.getElementById("subtitle").textContent = lastDate;
 
-        // Criar gráfico principal
         createMainChart(allDates, morpheus, ibov);
-        
-        // Criar gráficos de barras laterais
         createSideCharts(rows);
-        
-        // Carregar tabela
         loadTableData(rows);
 
       } catch (error) {
@@ -545,19 +552,16 @@
       const canvas = document.getElementById("performanceChart");
       const ctx = canvas.getContext("2d");
 
-      // Configurar canvas para alta resolução
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
       ctx.scale(dpr, dpr);
 
-      // Verificar se é dispositivo móvel para ajustar tamanhos de fonte
       const isMobile = document.body.classList.contains('mobile-device');
-      const axisFontSize = isMobile ? 17 : 15; // Aumenta de 15 para 17 no mobile
-      const legendFontSize = isMobile ? 14 : 12; // Aumenta de 12 para 14 no mobile
+      const axisFontSize = isMobile ? 17 : 15;
+      const legendFontSize = isMobile ? 14 : 12;
 
-      // Criar gradiente
       const createGradient = (ctx, chartArea) => {
         const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
         gradient.addColorStop(0, "#F6F8FC");
@@ -612,7 +616,7 @@
                 color: "#000000",
                 font: {
                   family: "Montserrat",
-                  size: legendFontSize, // Usa tamanho dinâmico
+                  size: legendFontSize,
                   weight: "300",
                 },
               },
@@ -633,7 +637,7 @@
                 minRotation: 45,
                 font: {
                   family: "Montserrat",
-                  size: axisFontSize, // Usa tamanho dinâmico
+                  size: axisFontSize,
                   weight: "300",
                 },
               },
@@ -644,7 +648,7 @@
                 color: "#000000",
                 font: {
                   family: "Montserrat",
-                  size: axisFontSize, // Usa tamanho dinâmico
+                  size: axisFontSize,
                   weight: "300",
                 },
                 callback: (v) => `${v.toFixed(0)}%`,
@@ -659,14 +663,11 @@
       console.log("Gráfico principal criado com sucesso");
     }
 
-    // NOVA FUNÇÃO: Criar gráficos de barras laterais
     function createSideCharts(rows) {
       try {
-        // Extrair dados para o primeiro gráfico lateral (B12 até C14)
         const concentracaoLabels = [];
         const concentracaoData = [];
         
-        // Linhas 12 a 14 (índices 11 a 13)
         for (let i = 11; i <= 13; i++) {
           if (rows[i] && rows[i].length > 2) {
             const cols = rows[i].split(",");
@@ -677,11 +678,9 @@
           }
         }
 
-        // Extrair dados para o segundo gráfico lateral (B16 até C18)
         const concentracaoExNasdaqLabels = [];
         const concentracaoExNasdaqData = [];
         
-        // Linhas 16 a 18 (índices 15 a 17)
         for (let i = 15; i <= 17; i++) {
           if (rows[i] && rows[i].length > 2) {
             const cols = rows[i].split(",");
@@ -695,10 +694,7 @@
         console.log("Dados Concentração:", concentracaoLabels, concentracaoData);
         console.log("Dados Concentração Ex Nasdaq:", concentracaoExNasdaqLabels, concentracaoExNasdaqData);
 
-        // Criar primeiro gráfico lateral
         createBarChart('concentracaoChart', concentracaoLabels, concentracaoData, 'Concentração da Carteira');
-        
-        // Criar segundo gráfico lateral
         createBarChart('concentracaoExNasdaqChart', concentracaoExNasdaqLabels, concentracaoExNasdaqData, 'Concentração da Carteira Ex Nasdaq-100');
 
       } catch (error) {
@@ -706,21 +702,18 @@
       }
     }
 
-    // FUNÇÃO AUXILIAR: Criar gráfico de barras horizontal
     function createBarChart(canvasId, labels, data, title) {
       const canvas = document.getElementById(canvasId);
       const ctx = canvas.getContext("2d");
 
-      // Configurar canvas para alta resolução
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
       ctx.scale(dpr, dpr);
 
-      // Verificar se é dispositivo móvel para ajustar tamanhos de fonte
       const isMobile = document.body.classList.contains('mobile-device');
-      const axisFontSize = isMobile ? 17 : 15; // Aumenta de 15 para 17 no mobile
+      const axisFontSize = isMobile ? 17 : 15;
 
       new Chart(ctx, {
         type: "bar",
@@ -738,11 +731,11 @@
               '#164CAD',
               '#164CAD'
             ],
-            borderWidth: 0.8, // Reduzido de 1 para 0.8
+            borderWidth: 0.8,
             borderRadius: 4,
             borderSkipped: false,
-            barPercentage: 0.4, // ✅ ALTERADO: Reduzido de 0.7 para 0.4 (barras mais finas)
-            categoryPercentage: 0.6, // ✅ ALTERADO: Reduzido para barras mais finas
+            barPercentage: 0.4,
+            categoryPercentage: 0.6,
           }]
         },
         options: {
@@ -754,12 +747,12 @@
               display: false
             },
             tooltip: {
-              enabled: false // ✅ ADICIONADO: Desativa completamente o tooltip
+              enabled: false
             }
           },
           scales: {
             x: {
-              display: false, // Remove o eixo horizontal
+              display: false,
             },
             y: {
               position: 'left',
@@ -767,7 +760,7 @@
                 color: '#000',
                 font: {
                   family: 'Montserrat',
-                  size: axisFontSize, // Usa tamanho dinâmico
+                  size: axisFontSize,
                   weight: '300'
                 },
                 padding: 5
@@ -776,18 +769,16 @@
                 display: false
               }
             },
-            // NOVO: Eixo vertical à direita
             xRight: {
               position: 'right',
               ticks: {
                 color: '#000',
                 font: {
                   family: 'Montserrat',
-                  size: axisFontSize, // Usa tamanho dinâmico
+                  size: axisFontSize,
                   weight: '300'
                 },
                 callback: function(value, index) {
-                  // Exibir o valor percentual correspondente a cada barra
                   return data[index] + '%';
                 }
               },
@@ -808,12 +799,11 @@
           throw new Error("Dados insuficientes para a tabela");
         }
 
-        // Extrair os dados das linhas 2 a 5 (índices 1 a 4) e das colunas W até AL
         const headerRow = rows[1].split(",");
         const dataRows = [
-          rows[2].split(","), // Linha 3
-          rows[3].split(","), // Linha 4
-          rows[4].split(",")  // Linha 5
+          rows[2].split(","),
+          rows[3].split(","),
+          rows[4].split(",")
         ];
 
         console.log("Cabeçalhos:", headerRow.slice(22, 38));
@@ -821,25 +811,19 @@
         console.log("Dados linha 4:", dataRows[1].slice(22, 38));
         console.log("Dados linha 5:", dataRows[2].slice(22, 38));
 
-        // Extrair os dados das colunas W a AL (índices 22 a 37)
         const tableHeaders = headerRow.slice(22, 38);
         
-        // Criar a tabela
         const table = document.getElementById("dataTable");
         const tableLoading = document.getElementById("tableLoading");
         
         table.innerHTML = "";
         
-        // Criar linha de cabeçalho
         const headerRowElement = document.createElement("tr");
         headerRowElement.className = "header-row";
         
-        // Adicionar todos os cabeçalhos (W até AL)
         tableHeaders.forEach((header, index) => {
           const th = document.createElement("th");
-          // Se não tiver conteúdo na planilha, deixar vazio
           th.textContent = header?.trim() || "";
-          // Destacar apenas a primeira coluna (W)
           if (index === 0) {
             th.className = "column-w";
           }
@@ -848,35 +832,26 @@
         
         table.appendChild(headerRowElement);
         
-        // Criar linhas de dados (linhas 3 a 5)
         dataRows.forEach((rowData, rowIndex) => {
           const dataRowElement = document.createElement("tr");
           
-          // Extrair dados das colunas W a AL para esta linha
           const rowCells = rowData.slice(22, 38);
           
-          // Para a primeira linha (linha 3), criar célula mesclada para a coluna W
           if (rowIndex === 0) {
             const mergedCell = document.createElement("td");
             mergedCell.className = "merged-cell";
             mergedCell.rowSpan = 3;
-            // Se não tiver conteúdo na planilha, deixar vazio
             mergedCell.textContent = rowCells[0]?.trim() || "";
             dataRowElement.appendChild(mergedCell);
             
-            // Adicionar as demais colunas (X até AL) para a primeira linha
             rowCells.slice(1).forEach((cellData, cellIndex) => {
               const td = document.createElement("td");
-              // Se não tiver conteúdo na planilha, deixar vazio
               td.textContent = cellData?.trim() || "";
               dataRowElement.appendChild(td);
             });
           } else {
-            // Para as linhas 4 e 5, adicionar apenas as colunas X até AL
-            // (a coluna W já está mesclada)
             rowCells.slice(1).forEach((cellData, cellIndex) => {
               const td = document.createElement("td");
-              // Se não tiver conteúdo na planilha, deixar vazio
               td.textContent = cellData?.trim() || "";
               dataRowElement.appendChild(td);
             });
@@ -885,7 +860,6 @@
           table.appendChild(dataRowElement);
         });
 
-        // Mostrar tabela e esconder loading
         table.style.display = "table";
         tableLoading.style.display = "none";
         
@@ -898,25 +872,30 @@
       }
     }
 
-    // Iniciar carregamento
     loadData();
   </script>
 
-  <!-- Script de detecção de dispositivo com classes CSS -->
   <script>
     function detectarDispositivo() {
       const largura = window.innerWidth;
       const altura = window.innerHeight;
       const deviceInfo = document.getElementById('deviceInfo');
       const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-      const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
+      
+      const isMobileSize = largura <= 1024 || 
+                          (largura < altura && largura <= 768) ||
+                          (isTouchDevice && (largura <= 1024 || altura <= 1024));
 
-      // Remover classes anteriores
-      document.body.classList.remove('desktop-device', 'mobile-device');
+      document.body.classList.remove('desktop-device', 'mobile-device', 'mobile-landscape');
 
       if (isMobileSize && isTouchDevice) {
-        deviceInfo.textContent = "Dispositivo atual: smartphone";
-        document.body.classList.add('mobile-device');
+        if (largura > altura) {
+          deviceInfo.textContent = "Dispositivo atual: smartphone (horizontal)";
+          document.body.classList.add('mobile-device', 'mobile-landscape');
+        } else {
+          deviceInfo.textContent = "Dispositivo atual: smartphone (vertical)";
+          document.body.classList.add('mobile-device');
+        }
       } else {
         deviceInfo.textContent = "Dispositivo atual: computador";
         document.body.classList.add('desktop-device');
@@ -926,7 +905,6 @@
     window.addEventListener('resize', detectarDispositivo);
     window.addEventListener('orientationchange', detectarDispositivo);
     
-    // Executar imediatamente e após um pequeno delay para garantir que o DOM esteja pronto
     setTimeout(detectarDispositivo, 100);
     detectarDispositivo();
   </script>
