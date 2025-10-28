@@ -61,7 +61,6 @@
       min-height: calc(100vh - 80px);
     }
 
-    /* NOVO: Estilos para o título e informações */
     .header-info {
       width: 95%;
       max-width: 1200px;
@@ -90,7 +89,6 @@
       text-align: left;
     }
 
-    /* NOVO: Container principal dos gráficos */
     .charts-main-container {
       display: flex;
       justify-content: center;
@@ -101,7 +99,6 @@
       margin-bottom: 30px;
     }
 
-    /* Container do gráfico principal */
     .main-chart-container {
       flex: 2;
       display: flex;
@@ -124,9 +121,9 @@
     canvas {
       width: 100%;
       height: 380px !important;
+      position: relative; /* ✅ adicionado */
     }
 
-    /* Container dos gráficos laterais */
     .side-charts-container {
       flex: 1;
       display: flex;
@@ -135,14 +132,14 @@
       min-width: 250px;
     }
 
-    /* Gráficos laterais - FUNDO TRANSPARENTE */
     .side-chart {
-      background-color: transparent; /* FUNDO TRANSPARENTE */
+      background-color: transparent;
       border-radius: 0;
       padding: 15px;
       box-shadow: none;
       border: none;
       position: relative;
+      overflow: visible; /* ✅ adicionado */
     }
 
     .side-chart h3 {
@@ -153,15 +150,14 @@
       font-weight: 600;
       font-family: "Montserrat", sans-serif;
       letter-spacing: 0.5px;
-      background-color: transparent; /* Garantir que o título também seja transparente */
+      background-color: transparent;
     }
 
     .side-chart canvas {
       height: 120px !important;
-      background-color: transparent !important; /* Canvas transparente */
+      background-color: transparent !important;
     }
 
-    /* Estilos para a tabela - BASE */
     .data-table-container {
       margin-top: 30px;
       width: 95%;
@@ -218,18 +214,15 @@
       font-weight: bold;
     }
 
-    /* Linha separadora entre antepenúltima e penúltima coluna */
     .data-table th:nth-last-child(3),
     .data-table td:nth-last-child(3) {
       border-right: 2px solid #a3a3a3;
     }
 
-    /* Célula mesclada para W3, W4, W5 */
     .data-table .merged-cell {
       vertical-align: middle;
     }
 
-    /* Largura padronizada para colunas Y até AL - mais estreitas */
     .data-table th:nth-child(n+4),
     .data-table td:nth-child(n+4) {
       width: 50px;
@@ -237,7 +230,6 @@
       max-width: 50px;
     }
 
-    /* Largura específica para colunas W e X */
     .data-table th:nth-child(1),
     .data-table td:nth-child(1) {
       width: 80px;
@@ -253,7 +245,6 @@
       width: 60px;
     }
 
-    /* ESTILOS PARA COMPUTADOR */
     .desktop-device .data-table {
       font-size: 14px;
     }
@@ -263,7 +254,6 @@
       padding: 10px 6px;
     }
 
-    /* ESTILOS PARA SMARTPHONE - AJUSTES ESPECÍFICOS */
     .mobile-device .charts-main-container {
       flex-direction: column;
       gap: 20px;
@@ -323,7 +313,6 @@
       padding: 4px 2px;
     }
 
-    /* Ajustes específicos de largura para mobile */
     .mobile-device .data-table th:nth-child(n+4),
     .mobile-device .data-table td:nth-child(n+4) {
       width: 45px;
@@ -359,7 +348,6 @@
       margin: 10px 0;
     }
 
-    /* Estilo para informação do dispositivo */
     #deviceInfo {
       text-align: center;
       font-size: 16px;
@@ -965,3 +953,4 @@
   </script>
 </body>
 </html>
+
