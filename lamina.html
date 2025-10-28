@@ -111,6 +111,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
     }
 
     .chart-container {
@@ -435,6 +436,107 @@
       font-weight: bold;
       color: #333;
     }
+
+    /* ESTILOS DO TOOLTIP PERSONALIZADO */
+    .custom-tooltip {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #164CAD;
+      border-radius: 8px;
+      padding: 12px 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      pointer-events: none;
+      z-index: 100;
+      font-family: "Montserrat", sans-serif;
+      backdrop-filter: blur(5px);
+      transition: opacity 0.2s ease;
+      opacity: 0;
+    }
+
+    .custom-tooltip.visible {
+      opacity: 1;
+    }
+
+    .custom-tooltip::before {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-style: solid;
+    }
+
+    .custom-tooltip.top::before {
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 8px 8px 0 8px;
+      border-color: #164CAD transparent transparent transparent;
+    }
+
+    .custom-tooltip.bottom::before {
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 0 8px 8px 8px;
+      border-color: transparent transparent #164CAD transparent;
+    }
+
+    .custom-tooltip.left::before {
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 8px 0 8px 8px;
+      border-color: transparent transparent transparent #164CAD;
+    }
+
+    .custom-tooltip.right::before {
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 8px 8px 8px 0;
+      border-color: transparent #164CAD transparent transparent;
+    }
+
+    .tooltip-header {
+      font-weight: 600;
+      color: #164CAD;
+      margin-bottom: 8px;
+      font-size: 14px;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 4px;
+    }
+
+    .tooltip-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .tooltip-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .tooltip-label {
+      display: flex;
+      align-items: center;
+      color: #333;
+    }
+
+    .tooltip-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+      display: inline-block;
+    }
+
+    .tooltip-value {
+      font-weight: 600;
+      color: #164CAD;
+      margin-left: 12px;
+    }
   </style>
 </head>
 <body>
@@ -460,6 +562,7 @@
         <div class="chart-container">
           <canvas id="performanceChart"></canvas>
         </div>
+        <!-- Tooltip personalizado será inserido aqui via JavaScript -->
       </div>
       
       <div class="side-charts-container">
@@ -533,6 +636,96 @@
       concentracaoChart: null,
       concentracaoExNasdaqChart: null
     };
+
+    // Tooltip personalizado
+    let customTooltip = null;
+
+    function createCustomTooltip() {
+      if (customTooltip) return customTooltip;
+      
+      customTooltip = document.createElement('div');
+      customTooltip.className = 'custom-tooltip';
+      document.querySelector('.main-chart-container').appendChild(customTooltip);
+      return customTooltip;
+    }
+
+    function showCustomTooltip(chart, tooltip) {
+      // Criar ou obter o tooltip personalizado
+      const tooltipEl = createCustomTooltip();
+      
+      // Esconder tooltip se não há dados
+      if (tooltip.opacity === 0) {
+        tooltipEl.classList.remove('visible');
+        return;
+      }
+
+      // Configurar conteúdo do tooltip
+      if (tooltip.body) {
+        const title = tooltip.title[0] || '';
+        const bodyLines = tooltip.body.map(b => b.lines);
+        
+        let tooltipHTML = `<div class="tooltip-header">${title}</div>`;
+        
+        // Adicionar dados de cada dataset
+        tooltip.dataPoints.forEach((dataPoint, index) => {
+          const dataset = chart.data.datasets[dataPoint.datasetIndex];
+          const value = dataPoint.formattedValue || dataPoint.raw.y.toFixed(2) + '%';
+          const label = dataset.label || '';
+          const color = dataset.borderColor || '#164CAD';
+          
+          tooltipHTML += `
+            <div class="tooltip-item">
+              <span class="tooltip-label">
+                <span class="tooltip-color" style="background-color: ${color}"></span>
+                ${label}
+              </span>
+              <span class="tooltip-value">${value}</span>
+            </div>
+          `;
+        });
+        
+        tooltipEl.innerHTML = tooltipHTML;
+      }
+
+      // Posicionar o tooltip
+      const position = chart.canvas.getBoundingClientRect();
+      const chartContainer = document.querySelector('.main-chart-container');
+      const containerRect = chartContainer.getBoundingClientRect();
+      
+      // Posição relativa ao container do gráfico
+      let left = position.left + tooltip.caretX - containerRect.left;
+      let top = position.top + tooltip.caretY - containerRect.top;
+      
+      // Ajustar posição para não sair da tela
+      const tooltipWidth = tooltipEl.offsetWidth;
+      const tooltipHeight = tooltipEl.offsetHeight;
+      
+      // Definir posição padrão (acima do ponto)
+      let placement = 'top';
+      
+      // Verificar se precisa ajustar a posição
+      if (top - tooltipHeight - 10 < 0) {
+        placement = 'bottom';
+        top += 20;
+      } else {
+        top -= tooltipHeight + 10;
+      }
+      
+      // Ajustar horizontalmente para não sair da tela
+      if (left + tooltipWidth > containerRect.width) {
+        left = containerRect.width - tooltipWidth - 10;
+      } else if (left < 0) {
+        left = 10;
+      } else {
+        left -= tooltipWidth / 2;
+      }
+      
+      tooltipEl.style.left = left + 'px';
+      tooltipEl.style.top = top + 'px';
+      
+      // Atualizar classe de posicionamento
+      tooltipEl.className = `custom-tooltip ${placement} visible`;
+    }
 
     async function loadData() {
       try {
@@ -662,6 +855,10 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: {
+            intersect: false,
+            mode: 'index',
+          },
           plugins: {
             legend: {
               position: "top",
@@ -676,6 +873,13 @@
                 },
               },
               reverse: true
+            },
+            tooltip: {
+              enabled: false, // Desabilitar tooltip padrão
+              external: (context) => {
+                // Tooltip externo personalizado
+                showCustomTooltip(context.chart, context.tooltip);
+              }
             },
           },
           scales: {
