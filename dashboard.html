@@ -230,7 +230,6 @@
       <a href="dashboard.html">Dashboard</a>
       <a href="lamina.html">Lâmina</a>
       <a href="comparacao-fundos.html">Comparação com Fundos</a>
-      <a href="#" id="logoutLink">Sair</a>
     </div>
   </div>
 
@@ -320,17 +319,6 @@
       } else {
         window.location.href = "index.html";
       }
-    });
-
-    document.getElementById("logoutLink").addEventListener("click", (e) => {
-      e.preventDefault();
-      signOut(auth)
-        .then(() => {
-          window.location.href = "index.html";
-        })
-        .catch((error) => {
-          console.error("Erro ao deslogar:", error);
-        });
     });
 
     // ====== DADOS GOOGLE SHEETS ======
