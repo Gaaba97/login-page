@@ -32,6 +32,7 @@
 
     .navbar .welcome {
       font-weight: bold;
+      font-size: 16px;
     }
 
     .navbar .links {
@@ -43,6 +44,7 @@
       color: white;
       text-decoration: none;
       font-weight: bold;
+      font-size: 16px;
       transition: transform 0.2s ease-in-out;
     }
 
@@ -273,11 +275,11 @@
 
     .mobile-device .chart-container {
       width: 100%;
-      height: 370px; /* Aumentado de 350px */
+      height: 380px; /* Aumentado */
     }
 
     .mobile-device .main-chart-container canvas {
-      height: 350px !important; /* Aumentado de 330px */
+      height: 360px !important; /* Aumentado */
     }
 
     .mobile-device .side-charts-container {
@@ -293,12 +295,12 @@
     }
 
     .mobile-device .side-chart h3 {
-      font-size: 17px; /* Aumentado de 16px */
+      font-size: 18px; /* Aumentado */
       margin-bottom: 18px;
     }
 
     .mobile-device .side-chart canvas {
-      height: 150px !important; /* Aumentado de 140px */
+      height: 160px !important; /* Aumentado */
     }
 
     .mobile-device .data-table-container {
@@ -306,13 +308,13 @@
     }
 
     .mobile-device .data-table {
-      font-size: 11px;
+      font-size: 12px; /* Aumentado */
       margin: 0 auto;
     }
 
     .mobile-device .data-table th,
     .mobile-device .data-table td {
-      padding: 4px 2px;
+      padding: 5px 3px; /* Aumentado */
     }
 
     .mobile-device .data-table th:nth-child(n+4),
@@ -337,10 +339,10 @@
       width: 50px;
     }
 
-    /* AUMENTOS ESPECÍFICOS PARA NAVBAR E FONTES NO MOBILE VERTICAL */
+    /* NAVBAR E FONTES AUMENTADAS NO MOBILE VERTICAL */
     .mobile-device .navbar {
-      padding: 15px 20px; /* Aumentado de 10px */
-      min-height: 60px; /* Altura mínima aumentada */
+      padding: 15px 20px; /* Aumentado */
+      min-height: 65px; /* Aumentado */
     }
 
     .mobile-device .navbar .welcome {
@@ -349,17 +351,12 @@
     }
 
     .mobile-device .navbar .links {
-      gap: 15px;
+      gap: 18px; /* Aumentado */
     }
 
     .mobile-device .navbar a {
-      font-size: 16px; /* Aumentado */
-      font-weight: 500;
-    }
-
-    /* Aumentar fontes dos eixos nos gráficos principais no mobile vertical */
-    .mobile-device .chartjs-legend {
-      font-size: 15px !important;
+      font-size: 18px; /* Aumentado - mesmo tamanho do Bem-vindo */
+      font-weight: 600; /* Mesmo peso do Bem-vindo */
     }
 
     /* ESTILOS PARA MOBILE LANDSCAPE */
@@ -389,19 +386,19 @@
     }
 
     .mobile-landscape .side-chart h3 {
-      font-size: 14px;
+      font-size: 16px; /* Aumentado */
     }
 
     .mobile-landscape .side-chart canvas {
-      height: 100px !important;
+      height: 120px !important; /* Aumentado */
     }
 
     .mobile-landscape .chart-container {
-      height: 300px;
+      height: 320px; /* Aumentado */
     }
 
     .mobile-landscape .main-chart-container canvas {
-      height: 280px !important;
+      height: 300px !important; /* Aumentado */
     }
 
     /* CORREÇÃO: Garantir alinhamento perfeito da tabela em landscape */
@@ -410,14 +407,14 @@
     }
 
     .mobile-landscape .data-table {
-      font-size: 10px;
+      font-size: 11px; /* Aumentado */
       width: 100%;
       table-layout: fixed;
     }
 
     .mobile-landscape .data-table th,
     .mobile-landscape .data-table td {
-      padding: 4px 2px;
+      padding: 5px 3px; /* Aumentado */
     }
 
     .mobile-landscape .data-table th:nth-child(n+4),
@@ -837,8 +834,8 @@
                           !document.body.classList.contains('mobile-landscape');
       
       // Aumentar fontes no mobile vertical
-      const axisFontSize = isMobileVertical ? 16 : (isMobile ? 15 : 15);
-      const legendFontSize = isMobileVertical ? 15 : (isMobile ? 14 : 12);
+      const axisFontSize = isMobileVertical ? 17 : (isMobile ? 16 : 15);
+      const legendFontSize = isMobileVertical ? 16 : (isMobile ? 15 : 12);
 
       const createGradient = (ctx, chartArea) => {
         const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
@@ -1005,7 +1002,7 @@
       const isMobileVertical = document.body.classList.contains('mobile-device') && 
                           !document.body.classList.contains('mobile-landscape');
       
-      const axisFontSize = isMobileVertical ? 16 : (isMobile ? 15 : 15);
+      const axisFontSize = isMobileVertical ? 17 : (isMobile ? 16 : 15);
 
       const chart = new Chart(ctx, {
         type: "bar",
