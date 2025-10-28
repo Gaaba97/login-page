@@ -359,6 +359,13 @@
       font-weight: bold; /* Mesmo peso do Bem-vindo */
     }
 
+    /* AUMENTAR FONTES DOS EIXOS DOS GRÁFICOS NO MOBILE VERTICAL */
+    .mobile-device #performanceChart,
+    .mobile-device #concentracaoChart,
+    .mobile-device #concentracaoExNasdaqChart {
+      font-size: 18px !important;
+    }
+
     /* ESTILOS PARA MOBILE LANDSCAPE */
     .mobile-landscape .charts-main-container,
     .mobile-landscape .data-table-container {
@@ -834,8 +841,8 @@
                           !document.body.classList.contains('mobile-landscape');
       
       // Aumentar fontes no mobile vertical
-      const axisFontSize = isMobileVertical ? 17 : (isMobile ? 16 : 15);
-      const legendFontSize = isMobileVertical ? 16 : (isMobile ? 15 : 12);
+      const axisFontSize = isMobileVertical ? 20 : (isMobile ? 16 : 15); /* Aumentado de 17 para 20 no mobile vertical */
+      const legendFontSize = isMobileVertical ? 18 : (isMobile ? 15 : 12); /* Aumentado de 16 para 18 no mobile vertical */
 
       const createGradient = (ctx, chartArea) => {
         const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
@@ -1002,7 +1009,7 @@
       const isMobileVertical = document.body.classList.contains('mobile-device') && 
                           !document.body.classList.contains('mobile-landscape');
       
-      const axisFontSize = isMobileVertical ? 17 : (isMobile ? 16 : 15);
+      const axisFontSize = isMobileVertical ? 20 : (isMobile ? 16 : 15); /* Aumentado de 17 para 20 no mobile vertical */
 
       const chart = new Chart(ctx, {
         type: "bar",
@@ -1249,4 +1256,3 @@
   </script>
 </body>
 </html>
-
