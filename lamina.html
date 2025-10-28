@@ -741,7 +741,8 @@
             borderWidth: 0.8, // Reduzido de 1 para 0.8
             borderRadius: 4,
             borderSkipped: false,
-            barPercentage: 0.7, // Reduz a largura das barras
+            barPercentage: 0.4, // ✅ ALTERADO: Reduzido de 0.7 para 0.4 (barras mais finas)
+            categoryPercentage: 0.6, // ✅ ALTERADO: Reduzido para barras mais finas
           }]
         },
         options: {
@@ -753,11 +754,7 @@
               display: false
             },
             tooltip: {
-              callbacks: {
-                label: function(context) {
-                  return `${context.parsed.x}%`;
-                }
-              }
+              enabled: false // ✅ ADICIONADO: Desativa completamente o tooltip
             }
           },
           scales: {
@@ -935,6 +932,3 @@
   </script>
 </body>
 </html>
-
-
-
