@@ -137,7 +137,7 @@
 
     /* Gráficos laterais - FUNDO TRANSPARENTE */
     .side-chart {
-      background-color: transparent; /* FUNDO TRANSPARENTE */
+      background-color: transparent;
       border-radius: 0;
       padding: 15px;
       box-shadow: none;
@@ -153,12 +153,41 @@
       font-weight: 600;
       font-family: "Montserrat", sans-serif;
       letter-spacing: 0.5px;
-      background-color: transparent; /* Garantir que o título também seja transparente */
+      background-color: transparent;
     }
 
-    .side-chart canvas {
+    .side-chart .chart-wrapper {
+      position: relative;
+      width: 100%;
+      height: 120px;
+    }
+
+    .side-chart .chart-wrapper canvas {
       height: 120px !important;
-      background-color: transparent !important; /* Canvas transparente */
+      background-color: transparent !important;
+    }
+
+    /* EIXO DIREITO CUSTOMIZADO */
+    .custom-right-axis {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10px 5px;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    .axis-value {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      color: #000;
+      text-align: right;
+      white-space: nowrap;
     }
 
     /* Estilos para a tabela - BASE */
@@ -301,8 +330,16 @@
       font-size: 16px;
     }
 
-    .mobile-device .side-chart canvas {
+    .mobile-device .side-chart .chart-wrapper {
+      height: 140px;
+    }
+
+    .mobile-device .side-chart .chart-wrapper canvas {
       height: 140px !important;
+    }
+
+    .mobile-device .axis-value {
+      font-size: 17px;
     }
 
     .mobile-device .data-table-container {
@@ -402,13 +439,19 @@
         <!-- Primeiro gráfico lateral -->
         <div class="side-chart">
           <h3>Concentração da Carteira</h3>
-          <canvas id="concentracaoChart"></canvas>
+          <div class="chart-wrapper">
+            <canvas id="concentracaoChart"></canvas>
+            <div class="custom-right-axis" id="axisConcentracao"></div>
+          </div>
         </div>
         
         <!-- Segundo gráfico lateral -->
         <div class="side-chart">
           <h3>Concentração da Carteira Ex Nasdaq-100</h3>
-          <canvas id="concentracaoExNasdaqChart"></canvas>
+          <div class="chart-wrapper">
+            <canvas id="concentracaoExNasdaqChart"></canvas>
+            <div class="custom-right-axis" id="axisConcentracaoExNasdaq"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -700,10 +743,10 @@
         console.log("Dados Concentração Ex Nasdaq:", concentracaoExNasdaqLabels, concentracaoExNasdaqData);
 
         // Criar primeiro gráfico lateral
-        createBarChart('concentracaoChart', concentracaoLabels, concentracaoData, 'Concentração da Carteira');
+        createBarChart('concentracaoChart', concentracaoLabels, concentracaoData, 'axisConcentracao');
         
         // Criar segundo gráfico lateral
-        createBarChart('concentracaoExNasdaqChart', concentracaoExNasdaqLabels, concentracaoExNasdaqData, 'Concentração da Carteira Ex Nasdaq-100');
+        createBarChart('concentracaoExNasdaqChart', concentracaoExNasdaqLabels, concentracaoExNasdaqData, 'axisConcentracaoExNasdaq');
 
       } catch (error) {
         console.error("Erro ao criar gráficos laterais:", error);
@@ -711,7 +754,7 @@
     }
 
     // FUNÇÃO AUXILIAR: Criar gráfico de barras horizontal
-    function createBarChart(canvasId, labels, data, title) {
+    function createBarChart(canvasId, labels, data, axisId) {
       const canvas = document.getElementById(canvasId);
       const ctx = canvas.getContext("2d");
 
@@ -730,6 +773,9 @@
       // Verificar se é dispositivo móvel para ajustar tamanhos de fonte
       const isMobile = document.body.classList.contains('mobile-device');
       const axisFontSize = isMobile ? 17 : 15;
+
+      // CRIAR EIXO DIREITO CUSTOMIZADO
+      createCustomRightAxis(axisId, data, isMobile);
 
       new Chart(ctx, {
         type: "bar",
@@ -759,7 +805,7 @@
           layout: {
             padding: {
               left: 10,
-              right: 40, // Aumentado para mais espaço
+              right: 45, // Espaço para o eixo customizado
               top: 5,
               bottom: 5
             }
@@ -784,7 +830,7 @@
           },
           scales: {
             x: {
-              display: false,
+              display: false, // Remove completamente o eixo X
             },
             y: {
               position: 'left',
@@ -803,35 +849,6 @@
               afterFit: function(scale) {
                 scale.width = 80;
               }
-            },
-            // Eixo vertical à direita - CORRIGIDO COM FUNDO TRANSPARENTE
-            xRight: {
-              position: 'right',
-              border: {
-                display: false
-              },
-              ticks: {
-                color: '#000',
-                font: {
-                  family: 'Montserrat',
-                  size: axisFontSize,
-                  weight: '300'
-                },
-                callback: function(value, index) {
-                  return data[index] + '%';
-                },
-                padding: 8,
-                crossAlign: 'far',
-                z: 100 // AUMENTADO: Prioridade máxima para ficar na frente
-              },
-              grid: {
-                display: false
-              },
-              // FUNDO TRANSPARENTE PARA O EIXO
-              background: 'transparent',
-              afterFit: function(scale) {
-                scale.width = 45;
-              }
             }
           }
         }
@@ -844,6 +861,21 @@
           chart.render();
         }
       }, 100);
+    }
+
+    // FUNÇÃO PARA CRIAR EIXO DIREITO CUSTOMIZADO
+    function createCustomRightAxis(axisId, data, isMobile) {
+      const axisContainer = document.getElementById(axisId);
+      axisContainer.innerHTML = '';
+      
+      // Criar valores do eixo (um para cada barra)
+      data.forEach((value, index) => {
+        const axisValue = document.createElement('div');
+        axisValue.className = 'axis-value';
+        axisValue.textContent = value + '%';
+        axisValue.style.fontSize = isMobile ? '17px' : '15px';
+        axisContainer.appendChild(axisValue);
+      });
     }
 
     function loadTableData(rows) {
