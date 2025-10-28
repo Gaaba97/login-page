@@ -241,10 +241,7 @@
     }
 
     #deviceInfo {
-      text-align: center;
-      font-size: 16px;
-      margin: 20px 0;
-      font-weight: bold;
+      display: none !important;
     }
   </style>
 </head>
@@ -255,7 +252,6 @@
     <a href="dashboard.html">Dashboard</a>
     <a href="lamina.html">Lâmina</a>
     <a href="comparacao-fundos.html">Comparação com Fundos</a>
-    <a href="#" id="logoutLink">Sair</a>
   </div>
 </div>
 
@@ -282,7 +278,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
   import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -318,12 +314,6 @@
     } else {
       window.location.href = "index.html";
     }
-  });
-
-  document.getElementById("logoutLink").addEventListener("click", (e) => {
-    e.preventDefault();
-    signOut(auth).then(() => window.location.href = "index.html")
-      .catch((error) => console.error("Erro ao deslogar:", error));
   });
 </script>
 
@@ -451,7 +441,6 @@
   function detectarDispositivo() {
     const largura = window.innerWidth;
     const altura = window.innerHeight;
-    const deviceInfo = document.getElementById('deviceInfo');
     const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
     
     const isMobileSize = largura <= 1024 || 
@@ -465,14 +454,11 @@
 
     if (isMobileSize && isTouchDevice) {
       if (largura > altura) {
-        deviceInfo.textContent = "Dispositivo atual: smartphone (horizontal)";
         document.body.classList.add('mobile-device', 'mobile-landscape');
       } else {
-        deviceInfo.textContent = "Dispositivo atual: smartphone (vertical)";
         document.body.classList.add('mobile-device');
       }
     } else {
-      deviceInfo.textContent = "Dispositivo atual: computador";
       document.body.classList.add('desktop-device');
     }
   }
