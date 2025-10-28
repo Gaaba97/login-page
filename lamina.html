@@ -335,6 +335,9 @@
       flex-direction: row;
       gap: 15px;
       width: 98%;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .mobile-landscape .main-chart-container {
@@ -370,22 +373,22 @@
     /* ESTILOS PARA MOBILE LANDSCAPE - TABELA */
     .mobile-landscape .data-table-container {
       width: 98%;
-      max-width: none;
-      padding: 0 5px;
+      max-width: 1200px;
       margin-left: auto;
       margin-right: auto;
-      overflow-x: auto;
+      padding: 0;
     }
 
     .mobile-landscape .data-table {
       font-size: 10px;
+      width: 100%;
+      max-width: 1200px;
       margin: 0 auto;
-      min-width: 100%;
     }
 
     .mobile-landscape .data-table th,
     .mobile-landscape .data-table td {
-      padding: 3px 1px;
+      padding: 4px 2px;
     }
 
     .mobile-landscape .data-table th:nth-child(n+4),
@@ -933,6 +936,8 @@
   </script>
 
   <script>
+    let orientationChangeTimeout;
+
     function detectarDispositivo() {
       const largura = window.innerWidth;
       const altura = window.innerHeight;
@@ -942,6 +947,9 @@
       const isMobileSize = largura <= 1024 || 
                           (largura < altura && largura <= 768) ||
                           (isTouchDevice && (largura <= 1024 || altura <= 1024));
+
+      const wasMobileLandscape = document.body.classList.contains('mobile-landscape');
+      const isNowMobileLandscape = isMobileSize && isTouchDevice && largura > altura;
 
       document.body.classList.remove('desktop-device', 'mobile-device', 'mobile-landscape');
 
@@ -958,64 +966,32 @@
         document.body.classList.add('desktop-device');
       }
 
-      // Forçar redraw completo de todos os elementos
-      setTimeout(() => {
-        redesenharGraficos();
-        redesenharTabela();
-        ajustarLayoutContainers();
-      }, 200);
+      // Só redesenhar se realmente mudou de layout
+      if (wasMobileLandscape !== isNowMobileLandscape) {
+        setTimeout(redesenharGraficosSuave, 100);
+      }
     }
 
-    function redesenharGraficos() {
+    function redesenharGraficosSuave() {
       if (window.chartInstances.performanceChart) {
         window.chartInstances.performanceChart.resize();
-        window.chartInstances.performanceChart.update('none');
       }
       if (window.chartInstances.concentracaoChart) {
         window.chartInstances.concentracaoChart.resize();
-        window.chartInstances.concentracaoChart.update('none');
       }
       if (window.chartInstances.concentracaoExNasdaqChart) {
         window.chartInstances.concentracaoExNasdaqChart.resize();
-        window.chartInstances.concentracaoExNasdaqChart.update('none');
       }
     }
 
-    function redesenharTabela() {
-      const table = document.getElementById("dataTable");
-      if (table && table.style.display !== "none") {
-        // Forçar reflow da tabela
-        table.style.display = 'none';
-        setTimeout(() => {
-          table.style.display = 'table';
-        }, 50);
-      }
-    }
+    window.addEventListener('resize', function() {
+      clearTimeout(orientationChangeTimeout);
+      orientationChangeTimeout = setTimeout(detectarDispositivo, 250);
+    });
 
-    function ajustarLayoutContainers() {
-      // Forçar reflow dos containers principais
-      const containers = [
-        '.charts-main-container',
-        '.main-chart-container', 
-        '.side-charts-container',
-        '.data-table-container'
-      ];
-      
-      containers.forEach(selector => {
-        const element = document.querySelector(selector);
-        if (element) {
-          element.style.display = 'none';
-          setTimeout(() => {
-            element.style.display = '';
-          }, 30);
-        }
-      });
-    }
-
-    window.addEventListener('resize', detectarDispositivo);
     window.addEventListener('orientationchange', function() {
-      // Aguardar um pouco mais para garantir que a orientação mudou completamente
-      setTimeout(detectarDispositivo, 300);
+      clearTimeout(orientationChangeTimeout);
+      orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
     });
     
     setTimeout(detectarDispositivo, 100);
