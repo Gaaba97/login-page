@@ -61,6 +61,60 @@
       color: white;
     }
 
+    /* ESTILOS PARA SMARTPHONE VERTICAL */
+    .mobile-device .navbar {
+      padding: 18px 20px;
+      min-height: 75px;
+    }
+
+    .mobile-device .navbar .welcome {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .mobile-device .navbar .links {
+      gap: 20px;
+    }
+
+    .mobile-device .navbar a {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    /* ESTILOS PARA SMARTPHONE HORIZONTAL */
+    .mobile-landscape .navbar {
+      padding: 12px 20px;
+    }
+
+    .mobile-landscape .navbar .welcome {
+      font-size: 18px;
+    }
+
+    .mobile-landscape .navbar .links {
+      gap: 15px;
+    }
+
+    .mobile-landscape .navbar a {
+      font-size: 18px;
+    }
+
+    /* ESTILOS PARA COMPUTADOR (DEFAULT) */
+    .desktop-device .navbar {
+      padding: 10px 20px;
+    }
+
+    .desktop-device .navbar .welcome {
+      font-size: 16px;
+    }
+
+    .desktop-device .navbar .links {
+      gap: 20px;
+    }
+
+    .desktop-device .navbar a {
+      font-size: 16px;
+    }
+
     @media (max-width: 768px) {
       .navbar {
         padding: 8px 15px;
@@ -391,25 +445,51 @@
 </script>
 
 <script>
+  // SCRIPT DE DETECÇÃO DE DISPOSITIVO
+  let orientationChangeTimeout;
+
   function detectarDispositivo() {
     const largura = window.innerWidth;
     const altura = window.innerHeight;
     const deviceInfo = document.getElementById('deviceInfo');
     const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-    const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
+    
+    const isMobileSize = largura <= 1024 || 
+                        (largura < altura && largura <= 768) ||
+                        (isTouchDevice && (largura <= 1024 || altura <= 1024));
+
+    const wasMobileLandscape = document.body.classList.contains('mobile-landscape');
+    const isNowMobileLandscape = isMobileSize && isTouchDevice && largura > altura;
+
+    document.body.classList.remove('desktop-device', 'mobile-device', 'mobile-landscape');
 
     if (isMobileSize && isTouchDevice) {
-      deviceInfo.textContent = "Dispositivo atual: smartphone";
+      if (largura > altura) {
+        deviceInfo.textContent = "Dispositivo atual: smartphone (horizontal)";
+        document.body.classList.add('mobile-device', 'mobile-landscape');
+      } else {
+        deviceInfo.textContent = "Dispositivo atual: smartphone (vertical)";
+        document.body.classList.add('mobile-device');
+      }
     } else {
       deviceInfo.textContent = "Dispositivo atual: computador";
+      document.body.classList.add('desktop-device');
     }
   }
 
-  window.addEventListener('resize', detectarDispositivo);
-  window.addEventListener('orientationchange', detectarDispositivo);
+  window.addEventListener('resize', function() {
+    clearTimeout(orientationChangeTimeout);
+    orientationChangeTimeout = setTimeout(detectarDispositivo, 250);
+  });
+
+  window.addEventListener('orientationchange', function() {
+    clearTimeout(orientationChangeTimeout);
+    orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
+  });
+  
+  // Detectar dispositivo ao carregar a página
+  setTimeout(detectarDispositivo, 100);
   detectarDispositivo();
 </script>
 </body>
 </html>
-
-
