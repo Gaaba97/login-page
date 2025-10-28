@@ -61,6 +61,7 @@
       min-height: calc(100vh - 80px);
     }
 
+    /* NOVO: Estilos para o título e informações */
     .header-info {
       width: 95%;
       max-width: 1200px;
@@ -89,6 +90,7 @@
       text-align: left;
     }
 
+    /* NOVO: Container principal dos gráficos */
     .charts-main-container {
       display: flex;
       justify-content: center;
@@ -99,6 +101,7 @@
       margin-bottom: 30px;
     }
 
+    /* Container do gráfico principal */
     .main-chart-container {
       flex: 2;
       display: flex;
@@ -121,9 +124,9 @@
     canvas {
       width: 100%;
       height: 380px !important;
-      position: relative; /* ✅ adicionado */
     }
 
+    /* Container dos gráficos laterais */
     .side-charts-container {
       flex: 1;
       display: flex;
@@ -132,14 +135,12 @@
       min-width: 250px;
     }
 
+    /* Gráficos laterais */
     .side-chart {
-      background-color: transparent;
-      border-radius: 0;
+      background-color: #fff;
+      border-radius: 8px;
       padding: 15px;
-      box-shadow: none;
-      border: none;
-      position: relative;
-      overflow: visible; /* ✅ adicionado */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .side-chart h3 {
@@ -150,14 +151,13 @@
       font-weight: 600;
       font-family: "Montserrat", sans-serif;
       letter-spacing: 0.5px;
-      background-color: transparent;
     }
 
     .side-chart canvas {
       height: 120px !important;
-      background-color: transparent !important;
     }
 
+    /* Estilos para a tabela - BASE */
     .data-table-container {
       margin-top: 30px;
       width: 95%;
@@ -214,15 +214,18 @@
       font-weight: bold;
     }
 
+    /* Linha separadora entre antepenúltima e penúltima coluna */
     .data-table th:nth-last-child(3),
     .data-table td:nth-last-child(3) {
       border-right: 2px solid #a3a3a3;
     }
 
+    /* Célula mesclada para W3, W4, W5 */
     .data-table .merged-cell {
       vertical-align: middle;
     }
 
+    /* Largura padronizada para colunas Y até AL - mais estreitas */
     .data-table th:nth-child(n+4),
     .data-table td:nth-child(n+4) {
       width: 50px;
@@ -230,6 +233,7 @@
       max-width: 50px;
     }
 
+    /* Largura específica para colunas W e X */
     .data-table th:nth-child(1),
     .data-table td:nth-child(1) {
       width: 80px;
@@ -245,6 +249,7 @@
       width: 60px;
     }
 
+    /* ESTILOS PARA COMPUTADOR */
     .desktop-device .data-table {
       font-size: 14px;
     }
@@ -254,6 +259,7 @@
       padding: 10px 6px;
     }
 
+    /* ESTILOS PARA SMARTPHONE - AJUSTES ESPECÍFICOS */
     .mobile-device .charts-main-container {
       flex-direction: column;
       gap: 20px;
@@ -288,11 +294,11 @@
     }
 
     .mobile-device .side-chart h3 {
-      font-size: 16px;
+      font-size: 16px; /* AUMENTADO de 14px para 16px */
     }
 
     .mobile-device .side-chart canvas {
-      height: 140px !important;
+      height: 140px !important; /* AUMENTADO para acompanhar a fonte maior */
     }
 
     .mobile-device .data-table-container {
@@ -313,6 +319,7 @@
       padding: 4px 2px;
     }
 
+    /* Ajustes específicos de largura para mobile */
     .mobile-device .data-table th:nth-child(n+4),
     .mobile-device .data-table td:nth-child(n+4) {
       width: 45px;
@@ -348,6 +355,7 @@
       margin: 10px 0;
     }
 
+    /* Estilo para informação do dispositivo */
     #deviceInfo {
       text-align: center;
       font-size: 16px;
@@ -546,8 +554,8 @@
 
       // Verificar se é dispositivo móvel para ajustar tamanhos de fonte
       const isMobile = document.body.classList.contains('mobile-device');
-      const axisFontSize = isMobile ? 17 : 15;
-      const legendFontSize = isMobile ? 14 : 12;
+      const axisFontSize = isMobile ? 17 : 15; // Aumenta de 15 para 17 no mobile
+      const legendFontSize = isMobile ? 14 : 12; // Aumenta de 12 para 14 no mobile
 
       // Criar gradiente
       const createGradient = (ctx, chartArea) => {
@@ -604,7 +612,7 @@
                 color: "#000000",
                 font: {
                   family: "Montserrat",
-                  size: legendFontSize,
+                  size: legendFontSize, // Usa tamanho dinâmico
                   weight: "300",
                 },
               },
@@ -625,7 +633,7 @@
                 minRotation: 45,
                 font: {
                   family: "Montserrat",
-                  size: axisFontSize,
+                  size: axisFontSize, // Usa tamanho dinâmico
                   weight: "300",
                 },
               },
@@ -636,7 +644,7 @@
                 color: "#000000",
                 font: {
                   family: "Montserrat",
-                  size: axisFontSize,
+                  size: axisFontSize, // Usa tamanho dinâmico
                   weight: "300",
                 },
                 callback: (v) => `${v.toFixed(0)}%`,
@@ -703,21 +711,16 @@
       const canvas = document.getElementById(canvasId);
       const ctx = canvas.getContext("2d");
 
-      // Configurar canvas para alta resolução com otimizações
+      // Configurar canvas para alta resolução
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
-      
-      canvas.width = Math.floor(rect.width * dpr);
-      canvas.height = Math.floor(rect.height * dpr);
-      
-      canvas.style.width = rect.width + 'px';
-      canvas.style.height = rect.height + 'px';
-      
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
       ctx.scale(dpr, dpr);
 
       // Verificar se é dispositivo móvel para ajustar tamanhos de fonte
       const isMobile = document.body.classList.contains('mobile-device');
-      const axisFontSize = isMobile ? 17 : 15;
+      const axisFontSize = isMobile ? 17 : 15; // Aumenta de 15 para 17 no mobile
 
       new Chart(ctx, {
         type: "bar",
@@ -730,34 +733,21 @@
               '#1E4DB7', 
               '#2A5FC9'
             ],
-            borderWidth: 0,
+            borderColor: [
+              '#0E2841',
+              '#164CAD',
+              '#1E4DB7'
+            ],
+            borderWidth: 0.8, // Reduzido de 1 para 0.8
             borderRadius: 4,
             borderSkipped: false,
-            barPercentage: 0.65,
-            categoryPercentage: 0.8,
+            barPercentage: 0.7, // Reduz a largura das barras
           }]
         },
         options: {
           indexAxis: 'y',
           responsive: true,
           maintainAspectRatio: false,
-          animation: {
-            duration: 0
-          },
-          layout: {
-            padding: {
-              left: 10,
-              right: 40, // Aumentado para mais espaço
-              top: 5,
-              bottom: 5
-            }
-          },
-          elements: {
-            bar: {
-              borderWidth: 0,
-              borderSkipped: false,
-            }
-          },
           plugins: {
             legend: {
               display: false
@@ -772,7 +762,7 @@
           },
           scales: {
             x: {
-              display: false,
+              display: false, // Remove o eixo horizontal
             },
             y: {
               position: 'left',
@@ -780,58 +770,37 @@
                 color: '#000',
                 font: {
                   family: 'Montserrat',
-                  size: axisFontSize,
+                  size: axisFontSize, // Usa tamanho dinâmico
                   weight: '300'
                 },
-                padding: 8
+                padding: 5
               },
               grid: {
                 display: false
-              },
-              afterFit: function(scale) {
-                scale.width = 80;
               }
             },
-            // Eixo vertical à direita - CORRIGIDO COM FUNDO TRANSPARENTE
+            // NOVO: Eixo vertical à direita
             xRight: {
               position: 'right',
-              border: {
-                display: false
-              },
               ticks: {
                 color: '#000',
                 font: {
                   family: 'Montserrat',
-                  size: axisFontSize,
+                  size: axisFontSize, // Usa tamanho dinâmico
                   weight: '300'
                 },
                 callback: function(value, index) {
+                  // Exibir o valor percentual correspondente a cada barra
                   return data[index] + '%';
-                },
-                padding: 8,
-                crossAlign: 'far',
-                z: 100 // AUMENTADO: Prioridade máxima para ficar na frente
+                }
               },
               grid: {
                 display: false
-              },
-              // FUNDO TRANSPARENTE PARA O EIXO
-              background: 'transparent',
-              afterFit: function(scale) {
-                scale.width = 45;
               }
             }
           }
         }
       });
-
-      // Forçar redesenho para melhor qualidade
-      setTimeout(() => {
-        const chart = Chart.getChart(canvasId);
-        if (chart) {
-          chart.render();
-        }
-      }, 100);
     }
 
     function loadTableData(rows) {
@@ -871,7 +840,9 @@
         // Adicionar todos os cabeçalhos (W até AL)
         tableHeaders.forEach((header, index) => {
           const th = document.createElement("th");
+          // Se não tiver conteúdo na planilha, deixar vazio
           th.textContent = header?.trim() || "";
+          // Destacar apenas a primeira coluna (W)
           if (index === 0) {
             th.className = "column-w";
           }
@@ -884,23 +855,31 @@
         dataRows.forEach((rowData, rowIndex) => {
           const dataRowElement = document.createElement("tr");
           
+          // Extrair dados das colunas W a AL para esta linha
           const rowCells = rowData.slice(22, 38);
           
+          // Para a primeira linha (linha 3), criar célula mesclada para a coluna W
           if (rowIndex === 0) {
             const mergedCell = document.createElement("td");
             mergedCell.className = "merged-cell";
             mergedCell.rowSpan = 3;
+            // Se não tiver conteúdo na planilha, deixar vazio
             mergedCell.textContent = rowCells[0]?.trim() || "";
             dataRowElement.appendChild(mergedCell);
             
+            // Adicionar as demais colunas (X até AL) para a primeira linha
             rowCells.slice(1).forEach((cellData, cellIndex) => {
               const td = document.createElement("td");
+              // Se não tiver conteúdo na planilha, deixar vazio
               td.textContent = cellData?.trim() || "";
               dataRowElement.appendChild(td);
             });
           } else {
+            // Para as linhas 4 e 5, adicionar apenas as colunas X até AL
+            // (a coluna W já está mesclada)
             rowCells.slice(1).forEach((cellData, cellIndex) => {
               const td = document.createElement("td");
+              // Se não tiver conteúdo na planilha, deixar vazio
               td.textContent = cellData?.trim() || "";
               dataRowElement.appendChild(td);
             });
@@ -909,6 +888,7 @@
           table.appendChild(dataRowElement);
         });
 
+        // Mostrar tabela e esconder loading
         table.style.display = "table";
         tableLoading.style.display = "none";
         
@@ -934,6 +914,7 @@
       const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
       const isMobileSize = largura <= 768 || (largura < altura && largura <= 1024);
 
+      // Remover classes anteriores
       document.body.classList.remove('desktop-device', 'mobile-device');
 
       if (isMobileSize && isTouchDevice) {
@@ -948,6 +929,7 @@
     window.addEventListener('resize', detectarDispositivo);
     window.addEventListener('orientationchange', detectarDispositivo);
     
+    // Executar imediatamente e após um pequeno delay para garantir que o DOM esteja pronto
     setTimeout(detectarDispositivo, 100);
     detectarDispositivo();
   </script>
