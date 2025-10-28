@@ -479,6 +479,13 @@
 
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
+    // Variável global para armazenar as instâncias dos gráficos
+    window.chartInstances = {
+      performanceChart: null,
+      concentracaoChart: null,
+      concentracaoExNasdaqChart: null
+    };
+
     async function loadData() {
       try {
         console.log("Iniciando carregamento de dados...");
@@ -570,7 +577,7 @@
         return gradient;
       };
 
-      new Chart(ctx, {
+      window.chartInstances.performanceChart = new Chart(ctx, {
         type: "line",
         data: {
           datasets: [
@@ -715,7 +722,7 @@
       const isMobile = document.body.classList.contains('mobile-device');
       const axisFontSize = isMobile ? 17 : 15;
 
-      new Chart(ctx, {
+      const chart = new Chart(ctx, {
         type: "bar",
         data: {
           labels: labels,
@@ -789,6 +796,13 @@
           }
         }
       });
+
+      // Armazenar a instância do gráfico
+      if (canvasId === 'concentracaoChart') {
+        window.chartInstances.concentracaoChart = chart;
+      } else if (canvasId === 'concentracaoExNasdaqChart') {
+        window.chartInstances.concentracaoExNasdaqChart = chart;
+      }
     }
 
     function loadTableData(rows) {
@@ -900,10 +914,34 @@
         deviceInfo.textContent = "Dispositivo atual: computador";
         document.body.classList.add('desktop-device');
       }
+
+      // Redesenhar os gráficos quando a orientação mudar
+      redesenharGraficos();
+    }
+
+    function redesenharGraficos() {
+      // Aguardar um pouco para o CSS ser aplicado
+      setTimeout(() => {
+        if (window.chartInstances.performanceChart) {
+          window.chartInstances.performanceChart.resize();
+          window.chartInstances.performanceChart.update('none');
+        }
+        if (window.chartInstances.concentracaoChart) {
+          window.chartInstances.concentracaoChart.resize();
+          window.chartInstances.concentracaoChart.update('none');
+        }
+        if (window.chartInstances.concentracaoExNasdaqChart) {
+          window.chartInstances.concentracaoExNasdaqChart.resize();
+          window.chartInstances.concentracaoExNasdaqChart.update('none');
+        }
+      }, 100);
     }
 
     window.addEventListener('resize', detectarDispositivo);
-    window.addEventListener('orientationchange', detectarDispositivo);
+    window.addEventListener('orientationchange', function() {
+      // Aguardar a orientação mudar completamente
+      setTimeout(detectarDispositivo, 150);
+    });
     
     setTimeout(detectarDispositivo, 100);
     detectarDispositivo();
