@@ -367,6 +367,49 @@
       height: 280px !important;
     }
 
+    /* ESTILOS PARA MOBILE LANDSCAPE - TABELA */
+    .mobile-landscape .data-table-container {
+      width: 98%;
+      max-width: none;
+      padding: 0 5px;
+      margin-left: auto;
+      margin-right: auto;
+      overflow-x: auto;
+    }
+
+    .mobile-landscape .data-table {
+      font-size: 10px;
+      margin: 0 auto;
+      min-width: 100%;
+    }
+
+    .mobile-landscape .data-table th,
+    .mobile-landscape .data-table td {
+      padding: 3px 1px;
+    }
+
+    .mobile-landscape .data-table th:nth-child(n+4),
+    .mobile-landscape .data-table td:nth-child(n+4) {
+      width: 40px;
+      min-width: 40px;
+      max-width: 40px;
+    }
+
+    .mobile-landscape .data-table th:nth-child(1),
+    .mobile-landscape .data-table td:nth-child(1) {
+      width: 60px;
+    }
+
+    .mobile-landscape .data-table th:nth-child(2),
+    .mobile-landscape .data-table td:nth-child(2) {
+      width: 50px;
+    }
+
+    .mobile-landscape .data-table th:nth-child(3),
+    .mobile-landscape .data-table td:nth-child(3) {
+      width: 45px;
+    }
+
     .loading {
       color: #666;
       font-style: italic;
@@ -915,32 +958,64 @@
         document.body.classList.add('desktop-device');
       }
 
-      // Redesenhar os gráficos quando a orientação mudar
-      redesenharGraficos();
+      // Forçar redraw completo de todos os elementos
+      setTimeout(() => {
+        redesenharGraficos();
+        redesenharTabela();
+        ajustarLayoutContainers();
+      }, 200);
     }
 
     function redesenharGraficos() {
-      // Aguardar um pouco para o CSS ser aplicado
-      setTimeout(() => {
-        if (window.chartInstances.performanceChart) {
-          window.chartInstances.performanceChart.resize();
-          window.chartInstances.performanceChart.update('none');
+      if (window.chartInstances.performanceChart) {
+        window.chartInstances.performanceChart.resize();
+        window.chartInstances.performanceChart.update('none');
+      }
+      if (window.chartInstances.concentracaoChart) {
+        window.chartInstances.concentracaoChart.resize();
+        window.chartInstances.concentracaoChart.update('none');
+      }
+      if (window.chartInstances.concentracaoExNasdaqChart) {
+        window.chartInstances.concentracaoExNasdaqChart.resize();
+        window.chartInstances.concentracaoExNasdaqChart.update('none');
+      }
+    }
+
+    function redesenharTabela() {
+      const table = document.getElementById("dataTable");
+      if (table && table.style.display !== "none") {
+        // Forçar reflow da tabela
+        table.style.display = 'none';
+        setTimeout(() => {
+          table.style.display = 'table';
+        }, 50);
+      }
+    }
+
+    function ajustarLayoutContainers() {
+      // Forçar reflow dos containers principais
+      const containers = [
+        '.charts-main-container',
+        '.main-chart-container', 
+        '.side-charts-container',
+        '.data-table-container'
+      ];
+      
+      containers.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+          element.style.display = 'none';
+          setTimeout(() => {
+            element.style.display = '';
+          }, 30);
         }
-        if (window.chartInstances.concentracaoChart) {
-          window.chartInstances.concentracaoChart.resize();
-          window.chartInstances.concentracaoChart.update('none');
-        }
-        if (window.chartInstances.concentracaoExNasdaqChart) {
-          window.chartInstances.concentracaoExNasdaqChart.resize();
-          window.chartInstances.concentracaoExNasdaqChart.update('none');
-        }
-      }, 100);
+      });
     }
 
     window.addEventListener('resize', detectarDispositivo);
     window.addEventListener('orientationchange', function() {
-      // Aguardar a orientação mudar completamente
-      setTimeout(detectarDispositivo, 150);
+      // Aguardar um pouco mais para garantir que a orientação mudou completamente
+      setTimeout(detectarDispositivo, 300);
     });
     
     setTimeout(detectarDispositivo, 100);
