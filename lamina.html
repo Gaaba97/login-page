@@ -913,7 +913,9 @@
               type: "time",
               time: {
                 unit: "month",
-                displayFormats: { month: "MMM - yy" },
+                displayFormats: { 
+                  month: "MMM - yy" 
+                },
                 tooltipFormat: "dd/MM/yyyy"
               },
               ticks: {
@@ -925,6 +927,19 @@
                   size: axisFontSize,
                   weight: "300",
                 },
+                // CORREÇÃO: Mapear meses para português
+                callback: function(value, index, values) {
+                  const date = new Date(value);
+                  const month = date.getMonth();
+                  const year = date.getFullYear().toString().slice(-2);
+                  
+                  const mesesPortugues = [
+                    'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+                  ];
+                  
+                  return `${mesesPortugues[month]} - ${year}`;
+                }
               },
               grid: { color: "rgba(0,0,0,0.05)" },
             },
