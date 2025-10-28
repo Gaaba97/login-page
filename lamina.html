@@ -759,7 +759,7 @@
           layout: {
             padding: {
               left: 10,
-              right: 40, // Aumentado para mais espaço
+              right: 40,
               top: 5,
               bottom: 5
             }
@@ -804,8 +804,9 @@
                 scale.width = 80;
               }
             },
-            // Eixo vertical à direita - CORRIGIDO COM FUNDO TRANSPARENTE
+            // Eixo vertical à direita - CORREÇÃO APLICADA AQUI
             xRight: {
+              type: 'linear',
               position: 'right',
               border: {
                 display: false
@@ -822,12 +823,13 @@
                 },
                 padding: 8,
                 crossAlign: 'far',
-                z: 100 // AUMENTADO: Prioridade máxima para ficar na frente
+                z: 100
               },
               grid: {
-                display: false
+                display: false,
+                drawOnChartArea: false
               },
-              // FUNDO TRANSPARENTE PARA O EIXO
+              // CORREÇÃO: Remover completamente o fundo branco
               background: 'transparent',
               afterFit: function(scale) {
                 scale.width = 45;
