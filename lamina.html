@@ -453,11 +453,7 @@
     }
 
     #deviceInfo {
-      text-align: center;
-      font-size: 16px;
-      margin: 20px 0;
-      font-weight: bold;
-      color: #333;
+      display: none !important;
     }
 
     /* ESTILOS DO TOOLTIP PERSONALIZADO */
@@ -1205,14 +1201,11 @@
 
       if (isMobileSize && isTouchDevice) {
         if (largura > altura) {
-          deviceInfo.textContent = "Dispositivo atual: smartphone (horizontal)";
           document.body.classList.add('mobile-device', 'mobile-landscape');
         } else {
-          deviceInfo.textContent = "Dispositivo atual: smartphone (vertical)";
           document.body.classList.add('mobile-device');
         }
       } else {
-        deviceInfo.textContent = "Dispositivo atual: computador";
         document.body.classList.add('desktop-device');
       }
 
