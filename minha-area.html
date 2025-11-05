@@ -446,9 +446,9 @@
         // Adicionar dados de cada dataset
         tooltip.dataPoints.forEach((dataPoint, index) => {
           const dataset = chart.data.datasets[dataPoint.datasetIndex];
-          // CORREÇÃO: Garantir apenas 2 casas decimais
+          // CORREÇÃO: Mostrar apenas o número sem % e com 2 casas decimais
           const rawValue = dataPoint.raw.y;
-          const value = typeof rawValue === 'number' ? rawValue.toFixed(2) + '%' : '0.00%';
+          const value = typeof rawValue === 'number' ? rawValue.toFixed(2).replace('.', ',') : '0,00';
           const label = dataset.label || '';
           const color = dataset.borderColor || '#164CAD';
           
@@ -557,30 +557,6 @@
       }
     }
 
-    // FUNÇÃO PARA CALCULAR VARIAÇÃO PERCENTUAL A PARTIR DE UMA DATA ESPECÍFICA
-    function calcularVariacaoDesdeData(dados, dataInicio) {
-      if (!dados || dados.length === 0) return [];
-      
-      // Encontrar o índice da data de início
-      const indexInicio = dados.findIndex(item => item.data === dataInicio);
-      if (indexInicio === -1) return [];
-      
-      // Pegar o valor base (valor na data de início)
-      const valorBase = dados[indexInicio].valor;
-      
-      // Calcular variação percentual para cada data a partir da data de início
-      const variacoes = [];
-      for (let i = indexInicio; i < dados.length; i++) {
-        const variacao = ((dados[i].valor / valorBase) - 1) * 100;
-        variacoes.push({
-          data: dados[i].data,
-          variacao: variacao
-        });
-      }
-      
-      return variacoes;
-    }
-
     // FUNÇÃO PARA FORMATAR VALOR COM ESPAÇO APÓS R$
     function formatarValorComEspaco(valorStr) {
       // Se já tem R$ seguido de número sem espaço, adiciona espaço
@@ -635,6 +611,7 @@
 
       let totalAplicado = 0;
       let totalAtual = 0;
+      let temDadosValidos = false;
 
       // Processar cada aplicação
       aplicacoes.forEach((aplicacao, index) => {
@@ -654,6 +631,7 @@
           
           if (!isNaN(valorNumerico)) {
             totalAplicado += valorNumerico;
+            temDadosValidos = true;
           }
 
           // Encontrar cota na data da aplicação
@@ -689,8 +667,8 @@
         }
       });
 
-      // Adicionar linha de total
-      if (totalAplicado > 0) {
+      // CORREÇÃO: Adicionar linha de total SEMPRE que houver aplicações válidas
+      if (temDadosValidos) {
         const totalRow = document.createElement('tr');
         totalRow.className = 'total-row';
         
