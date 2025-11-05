@@ -555,6 +555,30 @@
       }
     }
 
+    // FUNÇÃO PARA CALCULAR VARIAÇÃO PERCENTUAL A PARTIR DE UMA DATA ESPECÍFICA
+    function calcularVariacaoDesdeData(dados, dataInicio) {
+      if (!dados || dados.length === 0) return [];
+      
+      // Encontrar o índice da data de início
+      const indexInicio = dados.findIndex(item => item.data === dataInicio);
+      if (indexInicio === -1) return [];
+      
+      // Pegar o valor base (valor na data de início)
+      const valorBase = dados[indexInicio].valor;
+      
+      // Calcular variação percentual para cada data a partir da data de início
+      const variacoes = [];
+      for (let i = indexInicio; i < dados.length; i++) {
+        const variacao = ((dados[i].valor / valorBase) - 1) * 100;
+        variacoes.push({
+          data: dados[i].data,
+          variacao: variacao
+        });
+      }
+      
+      return variacoes;
+    }
+
     // FUNÇÃO PARA CARREGAR E EXIBIR AS APLICAÇÕES
     function carregarAplicacoes(aplicacoesString) {
       const loadingElement = document.getElementById('aplicacoesLoading');
@@ -713,30 +737,29 @@
         }
 
         const allDates = [];
-        const morpheus = [];
-        const ibov = [];
+        const morpheusValores = []; // Valores brutos das cotas
+        const ibovValores = []; // Valores brutos do IBOV
         cotasData = []; // Array para armazenar dados das cotas
 
+        // PRIMEIRO: Coletar todos os dados brutos
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
           if (cols.length >= 12) {
             const date = cols[9]?.trim();
-            const f1 = parseFloat(cols[10]); // Coluna K - Valor da cota
-            const f2 = parseFloat(cols[11]); // Coluna L - IBOV
+            const cotaMorpheus = parseFloat(cols[10]); // Coluna K - Valor da cota
+            const valorIbov = parseFloat(cols[11]); // Coluna L - IBOV
             
-            if (date && !isNaN(f1) && !isNaN(f2)) {
-              // Armazenar dados da cota
+            if (date && !isNaN(cotaMorpheus) && !isNaN(valorIbov)) {
+              // Armazenar dados brutos
+              allDates.push(date);
+              morpheusValores.push(cotaMorpheus);
+              ibovValores.push(valorIbov);
+              
+              // Armazenar dados da cota para a tabela
               cotasData.push({
                 data: date,
-                cota: f1
+                cota: cotaMorpheus
               });
-              
-              // Filtrar datas a partir da primeira aplicação
-              if (!primeiraDataAplicacao || date >= primeiraDataAplicacao) {
-                allDates.push(date);
-                morpheus.push((f1 - 1) * 100); // Usando a cota para cálculo Morpheus
-                ibov.push((f2 - 1) * 100);
-              }
             }
           }
         }
@@ -750,17 +773,59 @@
           }
         }
 
-        console.log("Dados processados - Datas:", allDates.length, "Morpheus:", morpheus.length, "IBOV:", ibov.length);
-        console.log("Primeira data do gráfico:", allDates[0]);
+        // CALCULAR VARIAÇÃO PERCENTUAL A PARTIR DA PRIMEIRA APLICAÇÃO
+        let morpheusVariacao = [];
+        let ibovVariacao = [];
+        let filteredDates = [];
 
-        if (allDates.length === 0) {
+        if (primeiraDataAplicacao) {
+          // Encontrar o índice da primeira data de aplicação
+          const indexInicio = allDates.findIndex(date => date === primeiraDataAplicacao);
+          
+          if (indexInicio !== -1) {
+            console.log(`Calculando variação a partir de ${primeiraDataAplicacao} (índice ${indexInicio})`);
+            
+            // Pegar valores base na data da primeira aplicação
+            const morpheusBase = morpheusValores[indexInicio];
+            const ibovBase = ibovValores[indexInicio];
+            
+            // Calcular variação percentual para cada data a partir da primeira aplicação
+            for (let i = indexInicio; i < allDates.length; i++) {
+              const variacaoMorpheus = ((morpheusValores[i] / morpheusBase) - 1) * 100;
+              const variacaoIbov = ((ibovValores[i] / ibovBase) - 1) * 100;
+              
+              morpheusVariacao.push(variacaoMorpheus);
+              ibovVariacao.push(variacaoIbov);
+              filteredDates.push(allDates[i]);
+            }
+            
+            console.log(`Variação calculada para ${filteredDates.length} datas a partir de ${primeiraDataAplicacao}`);
+          } else {
+            console.log("Data de aplicação não encontrada nos dados, usando dados completos");
+            morpheusVariacao = morpheusValores.map((valor, i) => ((valor / morpheusValores[0]) - 1) * 100);
+            ibovVariacao = ibovValores.map((valor, i) => ((valor / ibovValores[0]) - 1) * 100);
+            filteredDates = [...allDates];
+          }
+        } else {
+          // Sem data de aplicação, usar dados completos desde o início
+          morpheusVariacao = morpheusValores.map((valor, i) => ((valor / morpheusValores[0]) - 1) * 100);
+          ibovVariacao = ibovValores.map((valor, i) => ((valor / ibovValores[0]) - 1) * 100);
+          filteredDates = [...allDates];
+        }
+
+        console.log("Dados processados - Datas:", filteredDates.length, "Morpheus:", morpheusVariacao.length, "IBOV:", ibovVariacao.length);
+        console.log("Primeira data do gráfico:", filteredDates[0]);
+        console.log("Primeira variação Morpheus:", morpheusVariacao[0]);
+        console.log("Primeira variação IBOV:", ibovVariacao[0]);
+
+        if (filteredDates.length === 0) {
           throw new Error("Nenhum dado válido encontrado para o gráfico");
         }
 
-        const lastDate = allDates[allDates.length - 1];
+        const lastDate = filteredDates[filteredDates.length - 1];
         document.getElementById("subtitle").textContent = lastDate;
 
-        createMainChart(allDates, morpheus, ibov);
+        createMainChart(filteredDates, morpheusVariacao, ibovVariacao);
 
         // Agora carregar as aplicações com os dados das cotas disponíveis
         if (userData && userData.aplicacoes) {
@@ -987,4 +1052,3 @@
   </script>
 </body>
 </html>
-
