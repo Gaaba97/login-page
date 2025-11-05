@@ -644,9 +644,10 @@
       }
     }
 
-    // FUNÇÃO PARA FORMATAR VALOR COM ESPAÇO APÓS R$
+    // FUNÇÃO PARA FORMATAR VALOR COM ESPAÇO APÓS R$ (CORRIGIDA PARA VALORES NEGATIVOS)
     function formatarValorComEspaco(valorStr) {
       // Se já tem R$ seguido de número sem espaço, adiciona espaço
+      // Agora funciona tanto para valores positivos quanto negativos
       if (valorStr.includes('R$') && !valorStr.includes('R$ ')) {
         return valorStr.replace('R$', 'R$ ');
       }
@@ -701,15 +702,14 @@
           valorNumerico = -parseFloat(valorStr.substring(1).replace('R$', '')
                                              .replace('.', '')
                                              .replace(',', '.'));
+          // CORREÇÃO: Formatar também valores negativos com espaço após R$
+          valorStr = formatarValorComEspaco(valorStr);
         } else {
           // É uma aplicação (valor positivo)
           valorNumerico = parseFloat(valorStr.replace('R$', '')
                                             .replace('.', '')
                                             .replace(',', '.'));
-        }
-        
-        // Formatar valor com espaço após R$ (apenas para valores positivos)
-        if (!valorStr.startsWith('-')) {
+          // Formatar valor com espaço após R$
           valorStr = formatarValorComEspaco(valorStr);
         }
         
@@ -785,7 +785,7 @@
         dataCell.textContent = data;
         
         const valorCell = document.createElement('td');
-        valorCell.textContent = valorStr; // Já formatado com espaço (ou com hífen para negativos)
+        valorCell.textContent = valorStr; // Já formatado com espaço (inclusive para negativos)
         
         const valorAtualCell = document.createElement('td');
         valorAtualCell.textContent = valorAtualFormatado;
