@@ -510,14 +510,33 @@
       // Esconder loading
       loadingElement.style.display = 'none';
 
-      // Verificar se existem aplicações
+      // Verificar se existem aplicações e REMOVER AS ASPAS
       if (!aplicacoesString || aplicacoesString.trim() === '') {
         noAplicacoesElement.style.display = 'block';
         return;
       }
 
+      // REMOVER ASPAS DO INÍCIO E FINAL DA STRING
+      let aplicacoesProcessada = aplicacoesString.trim();
+      
+      // Remover aspas duplas do início
+      if (aplicacoesProcessada.startsWith('"')) {
+        aplicacoesProcessada = aplicacoesProcessada.substring(1);
+      }
+      
+      // Remover aspas duplas do final
+      if (aplicacoesProcessada.endsWith('"')) {
+        aplicacoesProcessada = aplicacoesProcessada.substring(0, aplicacoesProcessada.length - 1);
+      }
+      
+      // Remover espaços em branco extras
+      aplicacoesProcessada = aplicacoesProcessada.trim();
+
+      console.log("String original:", aplicacoesString);
+      console.log("String processada:", aplicacoesProcessada);
+
       // Dividir as aplicações por ponto e vírgula
-      const aplicacoes = aplicacoesString.split(';').filter(ap => ap.trim() !== '');
+      const aplicacoes = aplicacoesProcessada.split(';').filter(ap => ap.trim() !== '');
       
       if (aplicacoes.length === 0) {
         noAplicacoesElement.style.display = 'block';
