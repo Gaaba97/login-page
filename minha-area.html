@@ -446,8 +446,9 @@
         // Adicionar dados de cada dataset
         tooltip.dataPoints.forEach((dataPoint, index) => {
           const dataset = chart.data.datasets[dataPoint.datasetIndex];
-          // CORREÇÃO: Mostrar apenas 2 casas decimais
-          const value = dataPoint.formattedValue || dataPoint.raw.y.toFixed(2) + '%';
+          // CORREÇÃO: Garantir apenas 2 casas decimais
+          const rawValue = dataPoint.raw.y;
+          const value = typeof rawValue === 'number' ? rawValue.toFixed(2) + '%' : '0.00%';
           const label = dataset.label || '';
           const color = dataset.borderColor || '#164CAD';
           
@@ -580,6 +581,15 @@
       return variacoes;
     }
 
+    // FUNÇÃO PARA FORMATAR VALOR COM ESPAÇO APÓS R$
+    function formatarValorComEspaco(valorStr) {
+      // Se já tem R$ seguido de número sem espaço, adiciona espaço
+      if (valorStr.includes('R$') && !valorStr.includes('R$ ')) {
+        return valorStr.replace('R$', 'R$ ');
+      }
+      return valorStr;
+    }
+
     // FUNÇÃO PARA CARREGAR E EXIBIR AS APLICAÇÕES
     function carregarAplicacoes(aplicacoesString) {
       const loadingElement = document.getElementById('aplicacoesLoading');
@@ -632,7 +642,10 @@
         const partes = aplicacao.split('-');
         if (partes.length === 2) {
           const data = partes[0].trim();
-          const valorStr = partes[1].trim();
+          let valorStr = partes[1].trim();
+          
+          // CORREÇÃO: Formatar valor com espaço após R$
+          valorStr = formatarValorComEspaco(valorStr);
           
           // Converter valor para número para calcular total
           const valorNumerico = parseFloat(valorStr.replace('R$', '')
@@ -663,7 +676,7 @@
           dataCell.textContent = data;
           
           const valorCell = document.createElement('td');
-          valorCell.textContent = valorStr;
+          valorCell.textContent = valorStr; // Já formatado com espaço
           
           const valorAtualCell = document.createElement('td');
           valorAtualCell.textContent = valorAtualFormatado;
