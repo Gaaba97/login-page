@@ -653,7 +653,7 @@
       return valorStr;
     }
 
-    // FUNÇÃO PARA PROCESSAR STRING DE APLICAÇÕES
+    // FUNÇÃO PARA PROCESSAR STRING DE APLICAÇÕES (NOVO FORMATO)
     function processarAplicacoesString(aplicacoesString) {
       if (!aplicacoesString || aplicacoesString.trim() === '') return [];
       
@@ -679,27 +679,41 @@
       const aplicacoesProcessadas = [];
       
       aplicacoes.forEach((aplicacao, index) => {
-        // Separar data e valor pelo hífen
-        const partes = aplicacao.split('-');
-        if (partes.length === 2) {
-          const data = partes[0].trim();
-          let valorStr = partes[1].trim();
-          
-          // Formatar valor com espaço após R$
-          valorStr = formatarValorComEspaco(valorStr);
-          
-          // Converter valor para número
-          const valorNumerico = parseFloat(valorStr.replace('R$', '')
-                                                  .replace('.', '')
-                                                  .replace(',', '.'));
-          
-          if (!isNaN(valorNumerico)) {
-            aplicacoesProcessadas.push({
-              data: data,
-              valorStr: valorStr,
-              valorNumerico: valorNumerico
-            });
-          }
+        // NOVO PADRÃO: Data seguida diretamente do valor (só tem hífen se for negativo)
+        // Exemplo: "25/07/2025R$3.000,00" ou "14/08/2025-R$2.150,00"
+        
+        // Encontrar onde começa o "R$"
+        const indexR = aplicacao.indexOf('R$');
+        if (indexR === -1) return; // Pular se não encontrar R$
+        
+        // Separar data e valor
+        const data = aplicacao.substring(0, indexR).trim();
+        let valorStr = aplicacao.substring(indexR).trim();
+        
+        // Verificar se há hífen antes do R$ (indicando valor negativo)
+        let valorNumerico;
+        if (valorStr.startsWith('-R$')) {
+          // É um resgate (valor negativo)
+          valorStr = valorStr.substring(1); // Remove o hífen
+          valorNumerico = -parseFloat(valorStr.replace('R$', '')
+                                             .replace('.', '')
+                                             .replace(',', '.'));
+        } else {
+          // É uma aplicação (valor positivo)
+          valorNumerico = parseFloat(valorStr.replace('R$', '')
+                                            .replace('.', '')
+                                            .replace(',', '.'));
+        }
+        
+        // Formatar valor com espaço após R$
+        valorStr = formatarValorComEspaco(valorStr);
+        
+        if (!isNaN(valorNumerico)) {
+          aplicacoesProcessadas.push({
+            data: data,
+            valorStr: valorStr,
+            valorNumerico: valorNumerico
+          });
         }
       });
       
@@ -1001,7 +1015,7 @@
           ],
         },
         options: {
-          responsive: true,
+          responsive: true;
           maintainAspectRatio: false,
           interaction: {
             intersect: false,
