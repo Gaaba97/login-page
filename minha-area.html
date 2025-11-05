@@ -446,6 +446,7 @@
         // Adicionar dados de cada dataset
         tooltip.dataPoints.forEach((dataPoint, index) => {
           const dataset = chart.data.datasets[dataPoint.datasetIndex];
+          // CORREÇÃO: Mostrar apenas 2 casas decimais
           const value = dataPoint.formattedValue || dataPoint.raw.y.toFixed(2) + '%';
           const label = dataset.label || '';
           const color = dataset.borderColor || '#164CAD';
@@ -980,7 +981,7 @@
                   size: axisFontSize,
                   weight: "300",
                 },
-                callback: (v) => `${v.toFixed(0)}%`,
+                callback: (v) => `${v.toFixed(0)}%`, // Eixo Y com 0 casas decimais
                 stepSize: 5
               },
               grid: { color: "rgba(0,0,0,0.05)" },
