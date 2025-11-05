@@ -653,7 +653,7 @@
       return valorStr;
     }
 
-    // FUNÇÃO PARA PROCESSAR STRING DE APLICAÇÕES (NOVO FORMATO)
+    // FUNÇÃO PARA PROCESSAR STRING DE APLICAÇÕES (NOVO FORMATO CORRIGIDO)
     function processarAplicacoesString(aplicacoesString) {
       if (!aplicacoesString || aplicacoesString.trim() === '') return [];
       
@@ -680,22 +680,25 @@
       
       aplicacoes.forEach((aplicacao, index) => {
         // NOVO PADRÃO: Data seguida diretamente do valor (só tem hífen se for negativo)
-        // Exemplo: "25/07/2025R$3.000,00" ou "14/08/2025-R$2.150,00"
+        // Exemplo: "25/07/2025R$3.000,00" ou "15/10/2025-R$2.971,20"
         
-        // Encontrar onde começa o "R$"
-        const indexR = aplicacao.indexOf('R$');
-        if (indexR === -1) return; // Pular se não encontrar R$
+        // CORREÇÃO: Buscar pelo padrão de data (dd/mm/aaaa) para separar corretamente
+        const dataRegex = /(\d{2}\/\d{2}\/\d{4})/;
+        const match = aplicacao.match(dataRegex);
         
-        // Separar data e valor
-        const data = aplicacao.substring(0, indexR).trim();
-        let valorStr = aplicacao.substring(indexR).trim();
+        if (!match) return; // Pular se não encontrar padrão de data
         
-        // Verificar se há hífen antes do R$ (indicando valor negativo)
+        const data = match[1];
+        // Pegar o restante da string após a data
+        const restante = aplicacao.substring(data.length).trim();
+        
+        let valorStr = restante;
         let valorNumerico;
-        if (valorStr.startsWith('-R$')) {
-          // É um resgate (valor negativo)
-          valorStr = valorStr.substring(1); // Remove o hífen
-          valorNumerico = -parseFloat(valorStr.replace('R$', '')
+        
+        // Verificar se o valor começa com hífen (indicando negativo)
+        if (valorStr.startsWith('-')) {
+          // É um resgate (valor negativo) - manter o hífen no valorStr
+          valorNumerico = -parseFloat(valorStr.substring(1).replace('R$', '')
                                              .replace('.', '')
                                              .replace(',', '.'));
         } else {
@@ -705,8 +708,10 @@
                                             .replace(',', '.'));
         }
         
-        // Formatar valor com espaço após R$
-        valorStr = formatarValorComEspaco(valorStr);
+        // Formatar valor com espaço após R$ (apenas para valores positivos)
+        if (!valorStr.startsWith('-')) {
+          valorStr = formatarValorComEspaco(valorStr);
+        }
         
         if (!isNaN(valorNumerico)) {
           aplicacoesProcessadas.push({
@@ -714,6 +719,8 @@
             valorStr: valorStr,
             valorNumerico: valorNumerico
           });
+          
+          console.log(`Aplicação processada: Data=${data}, Valor=${valorStr}, Numérico=${valorNumerico}`);
         }
       });
       
@@ -733,6 +740,8 @@
       // Processar aplicações
       aplicacoesProcessadas = processarAplicacoesString(aplicacoesString);
       
+      console.log("Aplicações processadas:", aplicacoesProcessadas);
+      
       if (aplicacoesProcessadas.length === 0) {
         noAplicacoesElement.style.display = 'block';
         return;
@@ -741,6 +750,9 @@
       let totalAplicado = 0;
       let totalAtual = 0;
       let temDadosValidos = false;
+
+      // Limpar tabela antes de adicionar novas linhas
+      tableBody.innerHTML = '';
 
       // Processar cada aplicação
       aplicacoesProcessadas.forEach((aplicacao, index) => {
@@ -773,7 +785,7 @@
         dataCell.textContent = data;
         
         const valorCell = document.createElement('td');
-        valorCell.textContent = valorStr; // Já formatado com espaço
+        valorCell.textContent = valorStr; // Já formatado com espaço (ou com hífen para negativos)
         
         const valorAtualCell = document.createElement('td');
         valorAtualCell.textContent = valorAtualFormatado;
@@ -1015,7 +1027,7 @@
           ],
         },
         options: {
-          responsive: true, // CORREÇÃO: Removido o ponto e vírgula extra aqui
+          responsive: true,
           maintainAspectRatio: false,
           interaction: {
             intersect: false,
