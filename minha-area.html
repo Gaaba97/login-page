@@ -91,16 +91,11 @@
       text-align: left;
     }
 
-    /* CORREÇÃO: Garantir mesma largura para gráficos e tabela */
-    .charts-main-container,
-    .data-table-container {
+    .charts-main-container {
       width: 95%;
       max-width: 1200px;
       margin-left: auto;
       margin-right: auto;
-    }
-
-    .charts-main-container {
       display: flex;
       justify-content: center;
       align-items: flex-start;
@@ -109,7 +104,7 @@
     }
 
     .main-chart-container {
-      flex: 2;
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -131,312 +126,6 @@
     canvas {
       width: 100%;
       height: 380px !important;
-    }
-
-    .side-charts-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      min-width: 250px;
-    }
-
-    .side-chart {
-      background-color: #fff;
-      border-radius: 0;
-      padding: 15px;
-      box-shadow: none;
-    }
-
-    .side-chart h3 {
-      font-size: 14px;
-      color: #000000;
-      margin: 0 0 15px 0;
-      text-align: center;
-      font-weight: 600;
-      font-family: "Montserrat", sans-serif;
-      letter-spacing: 0.5px;
-    }
-
-    .side-chart canvas {
-      height: 120px !important;
-    }
-
-    .data-table-container {
-      margin-top: 30px;
-      overflow: visible;
-    }
-
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: "Montserrat", sans-serif;
-      margin-bottom: 20px;
-      border: none;
-      table-layout: fixed;
-    }
-
-    .data-table th {
-      background-color: #164CAD;
-      color: white;
-      padding: 8px 4px;
-      text-align: center;
-      font-weight: bold;
-      border: none;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .data-table td {
-      padding: 6px 4px;
-      text-align: center;
-      border: none;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .data-table tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-
-    .data-table tr:hover {
-      background-color: #f1f1f1;
-    }
-
-    .data-table .header-row {
-      background-color: #164CAD;
-      color: white;
-    }
-
-    .data-table .column-w {
-      background-color: #164CAD;
-      color: white;
-      font-weight: bold;
-    }
-
-    .data-table th:nth-last-child(3),
-    .data-table td:nth-last-child(3) {
-      border-right: 2px solid #a3a3a3;
-    }
-
-    .data-table .merged-cell {
-      vertical-align: middle;
-    }
-
-    .data-table th:nth-child(n+4),
-    .data-table td:nth-child(n+4) {
-      width: 50px;
-      min-width: 50px;
-      max-width: 50px;
-    }
-
-    .data-table th:nth-child(1),
-    .data-table td:nth-child(1) {
-      width: 80px;
-    }
-
-    .data-table th:nth-child(2),
-    .data-table td:nth-child(2) {
-      width: 70px;
-    }
-
-    .data-table th:nth-child(3),
-    .data-table td:nth-child(3) {
-      width: 60px;
-    }
-
-    .desktop-device .data-table {
-      font-size: 14px;
-    }
-
-    .desktop-device .data-table th,
-    .desktop-device .data-table td {
-      padding: 10px 6px;
-    }
-
-    /* ESTILOS PARA SMARTPHONE VERTICAL */
-    .mobile-device .charts-main-container,
-    .mobile-device .data-table-container {
-      width: 98%;
-      max-width: none;
-    }
-
-    .mobile-device .charts-main-container {
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .mobile-device .main-chart-container {
-      flex: none;
-      width: 100%;
-    }
-
-    .mobile-device .chart-container {
-      width: 100%;
-      height: 380px; /* Aumentado */
-    }
-
-    .mobile-device .main-chart-container canvas {
-      height: 360px !important; /* Aumentado */
-    }
-
-    .mobile-device .side-charts-container {
-      flex: none;
-      flex-direction: row;
-      gap: 15px;
-      width: 100%;
-    }
-
-    .mobile-device .side-chart {
-      flex: 1;
-      width: 50%;
-    }
-
-    .mobile-device .side-chart h3 {
-      font-size: 18px; /* Aumentado */
-      margin-bottom: 18px;
-    }
-
-    .mobile-device .side-chart canvas {
-      height: 160px !important; /* Aumentado */
-    }
-
-    .mobile-device .data-table-container {
-      padding: 0 10px;
-    }
-
-    .mobile-device .data-table {
-      font-size: 12px; /* Aumentado */
-      margin: 0 auto;
-    }
-
-    .mobile-device .data-table th,
-    .mobile-device .data-table td {
-      padding: 5px 3px; /* Aumentado */
-    }
-
-    .mobile-device .data-table th:nth-child(n+4),
-    .mobile-device .data-table td:nth-child(n+4) {
-      width: 45px;
-      min-width: 45px;
-      max-width: 45px;
-    }
-
-    .mobile-device .data-table th:nth-child(1),
-    .mobile-device .data-table td:nth-child(1) {
-      width: 70px;
-    }
-
-    .mobile-device .data-table th:nth-child(2),
-    .mobile-device .data-table td:nth-child(2) {
-      width: 60px;
-    }
-
-    .mobile-device .data-table th:nth-child(3),
-    .mobile-device .data-table td:nth-child(3) {
-      width: 50px;
-    }
-
-    /* NAVBAR E FONTES AUMENTADAS NO MOBILE VERTICAL */
-    .mobile-device .navbar {
-      padding: 18px 20px; /* Aumentado para acomodar fontes maiores */
-      min-height: 75px; /* Aumentado para acomodar fontes maiores */
-    }
-
-    .mobile-device .navbar .welcome {
-      font-size: 24px; /* Aumentado */
-      font-weight: bold; /* Alterado de 600 para bold */
-    }
-
-    .mobile-device .navbar .links {
-      gap: 20px; /* Aumentado */
-    }
-
-    .mobile-device .navbar a {
-      font-size: 24px; /* Aumentado - mesmo tamanho do Bem-vindo */
-      font-weight: bold; /* Mesmo peso do Bem-vindo */
-    }
-
-    /* ESTILOS PARA MOBILE LANDSCAPE */
-    .mobile-landscape .charts-main-container,
-    .mobile-landscape .data-table-container {
-      width: 98%;
-      max-width: 1200px;
-    }
-
-    .mobile-landscape .charts-main-container {
-      flex-direction: row;
-      gap: 15px;
-    }
-
-    .mobile-landscape .main-chart-container {
-      flex: 1.8;
-    }
-
-    .mobile-landscape .side-charts-container {
-      flex: 1;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .mobile-landscape .side-chart {
-      width: 100%;
-    }
-
-    .mobile-landscape .side-chart h3 {
-      font-size: 16px; /* Aumentado */
-    }
-
-    .mobile-landscape .side-chart canvas {
-      height: 120px !important; /* Aumentado */
-    }
-
-    .mobile-landscape .chart-container {
-      height: 320px; /* Aumentado */
-    }
-
-    .mobile-landscape .main-chart-container canvas {
-      height: 300px !important; /* Aumentado */
-    }
-
-    /* CORREÇÃO: Garantir alinhamento perfeito da tabela em landscape */
-    .mobile-landscape .data-table-container {
-      padding: 0;
-    }
-
-    .mobile-landscape .data-table {
-      font-size: 11px; /* Aumentado */
-      width: 100%;
-      table-layout: fixed;
-    }
-
-    .mobile-landscape .data-table th,
-    .mobile-landscape .data-table td {
-      padding: 5px 3px; /* Aumentado */
-    }
-
-    .mobile-landscape .data-table th:nth-child(n+4),
-    .mobile-landscape .data-table td:nth-child(n+4) {
-      width: 40px;
-      min-width: 40px;
-      max-width: 40px;
-    }
-
-    .mobile-landscape .data-table th:nth-child(1),
-    .mobile-landscape .data-table td:nth-child(1) {
-      width: 60px;
-    }
-
-    .mobile-landscape .data-table th:nth-child(2),
-    .mobile-landscape .data-table td:nth-child(2) {
-      width: 50px;
-    }
-
-    .mobile-landscape .data-table th:nth-child(3),
-    .mobile-landscape .data-table td:nth-child(3) {
-      width: 45px;
     }
 
     .loading {
@@ -582,24 +271,6 @@
         </div>
         <!-- Tooltip personalizado será inserido aqui via JavaScript -->
       </div>
-      
-      <div class="side-charts-container">
-        <div class="side-chart">
-          <h3>Concentração da Carteira</h3>
-          <canvas id="concentracaoChart"></canvas>
-        </div>
-        
-        <div class="side-chart">
-          <h3>Concentração da Carteira Ex Nasdaq-100</h3>
-          <canvas id="concentracaoExNasdaqChart"></canvas>
-        </div>
-      </div>
-    </div>
-    
-    <div class="data-table-container">
-      <div class="loading" id="tableLoading">Carregando tabela...</div>
-      <table class="data-table" id="dataTable" style="display: none;">
-      </table>
     </div>
 
     <div id="deviceInfo"></div>
@@ -645,9 +316,7 @@
 
     // Variável global para armazenar as instâncias dos gráficos
     window.chartInstances = {
-      performanceChart: null,
-      concentracaoChart: null,
-      concentracaoExNasdaqChart: null
+      performanceChart: null
     };
 
     // Tooltip personalizado
@@ -788,14 +457,10 @@
         document.getElementById("subtitle").textContent = lastDate;
 
         createMainChart(allDates, morpheus, ibov);
-        createSideCharts(rows);
-        loadTableData(rows);
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         document.getElementById("subtitle").textContent = "Erro ao carregar dados";
-        document.getElementById("tableLoading").textContent = `Erro: ${error.message}`;
-        document.getElementById("tableLoading").className = "error";
       }
     }
 
@@ -953,225 +618,6 @@
       console.log("Gráfico principal criado com sucesso");
     }
 
-    function createSideCharts(rows) {
-      try {
-        const concentracaoLabels = [];
-        const concentracaoData = [];
-        
-        for (let i = 11; i <= 13; i++) {
-          if (rows[i] && rows[i].length > 2) {
-            const cols = rows[i].split(",");
-            if (cols[1] && cols[2]) {
-              concentracaoLabels.push(cols[1].trim());
-              concentracaoData.push(parseFloat(cols[2].replace(",", ".")) || 0);
-            }
-          }
-        }
-
-        const concentracaoExNasdaqLabels = [];
-        const concentracaoExNasdaqData = [];
-        
-        for (let i = 15; i <= 17; i++) {
-          if (rows[i] && rows[i].length > 2) {
-            const cols = rows[i].split(",");
-            if (cols[1] && cols[2]) {
-              concentracaoExNasdaqLabels.push(cols[1].trim());
-              concentracaoExNasdaqData.push(parseFloat(cols[2].replace(",", ".")) || 0);
-            }
-          }
-        }
-
-        console.log("Dados Concentração:", concentracaoLabels, concentracaoData);
-        console.log("Dados Concentração Ex Nasdaq:", concentracaoExNasdaqLabels, concentracaoExNasdaqData);
-
-        createBarChart('concentracaoChart', concentracaoLabels, concentracaoData, 'Concentração da Carteira');
-        createBarChart('concentracaoExNasdaqChart', concentracaoExNasdaqLabels, concentracaoExNasdaqData, 'Concentração da Carteira Ex Nasdaq-100');
-
-      } catch (error) {
-        console.error("Erro ao criar gráficos laterais:", error);
-      }
-    }
-
-    function createBarChart(canvasId, labels, data, title) {
-      const canvas = document.getElementById(canvasId);
-      const ctx = canvas.getContext("2d");
-
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
-
-      const isMobileVertical = document.body.classList.contains('mobile-device') && 
-                          !document.body.classList.contains('mobile-landscape');
-      
-      // Aumentar significativamente as fontes no mobile vertical
-      const axisFontSize = isMobileVertical ? 22 : 15; // Aumentado para 22px no mobile vertical
-
-      const chart = new Chart(ctx, {
-        type: "bar",
-        data: {
-          labels: labels,
-          datasets: [{
-            data: data,
-            backgroundColor: [
-              '#164CAD',
-              '#164CAD', 
-              '#164CAD'
-            ],
-            borderColor: [
-              '#164CAD',
-              '#164CAD',
-              '#164CAD'
-            ],
-            borderWidth: 0.8,
-            borderRadius: 4,
-            borderSkipped: false,
-            barPercentage: 0.4,
-            categoryPercentage: 0.6,
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false
-            },
-            tooltip: {
-              enabled: false
-            }
-          },
-          scales: {
-            x: {
-              display: false,
-            },
-            y: {
-              position: 'left',
-              ticks: {
-                color: '#000',
-                font: {
-                  family: 'Montserrat',
-                  size: axisFontSize,
-                  weight: '300'
-                },
-                padding: 5
-              },
-              grid: {
-                display: false
-              }
-            },
-            xRight: {
-              position: 'right',
-              ticks: {
-                color: '#000',
-                font: {
-                  family: 'Montserrat',
-                  size: axisFontSize,
-                  weight: '300'
-                },
-                callback: function(value, index) {
-                  return data[index] + '%';
-                }
-              },
-              grid: {
-                display: false
-              }
-            }
-          }
-        }
-      });
-
-      // Armazenar a instância do gráfico
-      if (canvasId === 'concentracaoChart') {
-        window.chartInstances.concentracaoChart = chart;
-      } else if (canvasId === 'concentracaoExNasdaqChart') {
-        window.chartInstances.concentracaoExNasdaqChart = chart;
-      }
-    }
-
-    function loadTableData(rows) {
-      try {
-        console.log("Carregando dados da tabela...");
-
-        if (rows.length < 5) {
-          throw new Error("Dados insuficientes para a tabela");
-        }
-
-        const headerRow = rows[1].split(",");
-        const dataRows = [
-          rows[2].split(","),
-          rows[3].split(","),
-          rows[4].split(",")
-        ];
-
-        console.log("Cabeçalhos:", headerRow.slice(22, 38));
-        console.log("Dados linha 3:", dataRows[0].slice(22, 38));
-        console.log("Dados linha 4:", dataRows[1].slice(22, 38));
-        console.log("Dados linha 5:", dataRows[2].slice(22, 38));
-
-        const tableHeaders = headerRow.slice(22, 38);
-        
-        const table = document.getElementById("dataTable");
-        const tableLoading = document.getElementById("tableLoading");
-        
-        table.innerHTML = "";
-        
-        const headerRowElement = document.createElement("tr");
-        headerRowElement.className = "header-row";
-        
-        tableHeaders.forEach((header, index) => {
-          const th = document.createElement("th");
-          th.textContent = header?.trim() || "";
-          if (index === 0) {
-            th.className = "column-w";
-          }
-          headerRowElement.appendChild(th);
-        });
-        
-        table.appendChild(headerRowElement);
-        
-        dataRows.forEach((rowData, rowIndex) => {
-          const dataRowElement = document.createElement("tr");
-          
-          const rowCells = rowData.slice(22, 38);
-          
-          if (rowIndex === 0) {
-            const mergedCell = document.createElement("td");
-            mergedCell.className = "merged-cell";
-            mergedCell.rowSpan = 3;
-            mergedCell.textContent = rowCells[0]?.trim() || "";
-            dataRowElement.appendChild(mergedCell);
-            
-            rowCells.slice(1).forEach((cellData, cellIndex) => {
-              const td = document.createElement("td");
-              td.textContent = cellData?.trim() || "";
-              dataRowElement.appendChild(td);
-            });
-          } else {
-            rowCells.slice(1).forEach((cellData, cellIndex) => {
-              const td = document.createElement("td");
-              td.textContent = cellData?.trim() || "";
-              dataRowElement.appendChild(td);
-            });
-          }
-          
-          table.appendChild(dataRowElement);
-        });
-
-        table.style.display = "table";
-        tableLoading.style.display = "none";
-        
-        console.log("Tabela criada com sucesso");
-
-      } catch (error) {
-        console.error("Erro ao criar tabela:", error);
-        document.getElementById("tableLoading").textContent = `Erro na tabela: ${error.message}`;
-        document.getElementById("tableLoading").className = "error";
-      }
-    }
-
     loadData();
   </script>
 
@@ -1207,22 +653,9 @@
       setTimeout(redesenharGraficosSuave, 100);
     }
 
-    function ajustarAlinhamentoTabela() {
-      const chartsContainer = document.querySelector('.charts-main-container');
-      const tableContainer = document.querySelector('.data-table-container');
-      
-      if (chartsContainer && tableContainer) {
-        // Forçar a mesma largura
-        const chartsWidth = chartsContainer.offsetWidth;
-        tableContainer.style.width = chartsWidth + 'px';
-      }
-    }
-
     function redesenharGraficosSuave() {
       // Recriar os gráficos para aplicar as novas configurações de fonte
-      if (window.chartInstances.performanceChart || 
-          window.chartInstances.concentracaoChart || 
-          window.chartInstances.concentracaoExNasdaqChart) {
+      if (window.chartInstances.performanceChart) {
         
         // Recarregar os dados para recriar os gráficos com as novas configurações
         setTimeout(() => {
@@ -1230,9 +663,6 @@
           window.dispatchEvent(event);
         }, 100);
       }
-      
-      // Ajustar alinhamento da tabela
-      setTimeout(ajustarAlinhamentoTabela, 50);
     }
 
     window.addEventListener('resize', function() {
