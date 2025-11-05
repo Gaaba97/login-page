@@ -149,7 +149,7 @@
       background-color: #fff;
       border-radius: 8px;
       padding: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      /* REMOVIDA A BORDA: box-shadow: 0 2px 10px rgba(0,0,0,0.1); */
     }
 
     .aplicacoes-container h2 {
@@ -163,6 +163,7 @@
       width: 100%;
       border-collapse: collapse;
       font-family: "Montserrat", sans-serif;
+      /* REMOVIDA A BORDA DA TABELA */
     }
 
     .aplicacoes-table th {
@@ -347,6 +348,7 @@
           <tr>
             <th>Data</th>
             <th>Valor Aplicado</th>
+            <th>Valor Atual</th> <!-- NOVA COLUNA -->
           </tr>
         </thead>
         <tbody id="aplicacoesTableBody">
@@ -383,6 +385,8 @@
 
     // Variável global para armazenar os dados do usuário
     let userData = null;
+    let cotasData = null;
+    let ultimaCota = null;
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -395,8 +399,8 @@
           const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
           document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
           
-          // Carregar aplicações do usuário
-          carregarAplicacoes(userData.aplicacoes);
+          // Carregar dados da planilha primeiro, depois as aplicações
+          await loadData();
         }
       } else {
         window.location.href = "index.html";
@@ -500,6 +504,44 @@
       tooltipEl.className = `custom-tooltip ${placement} visible`;
     }
 
+    // FUNÇÃO PARA ENCONTRAR COTA POR DATA
+    function encontrarCotaPorData(dataAplicacao) {
+      if (!cotasData || cotasData.length === 0) return null;
+      
+      // Converter data da aplicação para formato Date
+      const [dia, mes, ano] = dataAplicacao.split('/');
+      const dataAplicacaoObj = new Date(ano, mes - 1, dia);
+      
+      // Encontrar a cota mais próxima da data da aplicação (igual ou anterior)
+      let cotaEncontrada = null;
+      
+      for (let i = cotasData.length - 1; i >= 0; i--) {
+        const cotaData = cotasData[i];
+        const [cotaDia, cotaMes, cotaAno] = cotaData.data.split('/');
+        const dataCotaObj = new Date(cotaAno, cotaMes - 1, cotaDia);
+        
+        if (dataCotaObj <= dataAplicacaoObj) {
+          cotaEncontrada = cotaData;
+          break;
+        }
+      }
+      
+      return cotaEncontrada;
+    }
+
+    // FUNÇÃO PARA CALCULAR VALOR ATUAL
+    function calcularValorAtual(valorAplicado, cotaAplicacao) {
+      if (!cotaAplicacao || !ultimaCota) return null;
+      
+      // Calcular quantidade de cotas compradas
+      const quantidadeCotas = valorAplicado / cotaAplicacao.cota;
+      
+      // Calcular valor atual
+      const valorAtual = quantidadeCotas * ultimaCota;
+      
+      return valorAtual;
+    }
+
     // FUNÇÃO PARA CARREGAR E EXIBIR AS APLICAÇÕES
     function carregarAplicacoes(aplicacoesString) {
       const loadingElement = document.getElementById('aplicacoesLoading');
@@ -544,6 +586,7 @@
       }
 
       let totalAplicado = 0;
+      let totalAtual = 0;
 
       // Processar cada aplicação
       aplicacoes.forEach((aplicacao, index) => {
@@ -562,6 +605,19 @@
             totalAplicado += valorNumerico;
           }
 
+          // Encontrar cota na data da aplicação
+          const cotaAplicacao = encontrarCotaPorData(data);
+          let valorAtual = null;
+          let valorAtualFormatado = 'N/A';
+
+          if (cotaAplicacao && valorNumerico) {
+            valorAtual = calcularValorAtual(valorNumerico, cotaAplicacao);
+            if (valorAtual) {
+              totalAtual += valorAtual;
+              valorAtualFormatado = `R$ ${valorAtual.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            }
+          }
+
           // Criar linha da tabela
           const row = document.createElement('tr');
           
@@ -571,8 +627,12 @@
           const valorCell = document.createElement('td');
           valorCell.textContent = valorStr;
           
+          const valorAtualCell = document.createElement('td');
+          valorAtualCell.textContent = valorAtualFormatado;
+          
           row.appendChild(dataCell);
           row.appendChild(valorCell);
+          row.appendChild(valorAtualCell);
           
           tableBody.appendChild(row);
         }
@@ -584,15 +644,20 @@
         totalRow.className = 'total-row';
         
         const totalLabelCell = document.createElement('td');
-        totalLabelCell.textContent = 'Total Aplicado';
+        totalLabelCell.textContent = 'Total';
         totalLabelCell.style.fontWeight = 'bold';
         
-        const totalValueCell = document.createElement('td');
-        totalValueCell.textContent = `R$ ${totalAplicado.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-        totalValueCell.style.fontWeight = 'bold';
+        const totalAplicadoCell = document.createElement('td');
+        totalAplicadoCell.textContent = `R$ ${totalAplicado.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        totalAplicadoCell.style.fontWeight = 'bold';
+        
+        const totalAtualCell = document.createElement('td');
+        totalAtualCell.textContent = `R$ ${totalAtual.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        totalAtualCell.style.fontWeight = 'bold';
         
         totalRow.appendChild(totalLabelCell);
-        totalRow.appendChild(totalValueCell);
+        totalRow.appendChild(totalAplicadoCell);
+        totalRow.appendChild(totalAtualCell);
         
         tableBody.appendChild(totalRow);
       }
@@ -611,7 +676,7 @@
         }
         
         const data = await response.text();
-        console.log("Dados CSV carregados:", data.substring(0, 200));
+        console.log("Dados CSV carregados:", data.substring(0, 500));
         
         const rows = data.split("\n").filter(row => row.trim() !== '');
         console.log("Número de linhas:", rows.length);
@@ -620,26 +685,60 @@
           throw new Error("Dados insuficientes no CSV");
         }
 
+        // ENCONTRAR PRIMEIRA DATA DE APLICAÇÃO PARA FILTRAR O GRÁFICO
+        let primeiraDataAplicacao = null;
+        if (userData && userData.aplicacoes) {
+          const aplicacoesProcessada = userData.aplicacoes.trim()
+            .replace(/^"/, '').replace(/"$/, '').trim();
+          const aplicacoes = aplicacoesProcessada.split(';').filter(ap => ap.trim() !== '');
+          
+          if (aplicacoes.length > 0) {
+            const primeiraAplicacao = aplicacoes[0].split('-')[0].trim();
+            primeiraDataAplicacao = primeiraAplicacao;
+            console.log("Primeira data de aplicação:", primeiraDataAplicacao);
+          }
+        }
+
         const allDates = [];
         const morpheus = [];
         const ibov = [];
+        cotasData = []; // Array para armazenar dados das cotas
 
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
           if (cols.length >= 12) {
             const date = cols[9]?.trim();
-            const f1 = parseFloat(cols[10]);
-            const f2 = parseFloat(cols[11]);
+            const f1 = parseFloat(cols[10]); // Coluna K - Valor da cota
+            const f2 = parseFloat(cols[11]); // Coluna L - IBOV
             
             if (date && !isNaN(f1) && !isNaN(f2)) {
-              allDates.push(date);
-              morpheus.push((f1 - 1) * 100);
-              ibov.push((f2 - 1) * 100);
+              // Armazenar dados da cota
+              cotasData.push({
+                data: date,
+                cota: f1
+              });
+              
+              // Filtrar datas a partir da primeira aplicação
+              if (!primeiraDataAplicacao || date >= primeiraDataAplicacao) {
+                allDates.push(date);
+                morpheus.push((f1 - 1) * 100); // Usando a cota para cálculo Morpheus
+                ibov.push((f2 - 1) * 100);
+              }
             }
           }
         }
 
+        // OBTER ÚLTIMA COTA (C9 da planilha)
+        if (rows.length >= 9) {
+          const linhaC9 = rows[8].split(","); // Linha 9 (índice 8)
+          if (linhaC9.length >= 3) {
+            ultimaCota = parseFloat(linhaC9[2]); // Coluna C (índice 2)
+            console.log("Última cota (C9):", ultimaCota);
+          }
+        }
+
         console.log("Dados processados - Datas:", allDates.length, "Morpheus:", morpheus.length, "IBOV:", ibov.length);
+        console.log("Primeira data do gráfico:", allDates[0]);
 
         if (allDates.length === 0) {
           throw new Error("Nenhum dado válido encontrado para o gráfico");
@@ -649,6 +748,11 @@
         document.getElementById("subtitle").textContent = lastDate;
 
         createMainChart(allDates, morpheus, ibov);
+
+        // Agora carregar as aplicações com os dados das cotas disponíveis
+        if (userData && userData.aplicacoes) {
+          carregarAplicacoes(userData.aplicacoes);
+        }
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -809,8 +913,6 @@
 
       console.log("Gráfico principal criado com sucesso");
     }
-
-    loadData();
   </script>
 
   <script>
