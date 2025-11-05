@@ -388,7 +388,7 @@
     let cotasData = null;
     let ultimaCota = null;
 
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(aauth, async (user) => {
       if (user) {
         const docRef = doc(db, "usuarios", user.uid);
         const docSnap = await getDoc(docRef);
@@ -529,17 +529,30 @@
       return cotaEncontrada;
     }
 
-    // FUNÇÃO PARA CALCULAR VALOR ATUAL
+    // FUNÇÃO PARA CALCULAR VALOR ATUAL COM MAIOR PRECISÃO
     function calcularValorAtual(valorAplicado, cotaAplicacao) {
       if (!cotaAplicacao || !ultimaCota) return null;
       
-      // Calcular quantidade de cotas compradas
-      const quantidadeCotas = valorAplicado / cotaAplicacao.cota;
-      
-      // Calcular valor atual
-      const valorAtual = quantidadeCotas * ultimaCota;
-      
-      return valorAtual;
+      try {
+        // Usar cálculo de alta precisão para evitar erros de arredondamento
+        const quantidadeCotas = valorAplicado / cotaAplicacao.cota;
+        
+        // Arredondar para 6 casas decimais para maior precisão
+        const quantidadeCotasPrecisa = Math.round(quantidadeCotas * 1000000) / 1000000;
+        
+        // Calcular valor atual com alta precisão
+        const valorAtual = quantidadeCotasPrecisa * ultimaCota;
+        
+        // Arredondar para 2 casas decimais (centavos)
+        const valorAtualArredondado = Math.round(valorAtual * 100) / 100;
+        
+        console.log(`Cálculo detalhado: R$ ${valorAplicado} / ${cotaAplicacao.cota} = ${quantidadeCotasPrecisa} cotas × ${ultimaCota} = R$ ${valorAtualArredondado}`);
+        
+        return valorAtualArredondado;
+      } catch (error) {
+        console.error("Erro no cálculo:", error);
+        return null;
+      }
     }
 
     // FUNÇÃO PARA CARREGAR E EXIBIR AS APLICAÇÕES
@@ -612,7 +625,7 @@
 
           if (cotaAplicacao && valorNumerico) {
             valorAtual = calcularValorAtual(valorNumerico, cotaAplicacao);
-            if (valorAtual) {
+            if (valorAtual !== null) {
               totalAtual += valorAtual;
               valorAtualFormatado = `R$ ${valorAtual.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             }
