@@ -141,6 +141,71 @@
       margin: 10px 0;
     }
 
+    /* ESTILOS DA TABELA DE APLICAÇÕES */
+    .aplicacoes-container {
+      width: 95%;
+      max-width: 800px;
+      margin: 30px auto;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .aplicacoes-container h2 {
+      color: #1E4DB7;
+      margin-bottom: 20px;
+      text-align: center;
+      font-family: "DM Sans", sans-serif;
+    }
+
+    .aplicacoes-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: "Montserrat", sans-serif;
+    }
+
+    .aplicacoes-table th {
+      background-color: #164CAD;
+      color: white;
+      padding: 12px 15px;
+      text-align: left;
+      font-weight: bold;
+      border: none;
+    }
+
+    .aplicacoes-table td {
+      padding: 10px 15px;
+      text-align: left;
+      border: none;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .aplicacoes-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .aplicacoes-table tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .aplicacoes-table .total-row {
+      background-color: #164CAD;
+      color: white;
+      font-weight: bold;
+    }
+
+    .aplicacoes-table .total-row td {
+      border-bottom: none;
+    }
+
+    .no-aplicacoes {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 20px;
+    }
+
     #deviceInfo {
       display: none !important;
     }
@@ -273,6 +338,26 @@
       </div>
     </div>
 
+    <!-- NOVA SEÇÃO: TABELA DE APLICAÇÕES -->
+    <div class="aplicacoes-container">
+      <h2>Minhas Aplicações</h2>
+      <div class="loading" id="aplicacoesLoading">Carregando aplicações...</div>
+      <table class="aplicacoes-table" id="aplicacoesTable" style="display: none;">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Valor Aplicado</th>
+          </tr>
+        </thead>
+        <tbody id="aplicacoesTableBody">
+          <!-- As aplicações serão inseridas aqui via JavaScript -->
+        </tbody>
+      </table>
+      <div class="no-aplicacoes" id="noAplicacoes" style="display: none;">
+        Nenhuma aplicação encontrada.
+      </div>
+    </div>
+
     <div id="deviceInfo"></div>
   </div>
 
@@ -296,16 +381,22 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Variável global para armazenar os dados do usuário
+    let userData = null;
+
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const docRef = doc(db, "usuarios", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          const data = docSnap.data();
-          const nome = data.nome || "Usuário";
-          const genero = (data.genero || "masculino").toLowerCase();
+          userData = docSnap.data();
+          const nome = userData.nome || "Usuário";
+          const genero = (userData.genero || "masculino").toLowerCase();
           const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
           document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+          
+          // Carregar aplicações do usuário
+          carregarAplicacoes(userData.aplicacoes);
         }
       } else {
         window.location.href = "index.html";
@@ -407,6 +498,88 @@
       
       // Atualizar classe de posicionamento
       tooltipEl.className = `custom-tooltip ${placement} visible`;
+    }
+
+    // FUNÇÃO PARA CARREGAR E EXIBIR AS APLICAÇÕES
+    function carregarAplicacoes(aplicacoesString) {
+      const loadingElement = document.getElementById('aplicacoesLoading');
+      const tableElement = document.getElementById('aplicacoesTable');
+      const tableBody = document.getElementById('aplicacoesTableBody');
+      const noAplicacoesElement = document.getElementById('noAplicacoes');
+
+      // Esconder loading
+      loadingElement.style.display = 'none';
+
+      // Verificar se existem aplicações
+      if (!aplicacoesString || aplicacoesString.trim() === '') {
+        noAplicacoesElement.style.display = 'block';
+        return;
+      }
+
+      // Dividir as aplicações por ponto e vírgula
+      const aplicacoes = aplicacoesString.split(';').filter(ap => ap.trim() !== '');
+      
+      if (aplicacoes.length === 0) {
+        noAplicacoesElement.style.display = 'block';
+        return;
+      }
+
+      let totalAplicado = 0;
+
+      // Processar cada aplicação
+      aplicacoes.forEach((aplicacao, index) => {
+        // Separar data e valor pelo hífen
+        const partes = aplicacao.split('-');
+        if (partes.length === 2) {
+          const data = partes[0].trim();
+          const valorStr = partes[1].trim();
+          
+          // Converter valor para número para calcular total
+          const valorNumerico = parseFloat(valorStr.replace('R$', '')
+                                                  .replace('.', '')
+                                                  .replace(',', '.'));
+          
+          if (!isNaN(valorNumerico)) {
+            totalAplicado += valorNumerico;
+          }
+
+          // Criar linha da tabela
+          const row = document.createElement('tr');
+          
+          const dataCell = document.createElement('td');
+          dataCell.textContent = data;
+          
+          const valorCell = document.createElement('td');
+          valorCell.textContent = valorStr;
+          
+          row.appendChild(dataCell);
+          row.appendChild(valorCell);
+          
+          tableBody.appendChild(row);
+        }
+      });
+
+      // Adicionar linha de total
+      if (totalAplicado > 0) {
+        const totalRow = document.createElement('tr');
+        totalRow.className = 'total-row';
+        
+        const totalLabelCell = document.createElement('td');
+        totalLabelCell.textContent = 'Total Aplicado';
+        totalLabelCell.style.fontWeight = 'bold';
+        
+        const totalValueCell = document.createElement('td');
+        totalValueCell.textContent = `R$ ${totalAplicado.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        totalValueCell.style.fontWeight = 'bold';
+        
+        totalRow.appendChild(totalLabelCell);
+        totalRow.appendChild(totalValueCell);
+        
+        tableBody.appendChild(totalRow);
+      }
+
+      // Mostrar tabela
+      tableElement.style.display = 'table';
     }
 
     async function loadData() {
