@@ -121,6 +121,7 @@
       border-radius: 8px;
       padding: 10px;
       box-sizing: border-box;
+      position: relative;
     }
 
     canvas {
@@ -191,13 +192,14 @@
     }
 
     .aplicacoes-table .total-row {
-      background-color: #164CAD;
+      background-color: #164CAD !important; /* CORREÇÃO: Forçar a cor azul */
       color: white;
       font-weight: bold;
     }
 
     .aplicacoes-table .total-row td {
       border-bottom: none;
+      background-color: #164CAD !important; /* CORREÇÃO: Forçar a cor nas células */
     }
 
     .no-aplicacoes {
@@ -311,6 +313,37 @@
       color: #00000;
       margin-left: 12px;
     }
+
+    /* ESTILOS PARA AS LINHAS VERTICAIS DAS APLICAÇÕES */
+    .vertical-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 3px,
+        #000 3px,
+        #000 6px
+      );
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .aplicacao-label {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #000;
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-family: "Montserrat", sans-serif;
+      white-space: nowrap;
+      z-index: 6;
+      pointer-events: none;
+      transform: translateY(-50%);
+    }
   </style>
 </head>
 <body>
@@ -334,6 +367,7 @@
       <div class="main-chart-container">
         <div class="chart-container">
           <canvas id="performanceChart"></canvas>
+          <!-- Linhas verticais e labels serão inseridas aqui via JavaScript -->
         </div>
         <!-- Tooltip personalizado será inserido aqui via JavaScript -->
       </div>
@@ -387,6 +421,7 @@
     let userData = null;
     let cotasData = null;
     let ultimaCota = null;
+    let aplicacoesProcessadas = [];
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -506,6 +541,58 @@
       tooltipEl.className = `custom-tooltip ${placement} visible`;
     }
 
+    // FUNÇÃO PARA ADICIONAR LINHAS VERTICAIS DAS APLICAÇÕES NO GRÁFICO
+    function adicionarLinhasAplicacoesNoGrafico(aplicacoes, chart) {
+      if (!aplicacoes || aplicacoes.length === 0 || !chart) return;
+      
+      const chartContainer = document.querySelector('.chart-container');
+      const canvas = chart.canvas;
+      const chartArea = chart.chartArea;
+      
+      // Limpar linhas anteriores
+      const existingLines = chartContainer.querySelectorAll('.vertical-line, .aplicacao-label');
+      existingLines.forEach(el => el.remove());
+      
+      aplicacoes.forEach((aplicacao, index) => {
+        const dataAplicacao = aplicacao.data;
+        const valor = aplicacao.valorNumerico;
+        const valorStr = aplicacao.valorStr;
+        
+        // Encontrar a posição X da data no gráfico
+        const dataObj = new Date(dataAplicacao.split('/').reverse().join('-'));
+        const xValue = dataObj.getTime();
+        
+        // Calcular a posição horizontal no canvas
+        const xScale = chart.scales.x;
+        const pixelX = xScale.getPixelForValue(xValue);
+        
+        // Verificar se a data está dentro da área visível do gráfico
+        if (pixelX >= chartArea.left && pixelX <= chartArea.right) {
+          // Criar linha vertical pontilhada
+          const line = document.createElement('div');
+          line.className = 'vertical-line';
+          line.style.left = (pixelX - chartArea.left) + 'px';
+          line.style.top = '0';
+          line.style.bottom = '0';
+          chartContainer.appendChild(line);
+          
+          // Criar label da aplicação
+          const label = document.createElement('div');
+          label.className = 'aplicacao-label';
+          label.style.left = (pixelX - chartArea.left + 5) + 'px';
+          label.style.top = '50%';
+          
+          // Determinar se é aplicação ou resgate
+          const tipo = valor >= 0 ? 'Aplicação de' : 'Resgate de';
+          const valorAbsoluto = Math.abs(valor);
+          const valorFormatado = `R$ ${valorAbsoluto.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+          
+          label.textContent = `${tipo} ${valorFormatado}`;
+          chartContainer.appendChild(label);
+        }
+      });
+    }
+
     // FUNÇÃO PARA ENCONTRAR COTA POR DATA
     function encontrarCotaPorData(dataAplicacao) {
       if (!cotasData || cotasData.length === 0) return null;
@@ -566,22 +653,10 @@
       return valorStr;
     }
 
-    // FUNÇÃO PARA CARREGAR E EXIBIR AS APLICAÇÕES
-    function carregarAplicacoes(aplicacoesString) {
-      const loadingElement = document.getElementById('aplicacoesLoading');
-      const tableElement = document.getElementById('aplicacoesTable');
-      const tableBody = document.getElementById('aplicacoesTableBody');
-      const noAplicacoesElement = document.getElementById('noAplicacoes');
-
-      // Esconder loading
-      loadingElement.style.display = 'none';
-
-      // Verificar se existem aplicações e REMOVER AS ASPAS
-      if (!aplicacoesString || aplicacoesString.trim() === '') {
-        noAplicacoesElement.style.display = 'block';
-        return;
-      }
-
+    // FUNÇÃO PARA PROCESSAR STRING DE APLICAÇÕES
+    function processarAplicacoesString(aplicacoesString) {
+      if (!aplicacoesString || aplicacoesString.trim() === '') return [];
+      
       // REMOVER ASPAS DO INÍCIO E FINAL DA STRING
       let aplicacoesProcessada = aplicacoesString.trim();
       
@@ -598,13 +673,53 @@
       // Remover espaços em branco extras
       aplicacoesProcessada = aplicacoesProcessada.trim();
 
-      console.log("String original:", aplicacoesString);
-      console.log("String processada:", aplicacoesProcessada);
-
       // Dividir as aplicações por ponto e vírgula
       const aplicacoes = aplicacoesProcessada.split(';').filter(ap => ap.trim() !== '');
       
-      if (aplicacoes.length === 0) {
+      const aplicacoesProcessadas = [];
+      
+      aplicacoes.forEach((aplicacao, index) => {
+        // Separar data e valor pelo hífen
+        const partes = aplicacao.split('-');
+        if (partes.length === 2) {
+          const data = partes[0].trim();
+          let valorStr = partes[1].trim();
+          
+          // Formatar valor com espaço após R$
+          valorStr = formatarValorComEspaco(valorStr);
+          
+          // Converter valor para número
+          const valorNumerico = parseFloat(valorStr.replace('R$', '')
+                                                  .replace('.', '')
+                                                  .replace(',', '.'));
+          
+          if (!isNaN(valorNumerico)) {
+            aplicacoesProcessadas.push({
+              data: data,
+              valorStr: valorStr,
+              valorNumerico: valorNumerico
+            });
+          }
+        }
+      });
+      
+      return aplicacoesProcessadas;
+    }
+
+    // FUNÇÃO PARA CARREGAR E EXIBIR AS APLICAÇÕES
+    function carregarAplicacoes(aplicacoesString) {
+      const loadingElement = document.getElementById('aplicacoesLoading');
+      const tableElement = document.getElementById('aplicacoesTable');
+      const tableBody = document.getElementById('aplicacoesTableBody');
+      const noAplicacoesElement = document.getElementById('noAplicacoes');
+
+      // Esconder loading
+      loadingElement.style.display = 'none';
+
+      // Processar aplicações
+      aplicacoesProcessadas = processarAplicacoesString(aplicacoesString);
+      
+      if (aplicacoesProcessadas.length === 0) {
         noAplicacoesElement.style.display = 'block';
         return;
       }
@@ -614,57 +729,46 @@
       let temDadosValidos = false;
 
       // Processar cada aplicação
-      aplicacoes.forEach((aplicacao, index) => {
-        // Separar data e valor pelo hífen
-        const partes = aplicacao.split('-');
-        if (partes.length === 2) {
-          const data = partes[0].trim();
-          let valorStr = partes[1].trim();
-          
-          // CORREÇÃO: Formatar valor com espaço após R$
-          valorStr = formatarValorComEspaco(valorStr);
-          
-          // Converter valor para número para calcular total
-          const valorNumerico = parseFloat(valorStr.replace('R$', '')
-                                                  .replace('.', '')
-                                                  .replace(',', '.'));
-          
-          if (!isNaN(valorNumerico)) {
-            totalAplicado += valorNumerico;
-            temDadosValidos = true;
-          }
-
-          // Encontrar cota na data da aplicação
-          const cotaAplicacao = encontrarCotaPorData(data);
-          let valorAtual = null;
-          let valorAtualFormatado = 'N/A';
-
-          if (cotaAplicacao && valorNumerico) {
-            valorAtual = calcularValorAtual(valorNumerico, cotaAplicacao);
-            if (valorAtual !== null) {
-              totalAtual += valorAtual;
-              valorAtualFormatado = `R$ ${valorAtual.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            }
-          }
-
-          // Criar linha da tabela
-          const row = document.createElement('tr');
-          
-          const dataCell = document.createElement('td');
-          dataCell.textContent = data;
-          
-          const valorCell = document.createElement('td');
-          valorCell.textContent = valorStr; // Já formatado com espaço
-          
-          const valorAtualCell = document.createElement('td');
-          valorAtualCell.textContent = valorAtualFormatado;
-          
-          row.appendChild(dataCell);
-          row.appendChild(valorCell);
-          row.appendChild(valorAtualCell);
-          
-          tableBody.appendChild(row);
+      aplicacoesProcessadas.forEach((aplicacao, index) => {
+        const data = aplicacao.data;
+        const valorStr = aplicacao.valorStr;
+        const valorNumerico = aplicacao.valorNumerico;
+        
+        if (!isNaN(valorNumerico)) {
+          totalAplicado += valorNumerico;
+          temDadosValidos = true;
         }
+
+        // Encontrar cota na data da aplicação
+        const cotaAplicacao = encontrarCotaPorData(data);
+        let valorAtual = null;
+        let valorAtualFormatado = 'N/A';
+
+        if (cotaAplicacao && valorNumerico) {
+          valorAtual = calcularValorAtual(valorNumerico, cotaAplicacao);
+          if (valorAtual !== null) {
+            totalAtual += valorAtual;
+            valorAtualFormatado = `R$ ${valorAtual.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+          }
+        }
+
+        // Criar linha da tabela
+        const row = document.createElement('tr');
+        
+        const dataCell = document.createElement('td');
+        dataCell.textContent = data;
+        
+        const valorCell = document.createElement('td');
+        valorCell.textContent = valorStr; // Já formatado com espaço
+        
+        const valorAtualCell = document.createElement('td');
+        valorAtualCell.textContent = valorAtualFormatado;
+        
+        row.appendChild(dataCell);
+        row.appendChild(valorCell);
+        row.appendChild(valorAtualCell);
+        
+        tableBody.appendChild(row);
       });
 
       // CORREÇÃO: Adicionar linha de total SEMPRE que houver aplicações válidas
@@ -717,13 +821,10 @@
         // ENCONTRAR PRIMEIRA DATA DE APLICAÇÃO PARA FILTRAR O GRÁFICO
         let primeiraDataAplicacao = null;
         if (userData && userData.aplicacoes) {
-          const aplicacoesProcessada = userData.aplicacoes.trim()
-            .replace(/^"/, '').replace(/"$/, '').trim();
-          const aplicacoes = aplicacoesProcessada.split(';').filter(ap => ap.trim() !== '');
+          aplicacoesProcessadas = processarAplicacoesString(userData.aplicacoes);
           
-          if (aplicacoes.length > 0) {
-            const primeiraAplicacao = aplicacoes[0].split('-')[0].trim();
-            primeiraDataAplicacao = primeiraAplicacao;
+          if (aplicacoesProcessadas.length > 0) {
+            primeiraDataAplicacao = aplicacoesProcessadas[0].data;
             console.log("Primeira data de aplicação:", primeiraDataAplicacao);
           }
         }
@@ -982,6 +1083,11 @@
       });
 
       console.log("Gráfico principal criado com sucesso");
+
+      // Adicionar linhas verticais das aplicações após o gráfico ser criado
+      setTimeout(() => {
+        adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, window.chartInstances.performanceChart);
+      }, 100);
     }
   </script>
 
