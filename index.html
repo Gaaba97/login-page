@@ -3,13 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Morpheus</title>
-  <!-- Firebase Hosting fornece configuração automática -->
-  <script src="/__/firebase/11.6.0/firebase-app.js"></script>
-  <script src="/__/firebase/11.6.0/firebase-auth.js"></script>
-  <script src="/__/firebase/init.js"></script>
   <!-- Favicon universal (compatível com todos os navegadores e tamanhos) -->
-  <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 
   <style>
     html, body {
@@ -303,9 +299,22 @@
   });
 </script>
 
-<script>
-  // Firebase já está inicializado automaticamente pelo Hosting
-  
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+    authDomain: "login-site-9cbbd.firebaseapp.com",
+    projectId: "login-site-9cbbd",
+    storageBucket: "login-site-9cbbd.firebasestorage.app",
+    messagingSenderId: "703993528666",
+    appId: "1:703993528666:web:1e7a02cb5b611e24c97363"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
   const loginBtn = document.getElementById('loginBtn');
   const errorMessage = document.getElementById('errorMessage');
 
@@ -316,7 +325,7 @@
     errorMessage.textContent = '';
 
     try {
-      await firebase.auth().signInWithEmailAndPassword(email, password);
+      await signInWithEmailAndPassword(auth, email, password);
       window.location.href = "dashboard.html";
     } catch (error) {
       let msg = "Erro ao fazer login.";
