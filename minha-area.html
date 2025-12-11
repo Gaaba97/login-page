@@ -72,7 +72,7 @@
 
     .user-nome {
       font-size: 22px;
-      color: #000000; /* Alterado para preto */
+      color: #000000;
       margin: 0 0 2px 0;
       text-align: left;
       font-weight: bold;
@@ -81,7 +81,7 @@
     .user-descricao {
       font-size: 16px;
       color: #555;
-      margin: 0 0 30px 0; /* Espaço triplo (30px) abaixo da descrição */
+      margin: 0 0 30px 0;
       text-align: left;
       font-weight: 400;
     }
@@ -328,7 +328,7 @@
       margin-left: 12px;
     }
 
-    /* ESTILOS PARA AS LINHAS VERTICAIS DAS APLICAÇÕES - ATUALIZADAS */
+    /* ESTILOS PARA AS LINHAS VERTICAIS DAS APLICAÇÕES - CORRIGIDAS */
     .vertical-line {
       position: absolute;
       width: 1px;
@@ -433,6 +433,7 @@
     let ultimaCota = null;
     let aplicacoesProcessadas = [];
     let morpheusDataPoints = [];
+    let chartDataPoints = [];
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -541,7 +542,7 @@
       tooltipEl.className = `custom-tooltip ${placement} visible`;
     }
 
-    // FUNÇÃO ATUALIZADA PARA ADICIONAR LINHAS VERTICAIS DAS APLICAÇÕES - CORRIGIDA
+    // FUNÇÃO COMPLETAMENTE REESCRITA PARA CORRIGIR AS LINHAS VERTICAIS
     function adicionarLinhasAplicacoesNoGrafico(aplicacoes, chart) {
       if (!aplicacoes || aplicacoes.length === 0 || !chart) return;
       
@@ -549,61 +550,79 @@
       const canvas = chart.canvas;
       const chartArea = chart.chartArea;
       
+      // Remover linhas anteriores
       const existingLines = chartContainer.querySelectorAll('.vertical-line, .aplicacao-label');
       existingLines.forEach(el => el.remove());
       
-      // Primeiro, precisamos obter o valor Y de cada ponto da linha Morpheus
-      const morpheusDataset = chart.data.datasets[0]; // Morpheus é o primeiro dataset
+      // Obter os pontos de dados do gráfico Morpheus
+      const morpheusDataset = chart.data.datasets[0];
       const morpheusPoints = morpheusDataset.data;
       
-      aplicacoes.forEach((aplicacao, index) => {
+      // Mapear todas as datas do gráfico para acesso rápido
+      const chartDatesMap = new Map();
+      morpheusPoints.forEach((point, index) => {
+        const date = new Date(point.x);
+        chartDatesMap.set(date.getTime(), {
+          point: point,
+          index: index
+        });
+      });
+      
+      aplicacoes.forEach((aplicacao) => {
         const dataAplicacao = aplicacao.data;
         const valor = aplicacao.valorNumerico;
         const valorStr = aplicacao.valorStr;
         
-        // Converter data para formato Date
-        const dataAplicacaoObj = new Date(dataAplicacao.split('/').reverse().join('-'));
-        const xValue = dataAplicacaoObj.getTime();
+        // Converter data da aplicação para Date object
+        const [dia, mes, ano] = dataAplicacao.split('/');
+        const dataAplicacaoObj = new Date(ano, mes - 1, dia);
+        const dataAplicacaoTime = dataAplicacaoObj.getTime();
         
-        // Encontrar o ponto mais próximo da linha Morpheus para esta data
-        let closestPoint = null;
-        let minDiff = Infinity;
+        // Encontrar o ponto mais próximo no gráfico
+        let pontoEncontrado = null;
+        let menorDiferenca = Infinity;
         
-        morpheusPoints.forEach((point, i) => {
-          const pointDate = new Date(point.x);
-          const diff = Math.abs(pointDate.getTime() - xValue);
-          if (diff < minDiff) {
-            minDiff = diff;
-            closestPoint = {
-              x: pointDate.getTime(),
-              y: point.y
-            };
+        // Procurar pelo ponto exato ou mais próximo
+        for (const [time, data] of chartDatesMap.entries()) {
+          const diferenca = Math.abs(time - dataAplicacaoTime);
+          if (diferenca < menorDiferenca) {
+            menorDiferenca = diferenca;
+            pontoEncontrado = data.point;
           }
-        });
+        }
         
-        if (!closestPoint) return;
+        if (!pontoEncontrado) return;
         
         // Calcular posições no canvas
         const xScale = chart.scales.x;
         const yScale = chart.scales.y;
         
-        const pixelX = xScale.getPixelForValue(closestPoint.x);
-        const pixelY = yScale.getPixelForValue(closestPoint.y);
+        // Obter valor Y do ponto encontrado
+        const valorY = pontoEncontrado.y;
         
+        // Calcular posição X da data da aplicação (não do ponto mais próximo)
+        const pixelX = xScale.getPixelForValue(dataAplicacaoTime);
+        const pixelY = yScale.getPixelForValue(valorY);
+        
+        // Verificar se está dentro da área visível do gráfico
         if (pixelX >= chartArea.left && pixelX <= chartArea.right) {
-          // Criar linha vertical que vai do topo até o ponto exato da linha Morpheus
+          // Calcular altura da linha (do topo até o ponto na linha do Morpheus)
+          const topOffset = 10; // Começar um pouco abaixo do topo
+          const lineHeight = Math.max(0, pixelY - topOffset);
+          
+          // Criar linha vertical
           const line = document.createElement('div');
           line.className = 'vertical-line';
           line.style.left = (pixelX - chartArea.left) + 'px';
-          line.style.top = '10px'; // Começar um pouco abaixo do topo
-          line.style.height = (pixelY - 10) + 'px'; // Altura exata até o ponto da linha
+          line.style.top = topOffset + 'px';
+          line.style.height = lineHeight + 'px';
           chartContainer.appendChild(line);
           
-          // Criar label da aplicação no topo do gráfico
+          // Criar label da aplicação
           const label = document.createElement('div');
           label.className = 'aplicacao-label';
           label.style.left = (pixelX - chartArea.left + 5) + 'px';
-          label.style.top = '10px';
+          label.style.top = topOffset + 'px';
           
           const tipo = valor >= 0 ? 'Aplicação de' : 'Resgate de';
           const valorAbsoluto = Math.abs(valor);
@@ -859,31 +878,44 @@
           aplicacoesProcessadas = processarAplicacoesString(userData.aplicacoes);
         }
 
+        // SEMPRE mostrar a primeira aplicação no D0 do gráfico
         if (aplicacoesProcessadas.length > 0) {
           const primeiraDataAplicacao = aplicacoesProcessadas[0].data;
-          const indexInicio = allDates.findIndex(date => date === primeiraDataAplicacao);
           
-          if (indexInicio !== -1) {
-            const morpheusBase = morpheusValores[indexInicio];
-            const ibovBase = ibovValores[indexInicio];
+          // Encontrar a posição desta data nos dados completos
+          let indexInicio = allDates.findIndex(date => date === primeiraDataAplicacao);
+          
+          // Se não encontrar exatamente, usar o início dos dados
+          if (indexInicio === -1) {
+            indexInicio = 0;
+          }
+          
+          console.log("Primeira aplicação:", primeiraDataAplicacao, "Índice:", indexInicio);
+          
+          const morpheusBase = morpheusValores[indexInicio];
+          const ibovBase = ibovValores[indexInicio];
+          
+          for (let i = indexInicio; i < allDates.length; i++) {
+            const variacaoMorpheus = ((morpheusValores[i] / morpheusBase) - 1) * 100;
+            const variacaoIbov = ((ibovValores[i] / ibovBase) - 1) * 100;
             
-            for (let i = indexInicio; i < allDates.length; i++) {
-              const variacaoMorpheus = ((morpheusValores[i] / morpheusBase) - 1) * 100;
-              const variacaoIbov = ((ibovValores[i] / ibovBase) - 1) * 100;
-              
-              morpheusVariacao.push(variacaoMorpheus);
-              ibovVariacao.push(variacaoIbov);
-              filteredDates.push(allDates[i]);
-            }
-          } else {
-            morpheusVariacao = morpheusValores.map((valor, i) => ((valor / morpheusValores[0]) - 1) * 100);
-            ibovVariacao = ibovValores.map((valor, i) => ((valor / ibovValores[0]) - 1) * 100);
-            filteredDates = [...allDates];
+            morpheusVariacao.push(variacaoMorpheus);
+            ibovVariacao.push(variacaoIbov);
+            filteredDates.push(allDates[i]);
           }
         } else {
-          morpheusVariacao = morpheusValores.map((valor, i) => ((valor / morpheusValores[0]) - 1) * 100);
-          ibovVariacao = ibovValores.map((valor, i) => ((valor / ibovValores[0]) - 1) * 100);
-          filteredDates = [...allDates];
+          // Sem aplicações, usar dados completos
+          const morpheusBase = morpheusValores[0];
+          const ibovBase = ibovValores[0];
+          
+          for (let i = 0; i < allDates.length; i++) {
+            const variacaoMorpheus = ((morpheusValores[i] / morpheusBase) - 1) * 100;
+            const variacaoIbov = ((ibovValores[i] / ibovBase) - 1) * 100;
+            
+            morpheusVariacao.push(variacaoMorpheus);
+            ibovVariacao.push(variacaoIbov);
+            filteredDates.push(allDates[i]);
+          }
         }
 
         if (filteredDates.length === 0) {
@@ -916,6 +948,9 @@
         x: date.split("/").reverse().join("-"),
         y: ibov[i]
       }));
+
+      // Salvar os pontos de dados para uso posterior
+      chartDataPoints = morpheusData;
 
       const canvas = document.getElementById("performanceChart");
       const ctx = canvas.getContext("2d");
@@ -1057,9 +1092,13 @@
       console.log("Gráfico principal criado com sucesso");
 
       // Adicionar linhas verticais das aplicações após o gráfico ser criado
+      // Com um pequeno delay para garantir que o gráfico esteja completamente renderizado
       setTimeout(() => {
-        adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, window.chartInstances.performanceChart);
-      }, 100);
+        if (aplicacoesProcessadas.length > 0) {
+          console.log("Adicionando linhas para", aplicacoesProcessadas.length, "aplicações");
+          adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, window.chartInstances.performanceChart);
+        }
+      }, 200);
     }
   </script>
 
@@ -1099,6 +1138,10 @@
         setTimeout(() => {
           const event = new Event('resize');
           window.dispatchEvent(event);
+          // Redesenhar as linhas verticais quando o gráfico for redimensionado
+          if (aplicacoesProcessadas.length > 0) {
+            adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, window.chartInstances.performanceChart);
+          }
         }, 100);
       }
     }
