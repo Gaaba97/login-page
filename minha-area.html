@@ -70,11 +70,27 @@
       margin-bottom: 20px;
     }
 
-    .header-info h1 {
+    .user-nome {
       font-size: 22px;
       color: #1E4DB7;
       margin: 0 0 2px 0;
       text-align: left;
+      font-weight: bold;
+    }
+
+    .clube-nome {
+      font-size: 22px;
+      color: #1E4DB7;
+      margin: 0 0 2px 0;
+      text-align: left;
+    }
+
+    .user-descricao {
+      font-size: 16px;
+      color: #555;
+      margin: 0 0 2px 0;
+      text-align: left;
+      font-weight: 400;
     }
 
     .cnpj {
@@ -150,7 +166,6 @@
       background-color: #fff;
       border-radius: 8px;
       padding: 20px;
-      /* REMOVIDA A BORDA: box-shadow: 0 2px 10px rgba(0,0,0,0.1); */
     }
 
     .aplicacoes-container h2 {
@@ -164,7 +179,6 @@
       width: 100%;
       border-collapse: collapse;
       font-family: "Montserrat", sans-serif;
-      /* REMOVIDA A BORDA DA TABELA */
     }
 
     .aplicacoes-table th {
@@ -192,14 +206,14 @@
     }
 
     .aplicacoes-table .total-row {
-      background-color: #164CAD !important; /* CORREÇÃO: Forçar a cor azul */
+      background-color: #164CAD !important;
       color: white;
       font-weight: bold;
     }
 
     .aplicacoes-table .total-row td {
       border-bottom: none;
-      background-color: #164CAD !important; /* CORREÇÃO: Forçar a cor nas células */
+      background-color: #164CAD !important;
     }
 
     .no-aplicacoes {
@@ -314,11 +328,9 @@
       margin-left: 12px;
     }
 
-    /* ESTILOS PARA AS LINHAS VERTICAIS DAS APLICAÇÕES */
+    /* ESTILOS PARA AS LINHAS VERTICAIS DAS APLICAÇÕES - ATUALIZADAS */
     .vertical-line {
       position: absolute;
-      top: 0;
-      bottom: 0;
       width: 1px;
       background: repeating-linear-gradient(
         to bottom,
@@ -333,7 +345,7 @@
 
     .aplicacao-label {
       position: absolute;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.95);
       border: 1px solid #000;
       border-radius: 3px;
       padding: 2px 6px;
@@ -342,7 +354,8 @@
       white-space: nowrap;
       z-index: 6;
       pointer-events: none;
-      transform: translateY(-50%);
+      transform: translateY(0);
+      top: 10px;
     }
   </style>
 </head>
@@ -358,7 +371,9 @@
 
   <div class="container">
     <div class="header-info">
-      <h1>Morpheus Clube de Investimentos</h1>
+      <div class="user-nome" id="userNome"></div>
+      <h1 class="clube-nome">Morpheus Clube de Investimentos</h1>
+      <div class="user-descricao" id="userDescricao"></div>
       <div class="cnpj">61.043.820/0001-55</div>
       <div class="subtitle" id="subtitle">Carregando dados...</div>
     </div>
@@ -367,13 +382,10 @@
       <div class="main-chart-container">
         <div class="chart-container">
           <canvas id="performanceChart"></canvas>
-          <!-- Linhas verticais e labels serão inseridas aqui via JavaScript -->
         </div>
-        <!-- Tooltip personalizado será inserido aqui via JavaScript -->
       </div>
     </div>
 
-    <!-- NOVA SEÇÃO: TABELA DE APLICAÇÕES -->
     <div class="aplicacoes-container">
       <h2>Minhas Aplicações</h2>
       <div class="loading" id="aplicacoesLoading">Carregando aplicações...</div>
@@ -382,11 +394,10 @@
           <tr>
             <th>Data</th>
             <th>Valor Aplicado</th>
-            <th>Valor Atual</th> <!-- NOVA COLUNA -->
+            <th>Valor Atual</th>
           </tr>
         </thead>
         <tbody id="aplicacoesTableBody">
-          <!-- As aplicações serão inseridas aqui via JavaScript -->
         </tbody>
       </table>
       <div class="no-aplicacoes" id="noAplicacoes" style="display: none;">
@@ -417,11 +428,11 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Variável global para armazenar os dados do usuário
     let userData = null;
     let cotasData = null;
     let ultimaCota = null;
     let aplicacoesProcessadas = [];
+    let primeiraAplicacaoIndex = -1;
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -434,7 +445,10 @@
           const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
           document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
           
-          // Carregar dados da planilha primeiro, depois as aplicações
+          // Exibir nome e descrição do usuário
+          document.getElementById("userNome").textContent = nome;
+          document.getElementById("userDescricao").textContent = userData.descricao || "";
+          
           await loadData();
         }
       } else {
@@ -444,12 +458,10 @@
 
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
-    // Variável global para armazenar as instâncias dos gráficos
     window.chartInstances = {
       performanceChart: null
     };
 
-    // Tooltip personalizado
     let customTooltip = null;
 
     function createCustomTooltip() {
@@ -462,26 +474,21 @@
     }
 
     function showCustomTooltip(chart, tooltip) {
-      // Criar ou obter o tooltip personalizado
       const tooltipEl = createCustomTooltip();
       
-      // Esconder tooltip se não há dados
       if (tooltip.opacity === 0) {
         tooltipEl.classList.remove('visible');
         return;
       }
 
-      // Configurar conteúdo do tooltip
       if (tooltip.body) {
         const title = tooltip.title[0] || '';
         const bodyLines = tooltip.body.map(b => b.lines);
         
         let tooltipHTML = `<div class="tooltip-header">${title}</div>`;
         
-        // Adicionar dados de cada dataset
         tooltip.dataPoints.forEach((dataPoint, index) => {
           const dataset = chart.data.datasets[dataPoint.datasetIndex];
-          // CORREÇÃO: Mostrar apenas o número sem % e com 2 casas decimais
           const rawValue = dataPoint.raw.y;
           const value = typeof rawValue === 'number' ? rawValue.toFixed(2).replace('.', ',') : '0,00';
           const label = dataset.label || '';
@@ -501,23 +508,18 @@
         tooltipEl.innerHTML = tooltipHTML;
       }
 
-      // Posicionar o tooltip
       const position = chart.canvas.getBoundingClientRect();
       const chartContainer = document.querySelector('.main-chart-container');
       const containerRect = chartContainer.getBoundingClientRect();
       
-      // Posição relativa ao container do gráfico
       let left = position.left + tooltip.caretX - containerRect.left;
       let top = position.top + tooltip.caretY - containerRect.top;
       
-      // Ajustar posição para não sair da tela
       const tooltipWidth = tooltipEl.offsetWidth;
       const tooltipHeight = tooltipEl.offsetHeight;
       
-      // Definir posição padrão (acima do ponto)
       let placement = 'top';
       
-      // Verificar se precisa ajustar a posição
       if (top - tooltipHeight - 10 < 0) {
         placement = 'bottom';
         top += 20;
@@ -525,7 +527,6 @@
         top -= tooltipHeight + 10;
       }
       
-      // Ajustar horizontalmente para não sair da tela
       if (left + tooltipWidth > containerRect.width) {
         left = containerRect.width - tooltipWidth - 10;
       } else if (left < 0) {
@@ -537,52 +538,69 @@
       tooltipEl.style.left = left + 'px';
       tooltipEl.style.top = top + 'px';
       
-      // Atualizar classe de posicionamento
       tooltipEl.className = `custom-tooltip ${placement} visible`;
     }
 
-    // FUNÇÃO PARA ADICIONAR LINHAS VERTICAIS DAS APLICAÇÕES NO GRÁFICO
-    function adicionarLinhasAplicacoesNoGrafico(aplicacoes, chart) {
-      if (!aplicacoes || aplicacoes.length === 0 || !chart) return;
+    // FUNÇÃO ATUALIZADA PARA ADICIONAR LINHAS VERTICAIS DAS APLICAÇÕES
+    function adicionarLinhasAplicacoesNoGrafico(aplicacoes, chart, morpheusData) {
+      if (!aplicacoes || aplicacoes.length === 0 || !chart || !morpheusData) return;
       
       const chartContainer = document.querySelector('.chart-container');
       const canvas = chart.canvas;
       const chartArea = chart.chartArea;
       
-      // Limpar linhas anteriores
       const existingLines = chartContainer.querySelectorAll('.vertical-line, .aplicacao-label');
       existingLines.forEach(el => el.remove());
       
+      // Encontrar o valor Y da linha Morpheus para cada data de aplicação
       aplicacoes.forEach((aplicacao, index) => {
+        // Pular a primeira aplicação (início do gráfico)
+        if (index === primeiraAplicacaoIndex) return;
+        
         const dataAplicacao = aplicacao.data;
         const valor = aplicacao.valorNumerico;
         const valorStr = aplicacao.valorStr;
         
-        // Encontrar a posição X da data no gráfico
         const dataObj = new Date(dataAplicacao.split('/').reverse().join('-'));
         const xValue = dataObj.getTime();
         
-        // Calcular a posição horizontal no canvas
         const xScale = chart.scales.x;
         const pixelX = xScale.getPixelForValue(xValue);
         
-        // Verificar se a data está dentro da área visível do gráfico
         if (pixelX >= chartArea.left && pixelX <= chartArea.right) {
-          // Criar linha vertical pontilhada
+          // Encontrar o ponto da linha Morpheus mais próximo desta data
+          let morpheusYValue = 0;
+          let minDiff = Infinity;
+          
+          morpheusData.forEach((dataPoint, i) => {
+            const pointX = dataPoint.x;
+            const diff = Math.abs(new Date(pointX).getTime() - xValue);
+            if (diff < minDiff) {
+              minDiff = diff;
+              morpheusYValue = dataPoint.y;
+            }
+          });
+          
+          // Converter o valor Y para pixels
+          const yScale = chart.scales.y;
+          const pixelY = yScale.getPixelForValue(morpheusYValue);
+          
+          // Criar linha vertical que vai do topo até o ponto da linha Morpheus
+          const lineHeight = Math.max(10, pixelY - 10); // Garantir altura mínima
+          
           const line = document.createElement('div');
           line.className = 'vertical-line';
           line.style.left = (pixelX - chartArea.left) + 'px';
-          line.style.top = '0';
-          line.style.bottom = '0';
+          line.style.top = '10px'; // Começar um pouco abaixo do topo
+          line.style.height = lineHeight + 'px';
           chartContainer.appendChild(line);
           
-          // Criar label da aplicação
+          // Criar label da aplicação no topo do gráfico
           const label = document.createElement('div');
           label.className = 'aplicacao-label';
           label.style.left = (pixelX - chartArea.left + 5) + 'px';
-          label.style.top = '50%';
+          label.style.top = '10px';
           
-          // Determinar se é aplicação ou resgate
           const tipo = valor >= 0 ? 'Aplicação de' : 'Resgate de';
           const valorAbsoluto = Math.abs(valor);
           const valorFormatado = `R$ ${valorAbsoluto.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
@@ -593,15 +611,12 @@
       });
     }
 
-    // FUNÇÃO PARA ENCONTRAR COTA POR DATA
     function encontrarCotaPorData(dataAplicacao) {
       if (!cotasData || cotasData.length === 0) return null;
       
-      // Converter data da aplicação para formato Date
       const [dia, mes, ano] = dataAplicacao.split('/');
       const dataAplicacaoObj = new Date(ano, mes - 1, dia);
       
-      // Encontrar a cota mais próxima da data da aplicação (igual ou anterior)
       let cotaEncontrada = null;
       
       for (let i = cotasData.length - 1; i >= 0; i--) {
@@ -618,24 +633,14 @@
       return cotaEncontrada;
     }
 
-    // FUNÇÃO PARA CALCULAR VALOR ATUAL COM MAIOR PRECISÃO
     function calcularValorAtual(valorAplicado, cotaAplicacao) {
       if (!cotaAplicacao || !ultimaCota) return null;
       
       try {
-        // Usar cálculo de alta precisão para evitar erros de arredondamento
         const quantidadeCotas = valorAplicado / cotaAplicacao.cota;
-        
-        // Arredondar para 6 casas decimais para maior precisão
         const quantidadeCotasPrecisa = Math.round(quantidadeCotas * 1000000) / 1000000;
-        
-        // Calcular valor atual com alta precisão
         const valorAtual = quantidadeCotasPrecisa * ultimaCota;
-        
-        // Arredondar para 2 casas decimais (centavos)
         const valorAtualArredondado = Math.round(valorAtual * 100) / 100;
-        
-        console.log(`Cálculo detalhado: R$ ${valorAplicado} / ${cotaAplicacao.cota} = ${quantidadeCotasPrecisa} cotas × ${ultimaCota} = R$ ${valorAtualArredondado}`);
         
         return valorAtualArredondado;
       } catch (error) {
@@ -644,72 +649,53 @@
       }
     }
 
-    // FUNÇÃO PARA FORMATAR VALOR COM ESPAÇO APÓS R$ (CORRIGIDA PARA VALORES NEGATIVOS)
     function formatarValorComEspaco(valorStr) {
-      // Se já tem R$ seguido de número sem espaço, adiciona espaço
-      // Agora funciona tanto para valores positivos quanto negativos
       if (valorStr.includes('R$') && !valorStr.includes('R$ ')) {
         return valorStr.replace('R$', 'R$ ');
       }
       return valorStr;
     }
 
-    // FUNÇÃO PARA PROCESSAR STRING DE APLICAÇÕES (NOVO FORMATO CORRIGIDO)
     function processarAplicacoesString(aplicacoesString) {
       if (!aplicacoesString || aplicacoesString.trim() === '') return [];
       
-      // REMOVER ASPAS DO INÍCIO E FINAL DA STRING
       let aplicacoesProcessada = aplicacoesString.trim();
       
-      // Remover aspas duplas do início
       if (aplicacoesProcessada.startsWith('"')) {
         aplicacoesProcessada = aplicacoesProcessada.substring(1);
       }
       
-      // Remover aspas duplas do final
       if (aplicacoesProcessada.endsWith('"')) {
         aplicacoesProcessada = aplicacoesProcessada.substring(0, aplicacoesProcessada.length - 1);
       }
       
-      // Remover espaços em branco extras
       aplicacoesProcessada = aplicacoesProcessada.trim();
 
-      // Dividir as aplicações por ponto e vírgula
       const aplicacoes = aplicacoesProcessada.split(';').filter(ap => ap.trim() !== '');
       
       const aplicacoesProcessadas = [];
       
       aplicacoes.forEach((aplicacao, index) => {
-        // NOVO PADRÃO: Data seguida diretamente do valor (só tem hífen se for negativo)
-        // Exemplo: "25/07/2025R$3.000,00" ou "15/10/2025-R$2.971,20"
-        
-        // CORREÇÃO: Buscar pelo padrão de data (dd/mm/aaaa) para separar corretamente
         const dataRegex = /(\d{2}\/\d{2}\/\d{4})/;
         const match = aplicacao.match(dataRegex);
         
-        if (!match) return; // Pular se não encontrar padrão de data
+        if (!match) return;
         
         const data = match[1];
-        // Pegar o restante da string após a data
         const restante = aplicacao.substring(data.length).trim();
         
         let valorStr = restante;
         let valorNumerico;
         
-        // Verificar se o valor começa com hífen (indicando negativo)
         if (valorStr.startsWith('-')) {
-          // É um resgate (valor negativo) - manter o hífen no valorStr
           valorNumerico = -parseFloat(valorStr.substring(1).replace('R$', '')
                                              .replace('.', '')
                                              .replace(',', '.'));
-          // CORREÇÃO: Formatar também valores negativos com espaço após R$
           valorStr = formatarValorComEspaco(valorStr);
         } else {
-          // É uma aplicação (valor positivo)
           valorNumerico = parseFloat(valorStr.replace('R$', '')
                                             .replace('.', '')
                                             .replace(',', '.'));
-          // Formatar valor com espaço após R$
           valorStr = formatarValorComEspaco(valorStr);
         }
         
@@ -719,28 +705,21 @@
             valorStr: valorStr,
             valorNumerico: valorNumerico
           });
-          
-          console.log(`Aplicação processada: Data=${data}, Valor=${valorStr}, Numérico=${valorNumerico}`);
         }
       });
       
       return aplicacoesProcessadas;
     }
 
-    // FUNÇÃO PARA CARREGAR E EXIBIR AS APLICAÇÕES
     function carregarAplicacoes(aplicacoesString) {
       const loadingElement = document.getElementById('aplicacoesLoading');
       const tableElement = document.getElementById('aplicacoesTable');
       const tableBody = document.getElementById('aplicacoesTableBody');
       const noAplicacoesElement = document.getElementById('noAplicacoes');
 
-      // Esconder loading
       loadingElement.style.display = 'none';
 
-      // Processar aplicações
       aplicacoesProcessadas = processarAplicacoesString(aplicacoesString);
-      
-      console.log("Aplicações processadas:", aplicacoesProcessadas);
       
       if (aplicacoesProcessadas.length === 0) {
         noAplicacoesElement.style.display = 'block';
@@ -751,10 +730,8 @@
       let totalAtual = 0;
       let temDadosValidos = false;
 
-      // Limpar tabela antes de adicionar novas linhas
       tableBody.innerHTML = '';
 
-      // Processar cada aplicação
       aplicacoesProcessadas.forEach((aplicacao, index) => {
         const data = aplicacao.data;
         const valorStr = aplicacao.valorStr;
@@ -765,7 +742,6 @@
           temDadosValidos = true;
         }
 
-        // Encontrar cota na data da aplicação
         const cotaAplicacao = encontrarCotaPorData(data);
         let valorAtual = null;
         let valorAtualFormatado = 'N/A';
@@ -778,14 +754,13 @@
           }
         }
 
-        // Criar linha da tabela
         const row = document.createElement('tr');
         
         const dataCell = document.createElement('td');
         dataCell.textContent = data;
         
         const valorCell = document.createElement('td');
-        valorCell.textContent = valorStr; // Já formatado com espaço (inclusive para negativos)
+        valorCell.textContent = valorStr;
         
         const valorAtualCell = document.createElement('td');
         valorAtualCell.textContent = valorAtualFormatado;
@@ -797,7 +772,6 @@
         tableBody.appendChild(row);
       });
 
-      // CORREÇÃO: Adicionar linha de total SEMPRE que houver aplicações válidas
       if (temDadosValidos) {
         const totalRow = document.createElement('tr');
         totalRow.className = 'total-row';
@@ -821,7 +795,6 @@
         tableBody.appendChild(totalRow);
       }
 
-      // Mostrar tabela
       tableElement.style.display = 'table';
     }
 
@@ -835,46 +808,38 @@
         }
         
         const data = await response.text();
-        console.log("Dados CSV carregados:", data.substring(0, 500));
-        
         const rows = data.split("\n").filter(row => row.trim() !== '');
-        console.log("Número de linhas:", rows.length);
 
         if (rows.length < 2) {
           throw new Error("Dados insuficientes no CSV");
         }
 
-        // ENCONTRAR PRIMEIRA DATA DE APLICAÇÃO PARA FILTRAR O GRÁFICO
-        let primeiraDataAplicacao = null;
+        // ENCONTRAR PRIMEIRA DATA DE APLICAÇÃO
         if (userData && userData.aplicacoes) {
           aplicacoesProcessadas = processarAplicacoesString(userData.aplicacoes);
           
           if (aplicacoesProcessadas.length > 0) {
-            primeiraDataAplicacao = aplicacoesProcessadas[0].data;
-            console.log("Primeira data de aplicação:", primeiraDataAplicacao);
+            primeiraAplicacaoIndex = 0; // Marcar que a primeira é onde inicia o gráfico
           }
         }
 
         const allDates = [];
-        const morpheusValores = []; // Valores brutos das cotas
-        const ibovValores = []; // Valores brutos do IBOV
-        cotasData = []; // Array para armazenar dados das cotas
+        const morpheusValores = [];
+        const ibovValores = [];
+        cotasData = [];
 
-        // PRIMEIRO: Coletar todos os dados brutos
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
           if (cols.length >= 12) {
             const date = cols[9]?.trim();
-            const cotaMorpheus = parseFloat(cols[10]); // Coluna K - Valor da cota
-            const valorIbov = parseFloat(cols[11]); // Coluna L - IBOV
+            const cotaMorpheus = parseFloat(cols[10]);
+            const valorIbov = parseFloat(cols[11]);
             
             if (date && !isNaN(cotaMorpheus) && !isNaN(valorIbov)) {
-              // Armazenar dados brutos
               allDates.push(date);
               morpheusValores.push(cotaMorpheus);
               ibovValores.push(valorIbov);
               
-              // Armazenar dados da cota para a tabela
               cotasData.push({
                 data: date,
                 cota: cotaMorpheus
@@ -883,32 +848,25 @@
           }
         }
 
-        // OBTER ÚLTIMA COTA (C9 da planilha)
         if (rows.length >= 9) {
-          const linhaC9 = rows[8].split(","); // Linha 9 (índice 8)
+          const linhaC9 = rows[8].split(",");
           if (linhaC9.length >= 3) {
-            ultimaCota = parseFloat(linhaC9[2]); // Coluna C (índice 2)
-            console.log("Última cota (C9):", ultimaCota);
+            ultimaCota = parseFloat(linhaC9[2]);
           }
         }
 
-        // CALCULAR VARIAÇÃO PERCENTUAL A PARTIR DA PRIMEIRA APLICAÇÃO
         let morpheusVariacao = [];
         let ibovVariacao = [];
         let filteredDates = [];
 
-        if (primeiraDataAplicacao) {
-          // Encontrar o índice da primeira data de aplicação
+        if (aplicacoesProcessadas.length > 0) {
+          const primeiraDataAplicacao = aplicacoesProcessadas[0].data;
           const indexInicio = allDates.findIndex(date => date === primeiraDataAplicacao);
           
           if (indexInicio !== -1) {
-            console.log(`Calculando variação a partir de ${primeiraDataAplicacao} (índice ${indexInicio})`);
-            
-            // Pegar valores base na data da primeira aplicação
             const morpheusBase = morpheusValores[indexInicio];
             const ibovBase = ibovValores[indexInicio];
             
-            // Calcular variação percentual para cada data a partir da primeira aplicação
             for (let i = indexInicio; i < allDates.length; i++) {
               const variacaoMorpheus = ((morpheusValores[i] / morpheusBase) - 1) * 100;
               const variacaoIbov = ((ibovValores[i] / ibovBase) - 1) * 100;
@@ -917,25 +875,16 @@
               ibovVariacao.push(variacaoIbov);
               filteredDates.push(allDates[i]);
             }
-            
-            console.log(`Variação calculada para ${filteredDates.length} datas a partir de ${primeiraDataAplicacao}`);
           } else {
-            console.log("Data de aplicação não encontrada nos dados, usando dados completos");
             morpheusVariacao = morpheusValores.map((valor, i) => ((valor / morpheusValores[0]) - 1) * 100);
             ibovVariacao = ibovValores.map((valor, i) => ((valor / ibovValores[0]) - 1) * 100);
             filteredDates = [...allDates];
           }
         } else {
-          // Sem data de aplicação, usar dados completos desde o início
           morpheusVariacao = morpheusValores.map((valor, i) => ((valor / morpheusValores[0]) - 1) * 100);
           ibovVariacao = ibovValores.map((valor, i) => ((valor / ibovValores[0]) - 1) * 100);
           filteredDates = [...allDates];
         }
-
-        console.log("Dados processados - Datas:", filteredDates.length, "Morpheus:", morpheusVariacao.length, "IBOV:", ibovVariacao.length);
-        console.log("Primeira data do gráfico:", filteredDates[0]);
-        console.log("Primeira variação Morpheus:", morpheusVariacao[0]);
-        console.log("Primeira variação IBOV:", ibovVariacao[0]);
 
         if (filteredDates.length === 0) {
           throw new Error("Nenhum dado válido encontrado para o gráfico");
@@ -944,9 +893,14 @@
         const lastDate = filteredDates[filteredDates.length - 1];
         document.getElementById("subtitle").textContent = lastDate;
 
-        createMainChart(filteredDates, morpheusVariacao, ibovVariacao);
+        // Criar gráfico e passar os dados Morpheus para as linhas verticais
+        const morpheusData = filteredDates.map((date, i) => ({
+          x: date.split("/").reverse().join("-"),
+          y: morpheusVariacao[i]
+        }));
+        
+        createMainChart(filteredDates, morpheusVariacao, ibovVariacao, morpheusData);
 
-        // Agora carregar as aplicações com os dados das cotas disponíveis
         if (userData && userData.aplicacoes) {
           carregarAplicacoes(userData.aplicacoes);
         }
@@ -957,7 +911,7 @@
       }
     }
 
-    function createMainChart(allDates, morpheus, ibov) {
+    function createMainChart(allDates, morpheus, ibov, morpheusDataPoints) {
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
@@ -980,9 +934,8 @@
       const isMobileVertical = document.body.classList.contains('mobile-device') && 
                           !document.body.classList.contains('mobile-landscape');
       
-      // Aumentar significativamente as fontes no mobile vertical
-      const axisFontSize = isMobileVertical ? 22 : 15; // Aumentado para 22px no mobile vertical
-      const legendFontSize = isMobileVertical ? 20 : 12; // Aumentado para 20px no mobile vertical
+      const axisFontSize = isMobileVertical ? 22 : 15;
+      const legendFontSize = isMobileVertical ? 20 : 12;
 
       const createGradient = (ctx, chartArea) => {
         const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
@@ -1049,9 +1002,8 @@
               reverse: true
             },
             tooltip: {
-              enabled: false, // Desabilitar tooltip padrão
+              enabled: false,
               external: (context) => {
-                // Tooltip externo personalizado
                 showCustomTooltip(context.chart, context.tooltip);
               }
             },
@@ -1075,7 +1027,6 @@
                   size: axisFontSize,
                   weight: "300",
                 },
-                // CORREÇÃO: Mapear meses para português
                 callback: function(value, index, values) {
                   const date = new Date(value);
                   const month = date.getMonth();
@@ -1099,7 +1050,7 @@
                   size: axisFontSize,
                   weight: "300",
                 },
-                callback: (v) => `${v.toFixed(0)}%`, // Eixo Y com 0 casas decimais
+                callback: (v) => `${v.toFixed(0)}%`,
                 stepSize: 5
               },
               grid: { color: "rgba(0,0,0,0.05)" },
@@ -1112,7 +1063,7 @@
 
       // Adicionar linhas verticais das aplicações após o gráfico ser criado
       setTimeout(() => {
-        adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, window.chartInstances.performanceChart);
+        adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, window.chartInstances.performanceChart, morpheusDataPoints);
       }, 100);
     }
   </script>
@@ -1145,15 +1096,11 @@
         document.body.classList.add('desktop-device');
       }
 
-      // Redesenhar gráficos sempre que mudar o dispositivo para aplicar as novas fontes
       setTimeout(redesenharGraficosSuave, 100);
     }
 
     function redesenharGraficosSuave() {
-      // Recriar os gráficos para aplicar as novas configurações de fonte
       if (window.chartInstances.performanceChart) {
-        
-        // Recarregar os dados para recriar os gráficos com as novas configurações
         setTimeout(() => {
           const event = new Event('resize');
           window.dispatchEvent(event);
