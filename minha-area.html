@@ -72,10 +72,18 @@
 
     .user-nome {
       font-size: 22px;
-      color: #1E4DB7;
+      color: #000000; /* Alterado para preto */
       margin: 0 0 2px 0;
       text-align: left;
       font-weight: bold;
+    }
+
+    .user-descricao {
+      font-size: 16px;
+      color: #555;
+      margin: 0 0 30px 0; /* Espaço triplo (30px) abaixo da descrição */
+      text-align: left;
+      font-weight: 400;
     }
 
     .clube-nome {
@@ -83,14 +91,6 @@
       color: #1E4DB7;
       margin: 0 0 2px 0;
       text-align: left;
-    }
-
-    .user-descricao {
-      font-size: 16px;
-      color: #555;
-      margin: 0 0 2px 0;
-      text-align: left;
-      font-weight: 400;
     }
 
     .cnpj {
@@ -372,8 +372,8 @@
   <div class="container">
     <div class="header-info">
       <div class="user-nome" id="userNome"></div>
-      <h1 class="clube-nome">Morpheus Clube de Investimentos</h1>
       <div class="user-descricao" id="userDescricao"></div>
+      <h1 class="clube-nome">Morpheus Clube de Investimentos</h1>
       <div class="cnpj">61.043.820/0001-55</div>
       <div class="subtitle" id="subtitle">Carregando dados...</div>
     </div>
@@ -432,7 +432,7 @@
     let cotasData = null;
     let ultimaCota = null;
     let aplicacoesProcessadas = [];
-    let primeiraAplicacaoIndex = -1;
+    let morpheusDataPoints = [];
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -541,9 +541,9 @@
       tooltipEl.className = `custom-tooltip ${placement} visible`;
     }
 
-    // FUNÇÃO ATUALIZADA PARA ADICIONAR LINHAS VERTICAIS DAS APLICAÇÕES
-    function adicionarLinhasAplicacoesNoGrafico(aplicacoes, chart, morpheusData) {
-      if (!aplicacoes || aplicacoes.length === 0 || !chart || !morpheusData) return;
+    // FUNÇÃO ATUALIZADA PARA ADICIONAR LINHAS VERTICAIS DAS APLICAÇÕES - CORRIGIDA
+    function adicionarLinhasAplicacoesNoGrafico(aplicacoes, chart) {
+      if (!aplicacoes || aplicacoes.length === 0 || !chart) return;
       
       const chartContainer = document.querySelector('.chart-container');
       const canvas = chart.canvas;
@@ -552,47 +552,51 @@
       const existingLines = chartContainer.querySelectorAll('.vertical-line, .aplicacao-label');
       existingLines.forEach(el => el.remove());
       
-      // Encontrar o valor Y da linha Morpheus para cada data de aplicação
+      // Primeiro, precisamos obter o valor Y de cada ponto da linha Morpheus
+      const morpheusDataset = chart.data.datasets[0]; // Morpheus é o primeiro dataset
+      const morpheusPoints = morpheusDataset.data;
+      
       aplicacoes.forEach((aplicacao, index) => {
-        // Pular a primeira aplicação (início do gráfico)
-        if (index === primeiraAplicacaoIndex) return;
-        
         const dataAplicacao = aplicacao.data;
         const valor = aplicacao.valorNumerico;
         const valorStr = aplicacao.valorStr;
         
-        const dataObj = new Date(dataAplicacao.split('/').reverse().join('-'));
-        const xValue = dataObj.getTime();
+        // Converter data para formato Date
+        const dataAplicacaoObj = new Date(dataAplicacao.split('/').reverse().join('-'));
+        const xValue = dataAplicacaoObj.getTime();
         
+        // Encontrar o ponto mais próximo da linha Morpheus para esta data
+        let closestPoint = null;
+        let minDiff = Infinity;
+        
+        morpheusPoints.forEach((point, i) => {
+          const pointDate = new Date(point.x);
+          const diff = Math.abs(pointDate.getTime() - xValue);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestPoint = {
+              x: pointDate.getTime(),
+              y: point.y
+            };
+          }
+        });
+        
+        if (!closestPoint) return;
+        
+        // Calcular posições no canvas
         const xScale = chart.scales.x;
-        const pixelX = xScale.getPixelForValue(xValue);
+        const yScale = chart.scales.y;
+        
+        const pixelX = xScale.getPixelForValue(closestPoint.x);
+        const pixelY = yScale.getPixelForValue(closestPoint.y);
         
         if (pixelX >= chartArea.left && pixelX <= chartArea.right) {
-          // Encontrar o ponto da linha Morpheus mais próximo desta data
-          let morpheusYValue = 0;
-          let minDiff = Infinity;
-          
-          morpheusData.forEach((dataPoint, i) => {
-            const pointX = dataPoint.x;
-            const diff = Math.abs(new Date(pointX).getTime() - xValue);
-            if (diff < minDiff) {
-              minDiff = diff;
-              morpheusYValue = dataPoint.y;
-            }
-          });
-          
-          // Converter o valor Y para pixels
-          const yScale = chart.scales.y;
-          const pixelY = yScale.getPixelForValue(morpheusYValue);
-          
-          // Criar linha vertical que vai do topo até o ponto da linha Morpheus
-          const lineHeight = Math.max(10, pixelY - 10); // Garantir altura mínima
-          
+          // Criar linha vertical que vai do topo até o ponto exato da linha Morpheus
           const line = document.createElement('div');
           line.className = 'vertical-line';
           line.style.left = (pixelX - chartArea.left) + 'px';
           line.style.top = '10px'; // Começar um pouco abaixo do topo
-          line.style.height = lineHeight + 'px';
+          line.style.height = (pixelY - 10) + 'px'; // Altura exata até o ponto da linha
           chartContainer.appendChild(line);
           
           // Criar label da aplicação no topo do gráfico
@@ -814,15 +818,6 @@
           throw new Error("Dados insuficientes no CSV");
         }
 
-        // ENCONTRAR PRIMEIRA DATA DE APLICAÇÃO
-        if (userData && userData.aplicacoes) {
-          aplicacoesProcessadas = processarAplicacoesString(userData.aplicacoes);
-          
-          if (aplicacoesProcessadas.length > 0) {
-            primeiraAplicacaoIndex = 0; // Marcar que a primeira é onde inicia o gráfico
-          }
-        }
-
         const allDates = [];
         const morpheusValores = [];
         const ibovValores = [];
@@ -859,6 +854,11 @@
         let ibovVariacao = [];
         let filteredDates = [];
 
+        // Processar aplicações primeiro
+        if (userData && userData.aplicacoes) {
+          aplicacoesProcessadas = processarAplicacoesString(userData.aplicacoes);
+        }
+
         if (aplicacoesProcessadas.length > 0) {
           const primeiraDataAplicacao = aplicacoesProcessadas[0].data;
           const indexInicio = allDates.findIndex(date => date === primeiraDataAplicacao);
@@ -893,13 +893,8 @@
         const lastDate = filteredDates[filteredDates.length - 1];
         document.getElementById("subtitle").textContent = lastDate;
 
-        // Criar gráfico e passar os dados Morpheus para as linhas verticais
-        const morpheusData = filteredDates.map((date, i) => ({
-          x: date.split("/").reverse().join("-"),
-          y: morpheusVariacao[i]
-        }));
-        
-        createMainChart(filteredDates, morpheusVariacao, ibovVariacao, morpheusData);
+        // Criar gráfico
+        createMainChart(filteredDates, morpheusVariacao, ibovVariacao);
 
         if (userData && userData.aplicacoes) {
           carregarAplicacoes(userData.aplicacoes);
@@ -911,7 +906,7 @@
       }
     }
 
-    function createMainChart(allDates, morpheus, ibov, morpheusDataPoints) {
+    function createMainChart(allDates, morpheus, ibov) {
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
@@ -1063,7 +1058,7 @@
 
       // Adicionar linhas verticais das aplicações após o gráfico ser criado
       setTimeout(() => {
-        adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, window.chartInstances.performanceChart, morpheusDataPoints);
+        adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, window.chartInstances.performanceChart);
       }, 100);
     }
   </script>
