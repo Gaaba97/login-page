@@ -555,16 +555,13 @@
       const existingLines = chartContainer.querySelectorAll('.vertical-line, .aplicacao-label');
       existingLines.forEach(el => el.remove());
       
-      // Criar um mapa das datas do gráfico para acesso rápido
-      const chartDatesMap = new Map();
-      filteredDates.forEach((date, index) => {
-        const dateObj = new Date(date.split('/').reverse().join('-'));
-        chartDatesMap.set(dateObj.getTime(), {
-          date: date,
-          index: index,
-          yValue: morpheusVariacao[index]
-        });
-      });
+      // Obter as posições do canvas e do contêiner
+      const canvasRect = chart.canvas.getBoundingClientRect();
+      const containerRect = chartContainer.getBoundingClientRect();
+      
+      // Diferença entre o canvas e o contêiner (devido ao padding, etc.)
+      const offsetX = canvasRect.left - containerRect.left;
+      const offsetY = canvasRect.top - containerRect.top;
       
       aplicacoes.forEach((aplicacao) => {
         const dataAplicacao = aplicacao.data;
@@ -574,66 +571,68 @@
         // Converter data da aplicação para Date object
         const [dia, mes, ano] = dataAplicacao.split('/');
         const dataAplicacaoObj = new Date(ano, mes - 1, dia);
-        const dataAplicacaoTime = dataAplicacaoObj.getTime();
         
-        // Encontrar a data exata ou a mais próxima no gráfico
-        let dataEncontrada = null;
-        let menorDiferenca = Infinity;
-        let yValue = 0;
-        
-        // Procurar pela data exata ou mais próxima
-        for (const [time, data] of chartDatesMap.entries()) {
-          const diferenca = Math.abs(time - dataAplicacaoTime);
-          if (diferenca < menorDiferenca) {
-            menorDiferenca = diferenca;
-            dataEncontrada = data.date;
-            yValue = data.yValue;
-          }
-        }
-        
-        if (!dataEncontrada) return;
-        
-        // Calcular posições no canvas usando as escalas do gráfico
+        // Obter a escala x do gráfico
         const xScale = chart.scales.x;
         const yScale = chart.scales.y;
         
-        // Usar o timestamp da data encontrada para calcular a posição X
-        const dataEncontradaObj = new Date(dataEncontrada.split('/').reverse().join('-'));
-        const pixelX = xScale.getPixelForValue(dataEncontradaObj.getTime());
-        const pixelY = yScale.getPixelForValue(yValue);
+        // Obter a posição X da data da aplicação (em pixels relativos ao canvas)
+        const pixelX = xScale.getPixelForValue(dataAplicacaoObj);
         
-        // Verificar se está dentro da área visível do gráfico
-        if (pixelX >= chartArea.left && pixelX <= chartArea.right) {
-          // Calcular altura da linha (do topo até o ponto na linha do Morpheus)
-          const topOffset = 10; // Começar um pouco abaixo do topo
-          const lineHeight = Math.max(0, pixelY - topOffset);
-          
-          // Ajustar a posição X para considerar o padding do canvas
-          const canvasRect = chart.canvas.getBoundingClientRect();
-          const chartAreaLeft = chartArea.left;
-          const relativeX = pixelX - chartAreaLeft;
-          
-          // Criar linha vertical
-          const line = document.createElement('div');
-          line.className = 'vertical-line';
-          line.style.left = relativeX + 'px';
-          line.style.top = topOffset + 'px';
-          line.style.height = lineHeight + 'px';
-          chartContainer.appendChild(line);
-          
-          // Criar label da aplicação
-          const label = document.createElement('div');
-          label.className = 'aplicacao-label';
-          label.style.left = (relativeX + 5) + 'px';
-          label.style.top = topOffset + 'px';
-          
-          const tipo = valor >= 0 ? 'Aplicação de' : 'Resgate de';
-          const valorAbsoluto = Math.abs(valor);
-          const valorFormatado = `R$ ${valorAbsoluto.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-          
-          label.textContent = `${tipo} ${valorFormatado}`;
-          chartContainer.appendChild(label);
+        // Verificar se a posição X está dentro da área do gráfico
+        if (pixelX < chartArea.left || pixelX > chartArea.right) {
+          return; // Não desenhar se estiver fora da área visível
         }
+        
+        // Encontrar o ponto mais próximo no dataset do Morpheus para obter o valor Y
+        const morpheusData = chart.data.datasets[0].data;
+        let minDiff = Infinity;
+        let closestYValue = null;
+        for (let i = 0; i < morpheusData.length; i++) {
+          const date = new Date(morpheusData[i].x);
+          const diff = Math.abs(date - dataAplicacaoObj);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestYValue = morpheusData[i].y;
+          }
+        }
+        
+        let pixelY;
+        if (closestYValue !== null) {
+          pixelY = yScale.getPixelForValue(closestYValue);
+        } else {
+          // Se não encontrar, usar o fundo da área do gráfico
+          pixelY = chartArea.bottom;
+        }
+        
+        // Calcular a posição absoluta dentro do chart-container
+        const left = offsetX + (pixelX - chartArea.left);
+        const top = offsetY + (pixelY - chartArea.top);
+        
+        // A linha vertical deve começar no topo da área do gráfico até o ponto Y.
+        const lineTop = offsetY + (chartArea.top - chartArea.top); // topo da área do gráfico relativo ao contêiner
+        const lineHeight = Math.max(0, top - lineTop);
+        
+        // Criar linha vertical
+        const line = document.createElement('div');
+        line.className = 'vertical-line';
+        line.style.left = left + 'px';
+        line.style.top = lineTop + 'px';
+        line.style.height = lineHeight + 'px';
+        chartContainer.appendChild(line);
+        
+        // Criar label da aplicação (colocar acima da linha, no topo)
+        const label = document.createElement('div');
+        label.className = 'aplicacao-label';
+        label.style.left = (left + 5) + 'px';
+        label.style.top = (lineTop - 20) + 'px'; // 20px acima do topo da linha
+        
+        const tipo = valor >= 0 ? 'Aplicação de' : 'Resgate de';
+        const valorAbsoluto = Math.abs(valor);
+        const valorFormatado = `R$ ${valorAbsoluto.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        
+        label.textContent = `${tipo} ${valorFormatado}`;
+        chartContainer.appendChild(label);
       });
     }
 
