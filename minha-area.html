@@ -52,6 +52,78 @@
       transform: scale(1.1);
     }
 
+    /* ESTILOS PARA SMARTPHONE VERTICAL */
+    .mobile-device .navbar {
+      padding: 18px 20px;
+      min-height: 75px;
+    }
+
+    .mobile-device .navbar .welcome {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .mobile-device .navbar .links {
+      gap: 20px;
+    }
+
+    .mobile-device .navbar a {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    /* ESTILOS PARA SMARTPHONE HORIZONTAL */
+    .mobile-landscape .navbar {
+      padding: 12px 20px;
+    }
+
+    .mobile-landscape .navbar .welcome {
+      font-size: 18px;
+    }
+
+    .mobile-landscape .navbar .links {
+      gap: 15px;
+    }
+
+    .mobile-landscape .navbar a {
+      font-size: 18px;
+    }
+
+    /* ESTILOS PARA COMPUTADOR (DEFAULT) */
+    .desktop-device .navbar {
+      padding: 10px 20px;
+    }
+
+    .desktop-device .navbar .welcome {
+      font-size: 16px;
+    }
+
+    .desktop-device .navbar .links {
+      gap: 20px;
+    }
+
+    .desktop-device .navbar a {
+      font-size: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 8px 15px;
+      }
+
+      .navbar .welcome {
+        font-size: 14px;
+      }
+
+      .navbar .links {
+        gap: 10px;
+      }
+
+      .navbar a {
+        font-size: 14px;
+      }
+    }
+
     .container {
       margin-top: 60px;
       text-align: center;
@@ -984,7 +1056,7 @@
       chartDataPoints = morpheusData;
 
       const canvas = document.getElementById("performanceChart");
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getBoundingClientRect();
 
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
@@ -1143,12 +1215,12 @@
   </script>
 
   <script>
+    // SCRIPT DE DETECÇÃO DE DISPOSITIVO
     let orientationChangeTimeout;
 
     function detectarDispositivo() {
       const largura = window.innerWidth;
       const altura = window.innerHeight;
-      const deviceInfo = document.getElementById('deviceInfo');
       const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
       
       const isMobileSize = largura <= 1024 || 
@@ -1169,21 +1241,6 @@
       } else {
         document.body.classList.add('desktop-device');
       }
-
-      setTimeout(redesenharGraficosSuave, 100);
-    }
-
-    function redesenharGraficosSuave() {
-      if (window.chartInstances.performanceChart) {
-        setTimeout(() => {
-          const event = new Event('resize');
-          window.dispatchEvent(event);
-          // Redesenhar as linhas verticais quando o gráfico for redimensionado
-          if (aplicacoesProcessadas.length > 0) {
-            adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, window.chartInstances.performanceChart);
-          }
-        }, 100);
-      }
     }
 
     window.addEventListener('resize', function() {
@@ -1196,6 +1253,7 @@
       orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
     });
     
+    // Detectar dispositivo ao carregar a página
     setTimeout(detectarDispositivo, 100);
     detectarDispositivo();
   </script>
