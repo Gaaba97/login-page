@@ -138,11 +138,15 @@
       padding: 10px;
       box-sizing: border-box;
       position: relative;
+      overflow: visible;
     }
 
     canvas {
       width: 100%;
       height: 380px !important;
+      display: block;
+      position: relative;
+      z-index: 1;
     }
 
     .loading {
@@ -339,8 +343,9 @@
         #000 3px,
         #000 6px
       );
-      z-index: 5;
+      z-index: 2;
       pointer-events: none;
+      transform: translateX(-0.5px);
     }
 
     .aplicacao-label {
@@ -352,10 +357,9 @@
       font-size: 10px;
       font-family: "Montserrat", sans-serif;
       white-space: nowrap;
-      z-index: 6;
+      z-index: 3;
       pointer-events: none;
       transform: translateY(0);
-      top: 10px;
     }
   </style>
 </head>
@@ -555,77 +559,84 @@
       const existingLines = chartContainer.querySelectorAll('.vertical-line, .aplicacao-label');
       existingLines.forEach(el => el.remove());
       
-      // Criar um mapa das datas do gráfico para acesso rápido
-      const chartDatesMap = new Map();
-      filteredDates.forEach((date, index) => {
-        const dateObj = new Date(date.split('/').reverse().join('-'));
-        chartDatesMap.set(dateObj.getTime(), {
-          date: date,
-          index: index,
-          yValue: morpheusVariacao[index]
-        });
-      });
+      // Obter dados do gráfico Morpheus (dataset 0)
+      const morpheusData = chart.data.datasets[0].data;
       
       aplicacoes.forEach((aplicacao) => {
         const dataAplicacao = aplicacao.data;
         const valor = aplicacao.valorNumerico;
         const valorStr = aplicacao.valorStr;
         
-        // Converter data da aplicação para Date object
+        // Converter data da aplicação de "DD/MM/YYYY" para objeto Date
         const [dia, mes, ano] = dataAplicacao.split('/');
         const dataAplicacaoObj = new Date(ano, mes - 1, dia);
-        const dataAplicacaoTime = dataAplicacaoObj.getTime();
         
-        // Encontrar a data exata ou a mais próxima no gráfico
-        let dataEncontrada = null;
+        // Encontrar o ponto EXATO ou mais próximo no gráfico
+        let pontoEncontrado = null;
         let menorDiferenca = Infinity;
-        let yValue = 0;
         
-        // Procurar pela data exata ou mais próxima
-        for (const [time, data] of chartDatesMap.entries()) {
-          const diferenca = Math.abs(time - dataAplicacaoTime);
-          if (diferenca < menorDiferenca) {
-            menorDiferenca = diferenca;
-            dataEncontrada = data.date;
-            yValue = data.yValue;
+        // Procurar pela data exata ou mais próxima no gráfico
+        morpheusData.forEach((ponto) => {
+          if (ponto && ponto.x) {
+            // Converter data do ponto do gráfico (YYYY-MM-DD) para Date
+            const dataPonto = new Date(ponto.x);
+            const diferenca = Math.abs(dataPonto - dataAplicacaoObj);
+            
+            if (diferenca < menorDiferenca) {
+              menorDiferenca = diferenca;
+              pontoEncontrado = ponto;
+            }
           }
-        }
+        });
         
-        if (!dataEncontrada) return;
+        if (!pontoEncontrado) return;
         
-        // Calcular posições no canvas usando as escalas do gráfico
+        // Obter escalas do gráfico
         const xScale = chart.scales.x;
         const yScale = chart.scales.y;
         
-        // Usar o timestamp da data encontrada para calcular a posição X
-        const dataEncontradaObj = new Date(dataEncontrada.split('/').reverse().join('-'));
-        const pixelX = xScale.getPixelForValue(dataEncontradaObj.getTime());
-        const pixelY = yScale.getPixelForValue(yValue);
+        // Converter data do ponto para timestamp para usar na escala
+        const dataPontoTimestamp = new Date(pontoEncontrado.x).getTime();
         
-        // Verificar se está dentro da área visível do gráfico
-        if (pixelX >= chartArea.left && pixelX <= chartArea.right) {
-          // Calcular altura da linha (do topo até o ponto na linha do Morpheus)
-          const topOffset = 10; // Começar um pouco abaixo do topo
-          const lineHeight = Math.max(0, pixelY - topOffset);
-          
-          // Ajustar a posição X para considerar o padding do canvas
-          const canvasRect = chart.canvas.getBoundingClientRect();
-          const chartAreaLeft = chartArea.left;
-          const relativeX = pixelX - chartAreaLeft;
-          
+        // Obter posições em pixels DENTRO DO CANVAS
+        const pixelXCanvas = xScale.getPixelForValue(dataPontoTimestamp);
+        const pixelYCanvas = yScale.getPixelForValue(pontoEncontrado.y);
+        
+        // Obter posições absolutas na página
+        const canvasRect = chart.canvas.getBoundingClientRect();
+        const containerRect = chartContainer.getBoundingClientRect();
+        
+        // Calcular a posição X ABSOLUTA na página
+        // canvasRect.left é a posição do canvas na página
+        // pixelXCanvas é a posição dentro do canvas
+        const posXAbsoluta = canvasRect.left + pixelXCanvas;
+        
+        // Calcular a posição X RELATIVA ao container
+        const posXRelativa = posXAbsoluta - containerRect.left;
+        
+        // Calcular a posição Y RELATIVA ao container (começar um pouco abaixo do topo)
+        const posYTopo = 10; // 10px do topo do container
+        
+        // Calcular altura da linha (do topo até o ponto na linha do gráfico)
+        const posYAbsoluta = canvasRect.top + pixelYCanvas;
+        const posYRelativaPonto = posYAbsoluta - containerRect.top;
+        const alturaLinha = Math.max(0, posYRelativaPonto - posYTopo);
+        
+        // Verificar se está dentro da área visível do container
+        if (posXRelativa >= 0 && posXRelativa <= containerRect.width) {
           // Criar linha vertical
           const line = document.createElement('div');
           line.className = 'vertical-line';
-          line.style.left = relativeX + 'px';
-          line.style.top = topOffset + 'px';
-          line.style.height = lineHeight + 'px';
+          line.style.left = posXRelativa + 'px';
+          line.style.top = posYTopo + 'px';
+          line.style.height = alturaLinha + 'px';
           chartContainer.appendChild(line);
           
           // Criar label da aplicação
           const label = document.createElement('div');
           label.className = 'aplicacao-label';
-          label.style.left = (relativeX + 5) + 'px';
-          label.style.top = topOffset + 'px';
+          label.style.left = (posXRelativa + 5) + 'px';
+          label.style.top = posYTopo + 'px';
           
           const tipo = valor >= 0 ? 'Aplicação de' : 'Resgate de';
           const valorAbsoluto = Math.abs(valor);
@@ -633,8 +644,19 @@
           
           label.textContent = `${tipo} ${valorFormatado}`;
           chartContainer.appendChild(label);
+          
+          console.log(`Linha para ${dataAplicacao}:`, {
+            dataPontoGrafico: pontoEncontrado.x,
+            pixelXCanvas,
+            canvasLeft: canvasRect.left,
+            containerLeft: containerRect.left,
+            posXRelativa,
+            posYRelativaPonto
+          });
         }
       });
+      
+      console.log(`Total de ${aplicacoes.length} aplicações processadas no gráfico`);
     }
 
     function encontrarCotaPorData(dataAplicacao) {
@@ -879,33 +901,41 @@
           aplicacoesProcessadas = processarAplicacoesString(userData.aplicacoes);
         }
 
-        // SEMPRE mostrar a primeira aplicação no D0 do gráfico
+        // Encontrar a data de início baseada na primeira aplicação
+        let indexInicio = 0;
         if (aplicacoesProcessadas.length > 0) {
           const primeiraDataAplicacao = aplicacoesProcessadas[0].data;
+          const [dia, mes, ano] = primeiraDataAplicacao.split('/');
+          const primeiraDataObj = new Date(ano, mes - 1, dia);
           
-          // Encontrar a posição desta data nos dados completos
-          let indexInicio = allDates.findIndex(date => date === primeiraDataAplicacao);
-          
-          // Se não encontrar exatamente, usar o início dos dados
-          if (indexInicio === -1) {
-            indexInicio = 0;
-          }
-          
-          console.log("Primeira aplicação:", primeiraDataAplicacao, "Índice:", indexInicio);
-          
-          const morpheusBase = morpheusValores[indexInicio];
-          const ibovBase = ibovValores[indexInicio];
-          
-          for (let i = indexInicio; i < allDates.length; i++) {
-            const variacaoMorpheus = ((morpheusValores[i] / morpheusBase) - 1) * 100;
-            const variacaoIbov = ((ibovValores[i] / ibovBase) - 1) * 100;
+          // Encontrar o índice da data igual ou imediatamente posterior
+          for (let i = 0; i < allDates.length; i++) {
+            const [cotaDia, cotaMes, cotaAno] = allDates[i].split('/');
+            const dataCotaObj = new Date(cotaAno, cotaMes - 1, cotaDia);
             
-            morpheusVariacao.push(variacaoMorpheus);
-            ibovVariacao.push(variacaoIbov);
-            filteredDates.push(allDates[i]);
+            if (dataCotaObj >= primeiraDataObj) {
+              indexInicio = i;
+              break;
+            }
           }
-        } else {
-          // Sem aplicações, usar dados completos
+          
+          console.log("Primeira aplicação:", primeiraDataAplicacao, "Índice no CSV:", indexInicio);
+        }
+
+        const morpheusBase = morpheusValores[indexInicio];
+        const ibovBase = ibovValores[indexInicio];
+
+        for (let i = indexInicio; i < allDates.length; i++) {
+          const variacaoMorpheus = ((morpheusValores[i] / morpheusBase) - 1) * 100;
+          const variacaoIbov = ((ibovValores[i] / ibovBase) - 1) * 100;
+          
+          morpheusVariacao.push(variacaoMorpheus);
+          ibovVariacao.push(variacaoIbov);
+          filteredDates.push(allDates[i]);
+        }
+
+        if (filteredDates.length === 0) {
+          // Fallback: usar dados completos se não encontrar correspondência
           const morpheusBase = morpheusValores[0];
           const ibovBase = ibovValores[0];
           
@@ -976,7 +1006,7 @@
         return gradient;
       };
 
-      window.chartInstances.performanceChart = new Chart(ctx, {
+      const chart = new Chart(ctx, {
         type: "line",
         data: {
           datasets: [
@@ -1087,19 +1117,28 @@
               grid: { color: "rgba(0,0,0,0.05)" },
             },
           },
+          animation: {
+            onComplete: function() {
+              if (aplicacoesProcessadas.length > 0) {
+                console.log("Gráfico renderizado - Adicionando linhas");
+                // Pequeno delay para garantir
+                setTimeout(() => {
+                  adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, chart);
+                }, 100);
+              }
+            }
+          }
         },
       });
 
-      console.log("Gráfico principal criado com sucesso");
+      window.chartInstances.performanceChart = chart;
 
-      // Adicionar linhas verticais das aplicações após o gráfico ser criado
-      // Com um pequeno delay para garantir que o gráfico esteja completamente renderizado
-      setTimeout(() => {
-        if (aplicacoesProcessadas.length > 0) {
-          console.log("Adicionando linhas para", aplicacoesProcessadas.length, "aplicações");
-          adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, window.chartInstances.performanceChart);
-        }
-      }, 200);
+      console.log("Gráfico principal criado com sucesso", {
+        totalPontos: morpheusData.length,
+        primeiraData: morpheusData[0]?.x,
+        ultimaData: morpheusData[morpheusData.length - 1]?.x,
+        aplicacoes: aplicacoesProcessadas.length
+      });
     }
   </script>
 
