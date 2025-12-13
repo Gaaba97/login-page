@@ -1056,7 +1056,7 @@
       chartDataPoints = morpheusData;
 
       const canvas = document.getElementById("performanceChart");
-      const ctx = canvas.getBoundingClientRect();
+      const ctx = canvas.getContext("2d"); // CORREÇÃO AQUI
 
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
@@ -1221,6 +1221,7 @@
     function detectarDispositivo() {
       const largura = window.innerWidth;
       const altura = window.innerHeight;
+      const deviceInfo = document.getElementById('deviceInfo');
       const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
       
       const isMobileSize = largura <= 1024 || 
@@ -1241,6 +1242,17 @@
       } else {
         document.body.classList.add('desktop-device');
       }
+      
+      // Redesenhar gráficos quando o dispositivo mudar
+      if (window.chartInstances.performanceChart) {
+        setTimeout(() => {
+          window.chartInstances.performanceChart.resize();
+          // Redesenhar as linhas verticais quando o gráfico for redimensionado
+          if (aplicacoesProcessadas && aplicacoesProcessadas.length > 0) {
+            adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, window.chartInstances.performanceChart);
+          }
+        }, 100);
+      }
     }
 
     window.addEventListener('resize', function() {
@@ -1253,7 +1265,6 @@
       orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
     });
     
-    // Detectar dispositivo ao carregar a página
     setTimeout(detectarDispositivo, 100);
     detectarDispositivo();
   </script>
