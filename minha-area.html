@@ -432,6 +432,72 @@
       z-index: 3;
       pointer-events: none;
       transform: translateY(0);
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .aplicacao-label:hover {
+      background: rgba(255, 255, 255, 1);
+      transform: scale(1.1);
+      z-index: 10;
+    }
+
+    /* NOVO TOOLTIP PARA APLICAÇÕES NO GRÁFICO */
+    .aplicacao-tooltip {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.98);
+      border: 2px solid #164CAD;
+      border-radius: 8px;
+      padding: 10px 14px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      pointer-events: none;
+      z-index: 1000;
+      font-family: "Montserrat", sans-serif;
+      backdrop-filter: blur(10px);
+      transition: opacity 0.2s ease;
+      opacity: 0;
+      min-width: 180px;
+    }
+
+    .aplicacao-tooltip.visible {
+      opacity: 1;
+    }
+
+    .aplicacao-tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 8px 8px 0 8px;
+      border-color: #164CAD transparent transparent transparent;
+    }
+
+    .tooltip-acao-numero {
+      font-weight: bold;
+      color: #164CAD;
+      font-size: 14px;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .tooltip-acao-detalhe {
+      font-size: 12px;
+      color: #333;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .tooltip-acao-detalhe .label {
+      font-weight: 500;
+    }
+
+    .tooltip-acao-detalhe .value {
+      font-weight: 400;
     }
   </style>
 </head>
@@ -468,6 +534,7 @@
       <table class="aplicacoes-table" id="aplicacoesTable" style="display: none;">
         <thead>
           <tr>
+            <th>Nº Ação</th>
             <th>Data</th>
             <th>Valor Aplicado</th>
             <th>Valor Atual</th>
@@ -542,6 +609,7 @@
     };
 
     let customTooltip = null;
+    let aplicacaoTooltip = null;
 
     function createCustomTooltip() {
       if (customTooltip) return customTooltip;
@@ -550,6 +618,15 @@
       customTooltip.className = 'custom-tooltip';
       document.querySelector('.main-chart-container').appendChild(customTooltip);
       return customTooltip;
+    }
+
+    function createAplicacaoTooltip() {
+      if (aplicacaoTooltip) return aplicacaoTooltip;
+      
+      aplicacaoTooltip = document.createElement('div');
+      aplicacaoTooltip.className = 'aplicacao-tooltip';
+      document.querySelector('.main-chart-container').appendChild(aplicacaoTooltip);
+      return aplicacaoTooltip;
     }
 
     function showCustomTooltip(chart, tooltip) {
@@ -620,6 +697,62 @@
       tooltipEl.className = `custom-tooltip ${placement} visible`;
     }
 
+    function showAplicacaoTooltip(aplicacao, numero, x, y) {
+      const tooltipEl = createAplicacaoTooltip();
+      
+      const tipo = aplicacao.valorNumerico >= 0 ? 'Aplicação' : 'Resgate';
+      const valorAbsoluto = Math.abs(aplicacao.valorNumerico);
+      const valorFormatado = `R$ ${valorAbsoluto.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      
+      tooltipEl.innerHTML = `
+        <div class="tooltip-acao-numero">Ação ${numero}</div>
+        <div class="tooltip-acao-detalhe">
+          <span class="label">Tipo:</span>
+          <span class="value">${tipo}</span>
+        </div>
+        <div class="tooltip-acao-detalhe">
+          <span class="label">Data:</span>
+          <span class="value">${aplicacao.data}</span>
+        </div>
+        <div class="tooltip-acao-detalhe">
+          <span class="label">Valor:</span>
+          <span class="value">${valorFormatado}</span>
+        </div>
+      `;
+      
+      const chartContainer = document.querySelector('.main-chart-container');
+      const containerRect = chartContainer.getBoundingClientRect();
+      
+      let left = x - containerRect.left;
+      let top = y - containerRect.top - tooltipEl.offsetHeight - 15;
+      
+      // Ajustar posição se o tooltip sair da tela
+      if (top < 10) {
+        top = y - containerRect.top + 25;
+        tooltipEl.style.setProperty('--arrow-position', 'top');
+      } else {
+        tooltipEl.style.setProperty('--arrow-position', 'bottom');
+      }
+      
+      if (left + tooltipEl.offsetWidth > containerRect.width - 10) {
+        left = containerRect.width - tooltipEl.offsetWidth - 10;
+      }
+      
+      if (left < 10) {
+        left = 10;
+      }
+      
+      tooltipEl.style.left = left + 'px';
+      tooltipEl.style.top = top + 'px';
+      tooltipEl.classList.add('visible');
+    }
+
+    function hideAplicacaoTooltip() {
+      if (aplicacaoTooltip) {
+        aplicacaoTooltip.classList.remove('visible');
+      }
+    }
+
     // FUNÇÃO COMPLETAMENTE REESCRITA PARA CORRIGIR O POSICIONAMENTO DAS LINHAS
     function adicionarLinhasAplicacoesNoGrafico(aplicacoes, chart) {
       if (!aplicacoes || aplicacoes.length === 0 || !chart) return;
@@ -634,7 +767,7 @@
       // Obter dados do gráfico Morpheus (dataset 0)
       const morpheusData = chart.data.datasets[0].data;
       
-      aplicacoes.forEach((aplicacao) => {
+      aplicacoes.forEach((aplicacao, index) => {
         const dataAplicacao = aplicacao.data;
         const valor = aplicacao.valorNumerico;
         const valorStr = aplicacao.valorStr;
@@ -704,17 +837,25 @@
           line.style.height = alturaLinha + 'px';
           chartContainer.appendChild(line);
           
-          // Criar label da aplicação
+          // Criar label da aplicação - APENAS O NÚMERO
           const label = document.createElement('div');
           label.className = 'aplicacao-label';
           label.style.left = (posXRelativa + 5) + 'px';
           label.style.top = posYTopo + 'px';
+          label.textContent = (index + 1).toString(); // Apenas o número
+          label.setAttribute('data-index', index);
+          label.setAttribute('data-aplicacao', JSON.stringify(aplicacao));
           
-          const tipo = valor >= 0 ? 'Aplicação de' : 'Resgate de';
-          const valorAbsoluto = Math.abs(valor);
-          const valorFormatado = `R$ ${valorAbsoluto.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+          // Adicionar eventos de mouse
+          label.addEventListener('mouseenter', (e) => {
+            const rect = e.target.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top;
+            showAplicacaoTooltip(aplicacao, index + 1, x, y);
+          });
           
-          label.textContent = `${tipo} ${valorFormatado}`;
+          label.addEventListener('mouseleave', hideAplicacaoTooltip);
+          
           chartContainer.appendChild(label);
           
           console.log(`Linha para ${dataAplicacao}:`, {
@@ -876,6 +1017,12 @@
 
         const row = document.createElement('tr');
         
+        // Número da ação
+        const numeroCell = document.createElement('td');
+        numeroCell.textContent = (index + 1).toString();
+        numeroCell.style.fontWeight = 'bold';
+        numeroCell.style.color = '#164CAD';
+        
         const dataCell = document.createElement('td');
         dataCell.textContent = data;
         
@@ -885,6 +1032,7 @@
         const valorAtualCell = document.createElement('td');
         valorAtualCell.textContent = valorAtualFormatado;
         
+        row.appendChild(numeroCell);
         row.appendChild(dataCell);
         row.appendChild(valorCell);
         row.appendChild(valorAtualCell);
@@ -900,6 +1048,9 @@
         totalLabelCell.textContent = 'Total';
         totalLabelCell.style.fontWeight = 'bold';
         
+        const totalVazioCell = document.createElement('td');
+        totalVazioCell.textContent = '';
+        
         const totalAplicadoCell = document.createElement('td');
         totalAplicadoCell.textContent = `R$ ${totalAplicado.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
         totalAplicadoCell.style.fontWeight = 'bold';
@@ -909,6 +1060,7 @@
         totalAtualCell.style.fontWeight = 'bold';
         
         totalRow.appendChild(totalLabelCell);
+        totalRow.appendChild(totalVazioCell);
         totalRow.appendChild(totalAplicadoCell);
         totalRow.appendChild(totalAtualCell);
         
