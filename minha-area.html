@@ -180,7 +180,7 @@
       text-align: left;
     }
 
-    /* ESTILO PARA O INVESTIMENTO DISPONÍVEL */
+    /* ESTILO PARA O INVESTIMENTO DISPONÍVEL - AGORA APENAS UM ITEM */
     .investimento-disponivel-container {
       position: absolute;
       right: 20px;
@@ -192,31 +192,16 @@
     }
 
     .investimento-item {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: bold;
       background-color: #f8f9fa;
-      padding: 8px 12px;
-      border-radius: 5px;
-      border: 1px solid #e0e0e0;
-      min-width: 280px;
-    }
-
-    .investimento-item.limite {
-      color: #164CAD;
-      border-color: #164CAD;
-      background-color: #f0f5ff;
-    }
-
-    .investimento-item.investido {
-      color: #27ae60;
-      border-color: #27ae60;
-      background-color: #f8fff9;
-    }
-
-    .investimento-item.disponivel {
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 2px solid #e74c3c;
+      min-width: 300px;
       color: #e74c3c;
-      border-color: #e74c3c;
       background-color: #fff5f5;
+      text-align: center;
     }
 
     /* ESTILOS RESPONSIVOS PARA O INVESTIMENTO DISPONÍVEL */
@@ -232,6 +217,8 @@
         min-width: auto;
         width: 100%;
         box-sizing: border-box;
+        font-size: 16px;
+        padding: 10px 14px;
       }
     }
 
@@ -589,10 +576,8 @@
       <div class="user-nome" id="userNome"></div>
       <div class="user-descricao" id="userDescricao"></div>
       
-      <!-- Nova div para os valores calculados separadamente -->
+      <!-- Container apenas para "Ainda pode investir" -->
       <div class="investimento-disponivel-container">
-        <div class="investimento-item limite" id="limiteInvestimento">Limite máximo: calculando...</div>
-        <div class="investimento-item investido" id="totalInvestidoCalculado">Total já investido: calculando...</div>
         <div class="investimento-item disponivel" id="investimentoDisponivel">Ainda pode investir: calculando...</div>
       </div>
       
@@ -771,7 +756,7 @@
       }
     }
 
-    // FUNÇÃO PARA BUSCAR ÚLTIMA COTA DA CÉLULA C9 (linha 9, coluna 3) - CORRIGIDA
+    // FUNÇÃO PARA BUSCAR ÚLTIMA COTA DA CÉLULA C9 (linha 9, coluna 3)
     async function buscarUltimaCota() {
       try {
         const response = await fetch(csvUrl);
@@ -820,9 +805,9 @@
       }
     }
 
-    // FUNÇÃO PARA CALCULAR E EXIBIR OS VALORES SEPARADOS - CORRIGIDA COM A FÓRMULA CORRETA
-    function calcularEExibirValoresSeparados() {
-      console.log("Calculando valores separados:", {
+    // FUNÇÃO PARA CALCULAR E EXIBIR APENAS "AINDA PODE INVESTIR"
+    function calcularEExibirValorDisponivel() {
+      console.log("Calculando valor disponível para investir:", {
         patrimonio: patrimonio,
         totalAtualGlobal: totalAtualGlobal,
         ultimaCota: ultimaCota
@@ -832,36 +817,28 @@
       if (patrimonio === 0) {
         buscarPatrimonioDaPlanilha().then(() => {
           if (patrimonio > 0) {
-            calcularValoresEFinalizar();
+            calcularValorDisponivelEFinalizar();
           } else {
-            exibirErroCalculos();
+            exibirErroCalculo();
           }
         });
       } else {
-        calcularValoresEFinalizar();
+        calcularValorDisponivelEFinalizar();
       }
     }
 
-    function calcularValoresEFinalizar() {
-      // Calcular o primeiro valor: (0.4 * D9) / 0.6
-      const limiteInvestimento = (0.4 * patrimonio) / 0.6;
-      
-      // Para exibição, mostramos o total atual das aplicações
-      const totalInvestidoParaExibicao = totalAtualGlobal;
-      
-      // CORREÇÃO: Cálculo do "Ainda pode investir" com a fórmula correta
+    function calcularValorDisponivelEFinalizar() {
+      // Cálculo do "Ainda pode investir" com a fórmula correta
       // [(0.4 × D9) ÷ 0.6] - (Total atual das aplicações ÷ 0.6)
       const investimentoDisponivel = ((0.4 * patrimonio) / 0.6) - (totalAtualGlobal / 0.6);
       
-      console.log("Valores calculados (CORRIGIDOS):", {
+      console.log("Valor disponível calculado:", {
         patrimonio: patrimonio,
-        limiteInvestimento: limiteInvestimento,
         totalAtualGlobal: totalAtualGlobal,
-        totalInvestidoParaExibicao: totalInvestidoParaExibicao,
         investimentoDisponivel: investimentoDisponivel
       });
       
-      // Formatar os valores como moeda brasileira
+      // Formatar o valor como moeda brasileira
       const formatoMoeda = {
         style: 'currency',
         currency: 'BRL',
@@ -869,40 +846,18 @@
         maximumFractionDigits: 2
       };
       
-      const limiteFormatado = limiteInvestimento.toLocaleString('pt-BR', formatoMoeda);
-      const investidoFormatado = totalInvestidoParaExibicao.toLocaleString('pt-BR', formatoMoeda);
       const disponivelFormatado = Math.max(0, investimentoDisponivel).toLocaleString('pt-BR', formatoMoeda);
       
-      // Exibir nos elementos
-      const elementoLimite = document.getElementById('limiteInvestimento');
-      const elementoInvestido = document.getElementById('totalInvestidoCalculado');
+      // Exibir apenas no elemento "Ainda pode investir"
       const elementoDisponivel = document.getElementById('investimentoDisponivel');
-      
-      if (elementoLimite) {
-        elementoLimite.textContent = `Limite máximo: ${limiteFormatado}`;
-      }
-      
-      if (elementoInvestido) {
-        elementoInvestido.textContent = `Total já investido: ${investidoFormatado}`;
-      }
       
       if (elementoDisponivel) {
         elementoDisponivel.textContent = `Ainda pode investir: ${disponivelFormatado}`;
       }
     }
 
-    function exibirErroCalculos() {
-      const elementoLimite = document.getElementById('limiteInvestimento');
-      const elementoInvestido = document.getElementById('totalInvestidoCalculado');
+    function exibirErroCalculo() {
       const elementoDisponivel = document.getElementById('investimentoDisponivel');
-      
-      if (elementoLimite) {
-        elementoLimite.textContent = "Limite máximo: Dados indisponíveis";
-      }
-      
-      if (elementoInvestido) {
-        elementoInvestido.textContent = "Total já investido: Dados indisponíveis";
-      }
       
       if (elementoDisponivel) {
         elementoDisponivel.textContent = "Ainda pode investir: Dados indisponíveis";
@@ -991,7 +946,6 @@
       
       tooltipEl.style.left = left + 'px';
       tooltipEl.style.top = top + 'px';
-      
       tooltipEl.className = `custom-tooltip ${placement} visible`;
     }
 
@@ -1191,7 +1145,7 @@
       return cotaEncontrada;
     }
 
-    // FUNÇÃO PARA CALCULAR VALOR ATUAL - AGORA USANDO A ÚLTIMA COTA DE C9
+    // FUNÇÃO PARA CALCULAR VALOR ATUAL - USANDO A ÚLTIMA COTA DE C9
     function calcularValorAtual(valorAplicado, cotaAplicacao) {
       if (!cotaAplicacao || !ultimaCota || ultimaCota === 0) {
         console.log("Dados insuficientes para cálculo:", {
@@ -1299,8 +1253,8 @@
       
       if (aplicacoesProcessadas.length === 0) {
         noAplicacoesElement.style.display = 'block';
-        // Atualizar os valores separados mesmo sem aplicações
-        setTimeout(calcularEExibirValoresSeparados, 100);
+        // Atualizar o valor disponível mesmo sem aplicações
+        setTimeout(calcularEExibirValorDisponivel, 100);
         return;
       }
 
@@ -1400,9 +1354,9 @@
 
         tableElement.style.display = 'table';
         
-        // Buscar patrimônio e calcular valores
+        // Buscar patrimônio e calcular valor disponível
         buscarPatrimonioDaPlanilha().then(() => {
-          calcularEExibirValoresSeparados();
+          calcularEExibirValorDisponivel();
         });
       });
     }
@@ -1521,9 +1475,9 @@
         if (userData && userData.aplicacoes) {
           carregarAplicacoes(userData.aplicacoes);
         } else {
-          // Atualizar os valores separados mesmo sem aplicações
+          // Atualizar o valor disponível mesmo sem aplicações
           buscarPatrimonioDaPlanilha().then(() => {
-            calcularEExibirValoresSeparados();
+            calcularEExibirValorDisponivel();
           });
         }
 
