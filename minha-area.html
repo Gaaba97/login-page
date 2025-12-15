@@ -812,7 +812,7 @@
       }
     }
 
-    // FUNÇÃO PARA CALCULAR E EXIBIR OS VALORES SEPARADOS - CORRIGIDA
+    // FUNÇÃO PARA CALCULAR E EXIBIR OS VALORES SEPARADOS - CORRIGIDA COM A FÓRMULA CORRETA
     function calcularEExibirValoresSeparados() {
       console.log("Calculando valores separados:", {
         patrimonio: patrimonio,
@@ -838,16 +838,18 @@
       // Calcular o primeiro valor: (0.4 * D9) / 0.6
       const limiteInvestimento = (0.4 * patrimonio) / 0.6;
       
-      // CORREÇÃO: Usar o totalAtualGlobal diretamente (sem dividir por 0.6)
-      const totalInvestidoCalculado = totalAtualGlobal;
+      // CORREÇÃO: Para exibição, mostramos o total atual das aplicações
+      const totalInvestidoParaExibicao = totalAtualGlobal;
       
-      // Calcular a diferença (ainda pode investir)
-      const investimentoDisponivel = limiteInvestimento - totalInvestidoCalculado;
+      // CORREÇÃO: Cálculo do "Ainda pode investir" com a fórmula correta
+      // [(0.4 × D9) ÷ 0.6] - (Total atual das aplicações ÷ 0.6)
+      const investimentoDisponivel = ((0.4 * patrimonio) / 0.6) - (totalAtualGlobal / 0.6);
       
       console.log("Valores calculados (CORRIGIDOS):", {
+        patrimonio: patrimonio,
         limiteInvestimento: limiteInvestimento,
         totalAtualGlobal: totalAtualGlobal,
-        totalInvestidoCalculado: totalInvestidoCalculado,
+        totalInvestidoParaExibicao: totalInvestidoParaExibicao,
         investimentoDisponivel: investimentoDisponivel
       });
       
@@ -860,7 +862,7 @@
       };
       
       const limiteFormatado = limiteInvestimento.toLocaleString('pt-BR', formatoMoeda);
-      const investidoFormatado = totalInvestidoCalculado.toLocaleString('pt-BR', formatoMoeda);
+      const investidoFormatado = totalInvestidoParaExibicao.toLocaleString('pt-BR', formatoMoeda);
       const disponivelFormatado = Math.max(0, investimentoDisponivel).toLocaleString('pt-BR', formatoMoeda);
       
       // Exibir nos elementos
@@ -1382,7 +1384,7 @@
           
           tableBody.appendChild(totalRow);
           
-          // Armazenar o total atual globalmente - AGORA USANDO O TOTAL ATUAL DA TABELA
+          // Armazenar o total atual globalmente
           totalAtualGlobal = totalAtualFinal;
         }
 
