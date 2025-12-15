@@ -186,16 +186,37 @@
       right: 20px;
       top: 20px;
       text-align: right;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .investimento-disponivel {
+    .investimento-item {
       font-size: 16px;
-      color: #27ae60;
       font-weight: bold;
-      background-color: #f8fff9;
+      background-color: #f8f9fa;
       padding: 8px 12px;
       border-radius: 5px;
-      border: 1px solid #27ae60;
+      border: 1px solid #e0e0e0;
+      min-width: 280px;
+    }
+
+    .investimento-item.limite {
+      color: #164CAD;
+      border-color: #164CAD;
+      background-color: #f0f5ff;
+    }
+
+    .investimento-item.investido {
+      color: #27ae60;
+      border-color: #27ae60;
+      background-color: #f8fff9;
+    }
+
+    .investimento-item.disponivel {
+      color: #e74c3c;
+      border-color: #e74c3c;
+      background-color: #fff5f5;
     }
 
     /* ESTILOS RESPONSIVOS PARA O INVESTIMENTO DISPONÍVEL */
@@ -204,10 +225,13 @@
         position: static;
         text-align: left;
         margin-top: 10px;
+        flex-direction: column;
       }
       
-      .investimento-disponivel {
-        display: inline-block;
+      .investimento-item {
+        min-width: auto;
+        width: 100%;
+        box-sizing: border-box;
       }
     }
 
@@ -565,9 +589,11 @@
       <div class="user-nome" id="userNome"></div>
       <div class="user-descricao" id="userDescricao"></div>
       
-      <!-- Nova div para o investimento disponível -->
+      <!-- Nova div para os valores calculados separadamente -->
       <div class="investimento-disponivel-container">
-        <div class="investimento-disponivel" id="investimentoDisponivel"></div>
+        <div class="investimento-item limite" id="limiteInvestimento"></div>
+        <div class="investimento-item investido" id="totalInvestidoCalculado"></div>
+        <div class="investimento-item disponivel" id="investimentoDisponivel"></div>
       </div>
       
       <h1 class="clube-nome">Morpheus Clube de Investimentos</h1>
@@ -690,53 +716,68 @@
       return isNaN(resultado) ? 0 : resultado;
     }
 
-    // FUNÇÃO PARA CALCULAR E EXIBIR O INVESTIMENTO DISPONÍVEL
-    function calcularEExibirInvestimentoDisponivel() {
-      console.log("Calculando investimento disponível:", {
+    // FUNÇÃO PARA CALCULAR E EXIBIR OS VALORES SEPARADOS
+    function calcularEExibirValoresSeparados() {
+      console.log("Calculando valores separados:", {
         patrimonio: patrimonio,
-        totalAtualGlobal: totalAtualGlobal,
-        ultimaCota: ultimaCota
+        totalAtualGlobal: totalAtualGlobal
       });
       
       if (patrimonio === 0) {
         console.log("Patrimônio é zero, não é possível calcular");
-        const elemento = document.getElementById('investimentoDisponivel');
-        if (elemento) {
-          elemento.textContent = "Patrimônio não disponível";
-        }
+        const elementoLimite = document.getElementById('limiteInvestimento');
+        const elementoInvestido = document.getElementById('totalInvestidoCalculado');
+        const elementoDisponivel = document.getElementById('investimentoDisponivel');
+        
+        if (elementoLimite) elementoLimite.textContent = "Limite: Patrimônio não disponível";
+        if (elementoInvestido) elementoInvestido.textContent = "Total investido: N/A";
+        if (elementoDisponivel) elementoDisponivel.textContent = "Ainda pode investir: N/A";
         return;
       }
       
-      // Fórmula corrigida: =((0,4*D9)/0,6)-(((totalAtualGlobal/D9)*D9)/0,6)
-      // Isso simplifica para: (0,4*D9 - totalAtualGlobal) / 0,6
+      // Calcular o primeiro valor: (0,4*D9)/0,6
+      const limiteInvestimento = (0.4 * patrimonio) / 0.6;
       
-      const parte1 = (0.4 * patrimonio) / 0.6;
-      const parte2 = ((totalAtualGlobal / patrimonio) * patrimonio) / 0.6;
+      // Calcular o segundo valor: (((totalAtualGlobal/D9)*D9)/0,6)
+      // Isso simplifica para: totalAtualGlobal / 0,6
+      const totalInvestidoCalculado = totalAtualGlobal / 0.6;
       
-      console.log("Parte 1 (0,4*D9)/0,6):", parte1);
-      console.log("Parte 2 (((totalAtualGlobal/D9)*D9)/0,6):", parte2);
+      // Calcular a diferença (ainda pode investir)
+      const investimentoDisponivel = limiteInvestimento - totalInvestidoCalculado;
       
-      const investimentoDisponivel = parte1 - parte2;
+      console.log("Valores calculados:", {
+        limiteInvestimento: limiteInvestimento,
+        totalInvestidoCalculado: totalInvestidoCalculado,
+        investimentoDisponivel: investimentoDisponivel
+      });
       
-      console.log("Investimento disponível calculado:", investimentoDisponivel);
-      
-      // Se o valor for negativo, mostrar 0 (não pode investir negativo)
-      const valorFinal = Math.max(0, investimentoDisponivel);
-      
-      // Formatar o valor como moeda brasileira
-      const valorFormatado = valorFinal.toLocaleString('pt-BR', {
+      // Formatar os valores como moeda brasileira
+      const formatoMoeda = {
         style: 'currency',
         currency: 'BRL',
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
-      });
+      };
       
-      console.log("Valor formatado:", valorFormatado);
+      const limiteFormatado = limiteInvestimento.toLocaleString('pt-BR', formatoMoeda);
+      const investidoFormatado = totalInvestidoCalculado.toLocaleString('pt-BR', formatoMoeda);
+      const disponivelFormatado = Math.max(0, investimentoDisponivel).toLocaleString('pt-BR', formatoMoeda);
       
-      // Exibir no elemento
-      const elemento = document.getElementById('investimentoDisponivel');
-      if (elemento) {
-        elemento.textContent = `Ainda Pode investir mais ${valorFormatado}`;
+      // Exibir nos elementos
+      const elementoLimite = document.getElementById('limiteInvestimento');
+      const elementoInvestido = document.getElementById('totalInvestidoCalculado');
+      const elementoDisponivel = document.getElementById('investimentoDisponivel');
+      
+      if (elementoLimite) {
+        elementoLimite.textContent = `Limite máximo: ${limiteFormatado}`;
+      }
+      
+      if (elementoInvestido) {
+        elementoInvestido.textContent = `Total investido: ${investidoFormatado}`;
+      }
+      
+      if (elementoDisponivel) {
+        elementoDisponivel.textContent = `Ainda pode investir: ${disponivelFormatado}`;
       }
     }
 
@@ -822,7 +863,6 @@
       
       tooltipEl.style.left = left + 'px';
       tooltipEl.style.top = top + 'px';
-      
       tooltipEl.className = `custom-tooltip ${placement} visible`;
     }
 
@@ -1100,8 +1140,8 @@
       
       if (aplicacoesProcessadas.length === 0) {
         noAplicacoesElement.style.display = 'block';
-        // Atualizar o investimento disponível mesmo sem aplicações
-        setTimeout(calcularEExibirInvestimentoDisponivel, 100);
+        // Atualizar os valores separados mesmo sem aplicações
+        setTimeout(calcularEExibirValoresSeparados, 100);
         return;
       }
 
@@ -1188,8 +1228,8 @@
 
       tableElement.style.display = 'table';
       
-      // Atualizar o investimento disponível
-      setTimeout(calcularEExibirInvestimentoDisponivel, 100);
+      // Atualizar os valores separados
+      setTimeout(calcularEExibirValoresSeparados, 100);
     }
 
     async function loadData() {
@@ -1317,8 +1357,8 @@
         if (userData && userData.aplicacoes) {
           carregarAplicacoes(userData.aplicacoes);
         } else {
-          // Atualizar o investimento disponível mesmo sem aplicações
-          setTimeout(calcularEExibirInvestimentoDisponivel, 100);
+          // Atualizar os valores separados mesmo sem aplicações
+          setTimeout(calcularEExibirValoresSeparados, 100);
         }
 
       } catch (error) {
