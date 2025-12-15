@@ -591,9 +591,9 @@
       
       <!-- Nova div para os valores calculados separadamente -->
       <div class="investimento-disponivel-container">
-        <div class="investimento-item limite" id="limiteInvestimento"></div>
-        <div class="investimento-item investido" id="totalInvestidoCalculado"></div>
-        <div class="investimento-item disponivel" id="investimentoDisponivel"></div>
+        <div class="investimento-item limite" id="limiteInvestimento">Limite máximo: calculando...</div>
+        <div class="investimento-item investido" id="totalInvestidoCalculado">Total já investido: calculando...</div>
+        <div class="investimento-item disponivel" id="investimentoDisponivel">Ainda pode investir: calculando...</div>
       </div>
       
       <h1 class="clube-nome">Morpheus Clube de Investimentos</h1>
@@ -701,45 +701,160 @@
       // Remover espaços
       let valor = valorStr.trim();
       
-      // Se já for um número válido, retornar
+      // Remover aspas se houver
+      valor = valor.replace(/"/g, '');
+      
+      // Verificar se é um número válido
       if (!isNaN(parseFloat(valor)) && isFinite(valor)) {
         return parseFloat(valor);
       }
       
-      // Tentar substituir vírgula por ponto se necessário
-      valor = valor.replace(',', '.');
+      // Se contém vírgula decimal, substituir por ponto
+      if (valor.includes(',') && !valor.includes('.')) {
+        valor = valor.replace(',', '.');
+      }
       
-      // Remover caracteres não numéricos exceto ponto e sinal negativo
+      // Se contém ambos, provavelmente é formato brasileiro: 500.000,00
+      if (valor.includes('.') && valor.includes(',')) {
+        // Remover pontos de milhar
+        valor = valor.replace(/\./g, '');
+        // Substituir vírgula decimal por ponto
+        valor = valor.replace(',', '.');
+      }
+      
+      // Remover qualquer caractere não numérico exceto ponto e sinal negativo
       valor = valor.replace(/[^\d.-]/g, '');
       
       const resultado = parseFloat(valor);
       return isNaN(resultado) ? 0 : resultado;
     }
 
+    // FUNÇÃO PARA BUSCAR PATRIMÔNIO NA PLANILHA
+    async function buscarPatrimonioDaPlanilha() {
+      try {
+        const response = await fetch(csvUrl);
+        if (!response.ok) {
+          throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        
+        const data = await response.text();
+        const rows = data.split("\n").filter(row => row.trim() !== '');
+        
+        console.log("Total de linhas na planilha:", rows.length);
+        
+        // Verificar diferentes posições onde o patrimônio pode estar
+        // Normalmente D9 é linha 9, coluna 4 (índice 8, coluna 3)
+        
+        // Tentar linha 9 (índice 8)
+        if (rows.length >= 9) {
+          const linha9 = rows[8].split(",");
+          console.log("Linha 9 (índice 8):", linha9);
+          
+          // Tentar coluna 4 (índice 3) - que seria a coluna D
+          if (linha9.length >= 4) {
+            patrimonio = corrigirNumeroPlanilha(linha9[3]);
+            console.log("Patrimônio encontrado na linha 9, coluna 4 (D9):", patrimonio);
+            return patrimonio;
+          }
+          
+          // Tentar coluna 3 (índice 2) como fallback
+          if (linha9.length >= 3) {
+            patrimonio = corrigirNumeroPlanilha(linha9[2]);
+            console.log("Patrimônio encontrado na linha 9, coluna 3:", patrimonio);
+            return patrimonio;
+          }
+        }
+        
+        // Tentar outras linhas comuns
+        for (let i = 0; i < Math.min(20, rows.length); i++) {
+          const linha = rows[i].split(",");
+          for (let j = 0; j < linha.length; j++) {
+            const valor = corrigirNumeroPlanilha(linha[j]);
+            if (valor > 100000) { // Supondo que patrimônio seja maior que 100.000
+              patrimonio = valor;
+              console.log(`Patrimônio encontrado na linha ${i+1}, coluna ${j+1}:`, patrimonio);
+              return patrimonio;
+            }
+          }
+        }
+        
+        console.log("Patrimônio não encontrado na planilha");
+        return 0;
+        
+      } catch (error) {
+        console.error("Erro ao buscar patrimônio:", error);
+        return 0;
+      }
+    }
+
+    // FUNÇÃO PARA BUSCAR ÚLTIMA COTA
+    async function buscarUltimaCota() {
+      try {
+        const response = await fetch(csvUrl);
+        if (!response.ok) {
+          throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        
+        const data = await response.text();
+        const rows = data.split("\n").filter(row => row.trim() !== '');
+        
+        // A última cota geralmente está na linha 8, coluna 3 (C9) ou similar
+        if (rows.length >= 8) {
+          const linha8 = rows[7].split(",");
+          console.log("Linha 8 (índice 7):", linha8);
+          
+          // Tentar coluna 3 (índice 2)
+          if (linha8.length >= 3) {
+            ultimaCota = corrigirNumeroPlanilha(linha8[2]);
+            console.log("Última cota encontrada na linha 8, coluna 3:", ultimaCota);
+            return ultimaCota;
+          }
+        }
+        
+        // Se não encontrar, usar a última cota dos dados históricos
+        if (cotasData && cotasData.length > 0) {
+          ultimaCota = cotasData[cotasData.length - 1].cota;
+          console.log("Última cota dos dados históricos:", ultimaCota);
+          return ultimaCota;
+        }
+        
+        console.log("Última cota não encontrada");
+        return 0;
+        
+      } catch (error) {
+        console.error("Erro ao buscar última cota:", error);
+        return 0;
+      }
+    }
+
     // FUNÇÃO PARA CALCULAR E EXIBIR OS VALORES SEPARADOS
     function calcularEExibirValoresSeparados() {
       console.log("Calculando valores separados:", {
         patrimonio: patrimonio,
-        totalAtualGlobal: totalAtualGlobal
+        totalAtualGlobal: totalAtualGlobal,
+        ultimaCota: ultimaCota
       });
       
+      // Buscar dados se não tiver
       if (patrimonio === 0) {
-        console.log("Patrimônio é zero, não é possível calcular");
-        const elementoLimite = document.getElementById('limiteInvestimento');
-        const elementoInvestido = document.getElementById('totalInvestidoCalculado');
-        const elementoDisponivel = document.getElementById('investimentoDisponivel');
-        
-        if (elementoLimite) elementoLimite.textContent = "Limite: Patrimônio não disponível";
-        if (elementoInvestido) elementoInvestido.textContent = "Total investido: N/A";
-        if (elementoDisponivel) elementoDisponivel.textContent = "Ainda pode investir: N/A";
-        return;
+        buscarPatrimonioDaPlanilha().then(() => {
+          if (patrimonio > 0) {
+            calcularValoresEFinalizar();
+          } else {
+            exibirErroCalculos();
+          }
+        });
+      } else {
+        calcularValoresEFinalizar();
       }
+    }
+
+    function calcularValoresEFinalizar() {
+      // Calcular o primeiro valor: (0.4 * D9) / 0.6
+      const limiteInvestimento = (0.4 * patrimonio) / 0.6;
       
-      // Calcular o primeiro valor: (0,4*D9)/0,6
-      const limiteInvestimento = (0.4 * 100000) / 0.6;
-      
-      // Calcular o segundo valor: (((totalAtualGlobal/D9)*D9)/0,6)
-      // Isso simplifica para: totalAtualGlobal / 0,6
+      // Calcular o segundo valor: (((totalAtualGlobal/D9)*D9)/0.6)
+      // Isso simplifica para: totalAtualGlobal / 0.6
       const totalInvestidoCalculado = totalAtualGlobal / 0.6;
       
       // Calcular a diferença (ainda pode investir)
@@ -773,11 +888,29 @@
       }
       
       if (elementoInvestido) {
-        elementoInvestido.textContent = `Total investido: ${investidoFormatado}`;
+        elementoInvestido.textContent = `Total já investido: ${investidoFormatado}`;
       }
       
       if (elementoDisponivel) {
         elementoDisponivel.textContent = `Ainda pode investir: ${disponivelFormatado}`;
+      }
+    }
+
+    function exibirErroCalculos() {
+      const elementoLimite = document.getElementById('limiteInvestimento');
+      const elementoInvestido = document.getElementById('totalInvestidoCalculado');
+      const elementoDisponivel = document.getElementById('investimentoDisponivel');
+      
+      if (elementoLimite) {
+        elementoLimite.textContent = "Limite máximo: Dados indisponíveis";
+      }
+      
+      if (elementoInvestido) {
+        elementoInvestido.textContent = "Total já investido: Dados indisponíveis";
+      }
+      
+      if (elementoDisponivel) {
+        elementoDisponivel.textContent = "Ainda pode investir: Dados indisponíveis";
       }
     }
 
@@ -863,6 +996,7 @@
       
       tooltipEl.style.left = left + 'px';
       tooltipEl.style.top = top + 'px';
+      
       tooltipEl.className = `custom-tooltip ${placement} visible`;
     }
 
@@ -1228,8 +1362,14 @@
 
       tableElement.style.display = 'table';
       
-      // Atualizar os valores separados
-      setTimeout(calcularEExibirValoresSeparados, 100);
+      // Buscar patrimônio e última cota antes de calcular
+      Promise.all([
+        buscarPatrimonioDaPlanilha(),
+        buscarUltimaCota()
+      ]).then(() => {
+        // Atualizar os valores separados
+        calcularEExibirValoresSeparados();
+      });
     }
 
     async function loadData() {
@@ -1243,6 +1383,13 @@
         
         const data = await response.text();
         const rows = data.split("\n").filter(row => row.trim() !== '');
+
+        console.log("Total de linhas no CSV:", rows.length);
+        
+        // Log das primeiras 10 linhas para depuração
+        for (let i = 0; i < Math.min(10, rows.length); i++) {
+          console.log(`Linha ${i}:`, rows[i]);
+        }
 
         if (rows.length < 2) {
           throw new Error("Dados insuficientes no CSV");
@@ -1270,24 +1417,6 @@
                 cota: cotaMorpheus
               });
             }
-          }
-        }
-
-        // Obter a última cota (linha 8, coluna 3 - índice 2)
-        if (rows.length >= 9) {
-          const linhaC9 = rows[8].split(",");
-          if (linhaC9.length >= 3) {
-            ultimaCota = corrigirNumeroPlanilha(linhaC9[2]);
-            console.log("Última cota (D20):", ultimaCota);
-          }
-        }
-
-        // Obter o patrimônio (linha 9, coluna 3 - índice 2) - célula D9
-        if (rows.length >= 10) {
-          const linhaD9 = rows[9].split(",");
-          if (linhaD9.length >= 3) {
-            patrimonio = corrigirNumeroPlanilha(linhaD9[2]);
-            console.log("Patrimônio (D9) encontrado:", patrimonio);
           }
         }
 
@@ -1358,7 +1487,9 @@
           carregarAplicacoes(userData.aplicacoes);
         } else {
           // Atualizar os valores separados mesmo sem aplicações
-          setTimeout(calcularEExibirValoresSeparados, 100);
+          buscarPatrimonioDaPlanilha().then(() => {
+            calcularEExibirValoresSeparados();
+          });
         }
 
       } catch (error) {
@@ -1589,4 +1720,3 @@
   </script>
 </body>
 </html>
-
