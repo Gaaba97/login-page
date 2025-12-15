@@ -771,17 +771,9 @@
       }
     }
 
-    // FUNÇÃO PARA BUSCAR ÚLTIMA COTA
+    // FUNÇÃO PARA BUSCAR ÚLTIMA COTA DA CÉLULA C9 (linha 9, coluna 3) - CORRIGIDA
     async function buscarUltimaCota() {
       try {
-        // Se já temos os dados das cotas, usar o último valor
-        if (cotasData && cotasData.length > 0) {
-          ultimaCota = cotasData[cotasData.length - 1].cota;
-          console.log("Última cota dos dados históricos:", ultimaCota);
-          return ultimaCota;
-        }
-        
-        // Se não, buscar na planilha
         const response = await fetch(csvUrl);
         if (!response.ok) {
           throw new Error(`Erro HTTP: ${response.status}`);
@@ -790,17 +782,33 @@
         const data = await response.text();
         const rows = data.split("\n").filter(row => row.trim() !== '');
         
-        // Procurar a última linha com dados de cota (geralmente após os headers)
-        for (let i = rows.length - 1; i >= 0; i--) {
-          const linha = rows[i].split(",");
-          if (linha.length >= 11) { // A cota está na coluna 11 (índice 10)
-            const cota = corrigirNumeroPlanilha(linha[10]);
-            if (cota > 0) {
-              ultimaCota = cota;
-              console.log("Última cota encontrada na linha", i, ":", ultimaCota);
-              return ultimaCota;
-            }
+        console.log("Buscando última cota na planilha. Total de linhas:", rows.length);
+        
+        // Buscar na célula C9: linha 9 (índice 8), coluna C (índice 2, pois A=0, B=1, C=2)
+        if (rows.length >= 9) {
+          const linha9 = rows[8].split(",");
+          console.log("Linha 9 (índice 8):", linha9);
+          
+          // Tentar coluna C (índice 2) - CÉLULA C9
+          if (linha9.length >= 3) {
+            ultimaCota = corrigirNumeroPlanilha(linha9[2]);
+            console.log("Última cota encontrada na linha 9, coluna C (C9):", ultimaCota);
+            return ultimaCota;
           }
+          
+          // Fallback para coluna B (índice 1) se C não existir
+          if (linha9.length >= 2) {
+            ultimaCota = corrigirNumeroPlanilha(linha9[1]);
+            console.log("Última cota encontrada na linha 9, coluna B (fallback):", ultimaCota);
+            return ultimaCota;
+          }
+        }
+        
+        // Se não encontrar em C9, tentar usar a última cota dos dados históricos como último recurso
+        if (cotasData && cotasData.length > 0) {
+          ultimaCota = cotasData[cotasData.length - 1].cota;
+          console.log("Última cota dos dados históricos (fallback):", ultimaCota);
+          return ultimaCota;
         }
         
         console.log("Última cota não encontrada");
@@ -838,7 +846,7 @@
       // Calcular o primeiro valor: (0.4 * D9) / 0.6
       const limiteInvestimento = (0.4 * patrimonio) / 0.6;
       
-      // CORREÇÃO: Para exibição, mostramos o total atual das aplicações
+      // Para exibição, mostramos o total atual das aplicações
       const totalInvestidoParaExibicao = totalAtualGlobal;
       
       // CORREÇÃO: Cálculo do "Ainda pode investir" com a fórmula correta
@@ -1183,7 +1191,7 @@
       return cotaEncontrada;
     }
 
-    // FUNÇÃO PARA CALCULAR VALOR ATUAL
+    // FUNÇÃO PARA CALCULAR VALOR ATUAL - AGORA USANDO A ÚLTIMA COTA DE C9
     function calcularValorAtual(valorAplicado, cotaAplicacao) {
       if (!cotaAplicacao || !ultimaCota || ultimaCota === 0) {
         console.log("Dados insuficientes para cálculo:", {
@@ -1198,11 +1206,11 @@
         // Calcular quantidade de cotas
         const quantidadeCotas = valorAplicado / cotaAplicacao.cota;
         
-        // Calcular valor atual
+        // Calcular valor atual usando a última cota de C9
         const valorAtual = quantidadeCotas * ultimaCota;
         const valorAtualArredondado = Math.round(valorAtual * 100) / 100;
         
-        console.log("Cálculo do valor atual:", {
+        console.log("Cálculo do valor atual (usando C9):", {
           valorAplicado: valorAplicado,
           cotaAplicacao: cotaAplicacao.cota,
           ultimaCota: ultimaCota,
@@ -1302,8 +1310,10 @@
 
       tableBody.innerHTML = '';
 
-      // Buscar última cota antes de processar as aplicações
+      // Buscar última cota de C9 antes de processar as aplicações
       buscarUltimaCota().then(() => {
+        console.log("Última cota de C9 para cálculo:", ultimaCota);
+        
         aplicacoesProcessadas.forEach((aplicacao, index) => {
           const data = aplicacao.data;
           const valorStr = aplicacao.valorStr;
