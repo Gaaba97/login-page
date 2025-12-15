@@ -140,6 +140,7 @@
       max-width: 1200px;
       text-align: left;
       margin-bottom: 20px;
+      position: relative;
     }
 
     .user-nome {
@@ -177,6 +178,37 @@
       color: #555;
       margin: 0;
       text-align: left;
+    }
+
+    /* ESTILO PARA O INVESTIMENTO DISPONÍVEL */
+    .investimento-disponivel-container {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      text-align: right;
+    }
+
+    .investimento-disponivel {
+      font-size: 16px;
+      color: #27ae60;
+      font-weight: bold;
+      background-color: #f8fff9;
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: 1px solid #27ae60;
+    }
+
+    /* ESTILOS RESPONSIVOS PARA O INVESTIMENTO DISPONÍVEL */
+    @media (max-width: 768px) {
+      .investimento-disponivel-container {
+        position: static;
+        text-align: left;
+        margin-top: 10px;
+      }
+      
+      .investimento-disponivel {
+        display: inline-block;
+      }
     }
 
     .charts-main-container {
@@ -532,6 +564,12 @@
     <div class="header-info">
       <div class="user-nome" id="userNome"></div>
       <div class="user-descricao" id="userDescricao"></div>
+      
+      <!-- Nova div para o investimento disponível -->
+      <div class="investimento-disponivel-container">
+        <div class="investimento-disponivel" id="investimentoDisponivel"></div>
+      </div>
+      
       <h1 class="clube-nome">Morpheus Clube de Investimentos</h1>
       <div class="cnpj">61.043.820/0001-55</div>
       <div class="subtitle" id="subtitle">Carregando dados...</div>
@@ -591,11 +629,13 @@
     let userData = null;
     let cotasData = null;
     let ultimaCota = null;
+    let patrimonio = 0;
     let aplicacoesProcessadas = [];
     let morpheusDataPoints = [];
     let chartDataPoints = [];
     let filteredDates = [];
     let morpheusVariacao = [];
+    let totalAtualGlobal = 0;
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -627,6 +667,33 @@
 
     let customTooltip = null;
     let aplicacaoTooltip = null;
+
+    // FUNÇÃO PARA CALCULAR E EXIBIR O INVESTIMENTO DISPONÍVEL
+    function calcularEExibirInvestimentoDisponivel() {
+      if (patrimonio === 0 || totalAtualGlobal === 0 || !ultimaCota) {
+        return;
+      }
+      
+      // Calcular conforme a fórmula fornecida
+      // =((0,4*D9)/0,6)-(((totalAtualGlobal/D9)*D20)/0,6)
+      const parte1 = (0.4 * patrimonio) / 0.6;
+      const parte2 = ((totalAtualGlobal / patrimonio) * ultimaCota) / 0.6;
+      const investimentoDisponivel = parte1 - parte2;
+      
+      // Formatar o valor
+      const valorFormatado = investimentoDisponivel.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      
+      // Exibir no elemento
+      const elemento = document.getElementById('investimentoDisponivel');
+      if (elemento) {
+        elemento.textContent = `Ainda Pode investir mais ${valorFormatado}`;
+      }
+    }
 
     function createCustomTooltip() {
       if (customTooltip) return customTooltip;
@@ -772,7 +839,6 @@
       }
     }
 
-    // FUNÇÃO COMPLETAMENTE REESCRITA PARA CORRIGIR O POSICIONAMENTO DAS LINHAS
     function adicionarLinhasAplicacoesNoGrafico(aplicacoes, chart) {
       if (!aplicacoes || aplicacoes.length === 0 || !chart) return;
       
@@ -831,8 +897,6 @@
         const containerRect = chartContainer.getBoundingClientRect();
         
         // Calcular a posição X ABSOLUTA na página
-        // canvasRect.left é a posição do canvas na página
-        // pixelXCanvas é a posição dentro do canvas
         const posXAbsoluta = canvasRect.left + pixelXCanvas;
         
         // Calcular a posição X RELATIVA ao container
@@ -875,19 +939,8 @@
           label.addEventListener('mouseleave', hideAplicacaoTooltip);
           
           chartContainer.appendChild(label);
-          
-          console.log(`Linha para ${dataAplicacao}:`, {
-            dataPontoGrafico: pontoEncontrado.x,
-            pixelXCanvas,
-            canvasLeft: canvasRect.left,
-            containerLeft: containerRect.left,
-            posXRelativa,
-            posYRelativaPonto
-          });
         }
       });
-      
-      console.log(`Total de ${aplicacoes.length} aplicações processadas no gráfico`);
     }
 
     function encontrarCotaPorData(dataAplicacao) {
@@ -1002,6 +1055,8 @@
       
       if (aplicacoesProcessadas.length === 0) {
         noAplicacoesElement.style.display = 'block';
+        // Atualizar o investimento disponível mesmo sem aplicações
+        setTimeout(calcularEExibirInvestimentoDisponivel, 100);
         return;
       }
 
@@ -1038,7 +1093,6 @@
         // Número da ação
         const numeroCell = document.createElement('td');
         numeroCell.textContent = (index + 1).toString();
-        // Removido o estilo especial, agora usa o estilo padrão da tabela
         
         const dataCell = document.createElement('td');
         dataCell.textContent = data;
@@ -1082,9 +1136,15 @@
         totalRow.appendChild(totalAtualCell);
         
         tableBody.appendChild(totalRow);
+        
+        // Armazenar o total atual globalmente
+        totalAtualGlobal = totalAtual;
       }
 
       tableElement.style.display = 'table';
+      
+      // Atualizar o investimento disponível
+      setTimeout(calcularEExibirInvestimentoDisponivel, 100);
     }
 
     async function loadData() {
@@ -1128,10 +1188,20 @@
           }
         }
 
+        // Obter a última cota (linha 8, coluna 3 - índice 2)
         if (rows.length >= 9) {
           const linhaC9 = rows[8].split(",");
           if (linhaC9.length >= 3) {
             ultimaCota = parseFloat(linhaC9[2]);
+          }
+        }
+
+        // Obter o patrimônio (linha 9, coluna 3 - índice 2) - célula D9
+        if (rows.length >= 10) {
+          const linhaD9 = rows[9].split(",");
+          if (linhaD9.length >= 3) {
+            patrimonio = parseFloat(linhaD9[2]);
+            console.log("Patrimônio encontrado:", patrimonio);
           }
         }
 
@@ -1159,8 +1229,6 @@
               break;
             }
           }
-          
-          console.log("Primeira aplicação:", primeiraDataAplicacao, "Índice no CSV:", indexInicio);
         }
 
         const morpheusBase = morpheusValores[indexInicio];
@@ -1202,6 +1270,9 @@
 
         if (userData && userData.aplicacoes) {
           carregarAplicacoes(userData.aplicacoes);
+        } else {
+          // Atualizar o investimento disponível mesmo sem aplicações
+          setTimeout(calcularEExibirInvestimentoDisponivel, 100);
         }
 
       } catch (error) {
@@ -1373,13 +1444,6 @@
       });
 
       window.chartInstances.performanceChart = chart;
-
-      console.log("Gráfico principal criado com sucesso", {
-        totalPontos: morpheusData.length,
-        primeiraData: morpheusData[0]?.x,
-        ultimaData: morpheusData[morpheusData.length - 1]?.x,
-        aplicacoes: aplicacoesProcessadas.length
-      });
     }
   </script>
 
