@@ -668,25 +668,70 @@
     let customTooltip = null;
     let aplicacaoTooltip = null;
 
+    // FUNÇÃO PARA CORRIGIR NÚMEROS DA PLANILHA
+    function corrigirNumeroPlanilha(valorStr) {
+      if (!valorStr || valorStr.trim() === '') return 0;
+      
+      // Remover espaços
+      let valor = valorStr.trim();
+      
+      // Se já for um número válido, retornar
+      if (!isNaN(parseFloat(valor)) && isFinite(valor)) {
+        return parseFloat(valor);
+      }
+      
+      // Tentar substituir vírgula por ponto se necessário
+      valor = valor.replace(',', '.');
+      
+      // Remover caracteres não numéricos exceto ponto e sinal negativo
+      valor = valor.replace(/[^\d.-]/g, '');
+      
+      const resultado = parseFloat(valor);
+      return isNaN(resultado) ? 0 : resultado;
+    }
+
     // FUNÇÃO PARA CALCULAR E EXIBIR O INVESTIMENTO DISPONÍVEL
     function calcularEExibirInvestimentoDisponivel() {
-      if (patrimonio === 0 || totalAtualGlobal === 0 || !ultimaCota) {
+      console.log("Calculando investimento disponível:", {
+        patrimonio: patrimonio,
+        totalAtualGlobal: totalAtualGlobal,
+        ultimaCota: ultimaCota
+      });
+      
+      if (patrimonio === 0) {
+        console.log("Patrimônio é zero, não é possível calcular");
+        const elemento = document.getElementById('investimentoDisponivel');
+        if (elemento) {
+          elemento.textContent = "Patrimônio não disponível";
+        }
         return;
       }
       
-      // Calcular conforme a fórmula fornecida
-      // =((0,4*D9)/0,6)-(((totalAtualGlobal/D9)*D20)/0,6)
+      // Fórmula corrigida: =((0,4*D9)/0,6)-(((totalAtualGlobal/D9)*D9)/0,6)
+      // Isso simplifica para: (0,4*D9 - totalAtualGlobal) / 0,6
+      
       const parte1 = (0.4 * patrimonio) / 0.6;
-      const parte2 = ((totalAtualGlobal / patrimonio) * ultimaCota) / 0.6;
+      const parte2 = ((totalAtualGlobal / patrimonio) * patrimonio) / 0.6;
+      
+      console.log("Parte 1 (0,4*D9)/0,6):", parte1);
+      console.log("Parte 2 (((totalAtualGlobal/D9)*D9)/0,6):", parte2);
+      
       const investimentoDisponivel = parte1 - parte2;
       
-      // Formatar o valor
-      const valorFormatado = investimentoDisponivel.toLocaleString('pt-BR', {
+      console.log("Investimento disponível calculado:", investimentoDisponivel);
+      
+      // Se o valor for negativo, mostrar 0 (não pode investir negativo)
+      const valorFinal = Math.max(0, investimentoDisponivel);
+      
+      // Formatar o valor como moeda brasileira
+      const valorFormatado = valorFinal.toLocaleString('pt-BR', {
         style: 'currency',
         currency: 'BRL',
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });
+      
+      console.log("Valor formatado:", valorFormatado);
       
       // Exibir no elemento
       const elemento = document.getElementById('investimentoDisponivel');
@@ -1192,7 +1237,8 @@
         if (rows.length >= 9) {
           const linhaC9 = rows[8].split(",");
           if (linhaC9.length >= 3) {
-            ultimaCota = parseFloat(linhaC9[2]);
+            ultimaCota = corrigirNumeroPlanilha(linhaC9[2]);
+            console.log("Última cota (D20):", ultimaCota);
           }
         }
 
@@ -1200,8 +1246,8 @@
         if (rows.length >= 10) {
           const linhaD9 = rows[9].split(",");
           if (linhaD9.length >= 3) {
-            patrimonio = parseFloat(linhaD9[2]);
-            console.log("Patrimônio encontrado:", patrimonio);
+            patrimonio = corrigirNumeroPlanilha(linhaD9[2]);
+            console.log("Patrimônio (D9) encontrado:", patrimonio);
           }
         }
 
