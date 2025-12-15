@@ -812,7 +812,7 @@
       }
     }
 
-    // FUNÇÃO PARA CALCULAR E EXIBIR OS VALORES SEPARADOS
+    // FUNÇÃO PARA CALCULAR E EXIBIR OS VALORES SEPARADOS - CORRIGIDA
     function calcularEExibirValoresSeparados() {
       console.log("Calculando valores separados:", {
         patrimonio: patrimonio,
@@ -838,15 +838,15 @@
       // Calcular o primeiro valor: (0.4 * D9) / 0.6
       const limiteInvestimento = (0.4 * patrimonio) / 0.6;
       
-      // Calcular o segundo valor: (((totalAtualGlobal/D9)*D9)/0.6)
-      // Isso simplifica para: totalAtualGlobal / 0.6
-      const totalInvestidoCalculado = totalAtualGlobal / 0.6;
+      // CORREÇÃO: Usar o totalAtualGlobal diretamente (sem dividir por 0.6)
+      const totalInvestidoCalculado = totalAtualGlobal;
       
       // Calcular a diferença (ainda pode investir)
       const investimentoDisponivel = limiteInvestimento - totalInvestidoCalculado;
       
-      console.log("Valores calculados:", {
+      console.log("Valores calculados (CORRIGIDOS):", {
         limiteInvestimento: limiteInvestimento,
+        totalAtualGlobal: totalAtualGlobal,
         totalInvestidoCalculado: totalInvestidoCalculado,
         investimentoDisponivel: investimentoDisponivel
       });
@@ -1382,7 +1382,7 @@
           
           tableBody.appendChild(totalRow);
           
-          // Armazenar o total atual globalmente
+          // Armazenar o total atual globalmente - AGORA USANDO O TOTAL ATUAL DA TABELA
           totalAtualGlobal = totalAtualFinal;
         }
 
