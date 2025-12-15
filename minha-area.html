@@ -447,7 +447,7 @@
       z-index: 10;
     }
 
-    /* NOVO TOOLTIP PARA APLICAÇÕES NO GRÁFICO - MELHORADO */
+    /* NOVO TOOLTIP PARA APLICAÇÕES NO GRÁFICO */
     .aplicacao-tooltip {
       position: absolute;
       background: rgba(255, 255, 255, 0.98);
@@ -515,27 +515,6 @@
     .mobile-landscape .aplicacao-label {
       font-size: 11px;
       top: 30px;
-    }
-    
-    /* ESTILOS ADICIONAIS PARA DESTACAR TIPO E VALOR */
-    .tipo-aplicacao {
-      color: #27ae60;
-      font-weight: bold;
-    }
-    
-    .tipo-resgate {
-      color: #e74c3c;
-      font-weight: bold;
-    }
-    
-    .valor-aplicacao {
-      color: #27ae60;
-      font-weight: bold;
-    }
-    
-    .valor-resgate {
-      color: #e74c3c;
-      font-weight: bold;
     }
   </style>
 </head>
@@ -739,15 +718,16 @@
       const tooltipEl = createAplicacaoTooltip();
       
       const tipo = aplicacao.valorNumerico >= 0 ? 'Aplicação' : 'Resgate';
-      const tipoClasse = aplicacao.valorNumerico >= 0 ? 'tipo-aplicacao' : 'tipo-resgate';
-      const valorClasse = aplicacao.valorNumerico >= 0 ? 'valor-aplicacao' : 'valor-resgate';
-      const valorFormatado = aplicacao.valorNumerico.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+      const valorFormatado = aplicacao.valorNumerico.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
       
       tooltipEl.innerHTML = `
         <div class="tooltip-acao-numero">Ação ${numero}</div>
         <div class="tooltip-acao-detalhe">
           <span class="label">Tipo:</span>
-          <span class="value ${tipoClasse}">${tipo}</span>
+          <span class="value">${tipo}</span>
         </div>
         <div class="tooltip-acao-detalhe">
           <span class="label">Data:</span>
@@ -755,7 +735,7 @@
         </div>
         <div class="tooltip-acao-detalhe">
           <span class="label">Valor:</span>
-          <span class="value ${valorClasse}">${valorFormatado}</span>
+          <span class="value">${valorFormatado}</span>
         </div>
       `;
       
@@ -1342,8 +1322,8 @@
               },
               ticks: {
                 color: "#000000",
-                maxRotation: 45;
-                minRotation: 45;
+                maxRotation: 45,
+                minRotation: 45,
                 font: {
                   family: "Montserrat",
                   size: axisFontSize,
