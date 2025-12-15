@@ -729,7 +729,7 @@
       return isNaN(resultado) ? 0 : resultado;
     }
 
-    // FUNÇÃO PARA BUSCAR PATRIMÔNIO NA PLANILHA - AGORA NA LINHA 8, COLUNA 3
+    // FUNÇÃO PARA BUSCAR PATRIMÔNIO NA PLANILHA - AGORA NA CÉLULA D9 (linha 9, coluna 4)
     async function buscarPatrimonioDaPlanilha() {
       try {
         const response = await fetch(csvUrl);
@@ -742,22 +742,22 @@
         
         console.log("Total de linhas na planilha:", rows.length);
         
-        // Buscar na linha 8 (índice 7), coluna 3 (índice 2)
-        if (rows.length >= 8) {
-          const linha8 = rows[7].split(",");
-          console.log("Linha 8 (índice 7):", linha8);
+        // Buscar na célula D9: linha 9 (índice 8), coluna D (índice 3, pois A=0, B=1, C=2, D=3)
+        if (rows.length >= 9) {
+          const linha9 = rows[8].split(",");
+          console.log("Linha 9 (índice 8):", linha9);
           
-          // Tentar coluna 3 (índice 2)
-          if (linha8.length >= 3) {
-            patrimonio = corrigirNumeroPlanilha(linha8[2]);
-            console.log("Patrimônio encontrado na linha 8, coluna 3:", patrimonio);
+          // Tentar coluna D (índice 3)
+          if (linha9.length >= 4) {
+            patrimonio = corrigirNumeroPlanilha(linha9[3]);
+            console.log("Patrimônio encontrado na linha 9, coluna D (índice 3):", patrimonio);
             return patrimonio;
           }
           
-          // Fallback para coluna 2 (índice 1)
-          if (linha8.length >= 2) {
-            patrimonio = corrigirNumeroPlanilha(linha8[1]);
-            console.log("Patrimônio encontrado na linha 8, coluna 2:", patrimonio);
+          // Fallback para coluna C (índice 2) se D não existir
+          if (linha9.length >= 3) {
+            patrimonio = corrigirNumeroPlanilha(linha9[2]);
+            console.log("Patrimônio encontrado na linha 9, coluna C (fallback):", patrimonio);
             return patrimonio;
           }
         }
@@ -771,7 +771,7 @@
       }
     }
 
-    // FUNÇÃO PARA BUSCAR ÚLTIMA COTA - CORRIGIDA
+    // FUNÇÃO PARA BUSCAR ÚLTIMA COTA
     async function buscarUltimaCota() {
       try {
         // Se já temos os dados das cotas, usar o último valor
@@ -1147,7 +1147,7 @@
       });
     }
 
-    // FUNÇÃO PARA ENCONTRAR COTA POR DATA - CORRIGIDA
+    // FUNÇÃO PARA ENCONTRAR COTA POR DATA
     function encontrarCotaPorData(dataAplicacao) {
       if (!cotasData || cotasData.length === 0) return null;
       
@@ -1181,7 +1181,7 @@
       return cotaEncontrada;
     }
 
-    // FUNÇÃO PARA CALCULAR VALOR ATUAL - CORRIGIDA
+    // FUNÇÃO PARA CALCULAR VALOR ATUAL
     function calcularValorAtual(valorAplicado, cotaAplicacao) {
       if (!cotaAplicacao || !ultimaCota || ultimaCota === 0) {
         console.log("Dados insuficientes para cálculo:", {
