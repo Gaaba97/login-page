@@ -209,26 +209,36 @@
       text-align: left;
     }
 
-    /* ESTILO PARA O INVESTIMENTO DISPONÍVEL - AGORA COM DUAS LINHAS */
-    .investimento-disponivel-container {
-      position: absolute;
-      right: 20px;
-      top: 20px;
-      text-align: right;
+    /* ALTERADO: Container flex para alinhar horizontalmente nome/descrição com investimento */
+    .header-top-container {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      justify-content: space-between;
+      align-items: flex-start;
+      width: 100%;
+      margin-bottom: 20px;
     }
 
-    /* MODIFICADO: REMOVIDA BORDA VERMELHA, TEXTO PRETO, SEM BACKGROUND ESPECIAL */
+    .header-user-info {
+      flex: 1;
+      text-align: left;
+    }
+
+    /* MODIFICADO: Container do investimento agora alinhado à direita */
+    .investimento-disponivel-container {
+      text-align: right;
+      margin-left: 20px;
+      flex-shrink: 0;
+    }
+
+    /* MODIFICADO: Estilo para o investimento item */
     .investimento-item {
       font-size: 18px;
       font-weight: bold;
       padding: 12px 16px;
       border-radius: 8px;
-      min-width: 300px;
       color: #000000;
-      text-align: center;
+      text-align: right;
+      white-space: nowrap;
     }
 
     /* NOVO: ESTILOS PARA AS DUAS LINHAS DO TEXTO */
@@ -236,13 +246,13 @@
       font-size: 18px;
       font-weight: bold;
       margin-bottom: 2px;
-      text-align: center;
+      text-align: right;
     }
 
     .investimento-item .linha2 {
       font-size: 18px;
       font-weight: bold;
-      text-align: center;
+      text-align: right;
     }
 
     .investimento-item .valor-disponivel {
@@ -250,27 +260,33 @@
       font-weight: bold;
     }
 
-    /* ESTILOS RESPONSIVOS PARA O INVESTIMENTO DISPONÍVEL */
+    /* ESTILOS RESPONSIVOS - MOBILE */
     @media (max-width: 768px) {
-      .investimento-disponivel-container {
-        position: static;
-        text-align: left;
-        margin-top: 20px;
+      .header-top-container {
         flex-direction: column;
       }
       
+      .investimento-disponivel-container {
+        margin-left: 0;
+        margin-top: 20px;
+        text-align: left;
+        width: 100%;
+      }
+      
       .investimento-item {
-        min-width: auto;
+        text-align: left;
         width: 100%;
         box-sizing: border-box;
         font-size: 16px;
         padding: 10px 14px;
+        white-space: normal;
       }
       
       .investimento-item .linha1,
       .investimento-item .linha2,
       .investimento-item .valor-disponivel {
         font-size: 16px;
+        text-align: left;
       }
     }
 
@@ -625,14 +641,19 @@
 
   <div class="container">
     <div class="header-info">
-      <div class="user-nome" id="userNome"></div>
-      <div class="user-descricao" id="userDescricao"></div>
-      
-      <!-- Container para "Você pode investir mais" - AGORA COM DUAS LINHAS -->
-      <div class="investimento-disponivel-container">
-        <div class="investimento-item disponivel" id="investimentoDisponivel">
-          <div class="linha1">Você pode investir</div>
-          <div class="linha2">mais <span class="valor-disponivel">calculando...</span></div>
+      <!-- ALTERADO: Container flex para alinhar horizontalmente -->
+      <div class="header-top-container">
+        <div class="header-user-info">
+          <div class="user-nome" id="userNome"></div>
+          <div class="user-descricao" id="userDescricao"></div>
+        </div>
+        
+        <!-- Container para "Você pode investir mais" - AGORA ALINHADO À DIREITA -->
+        <div class="investimento-disponivel-container">
+          <div class="investimento-item disponivel" id="investimentoDisponivel">
+            <div class="linha1">Você pode investir</div>
+            <div class="linha2">mais <span class="valor-disponivel">calculando...</span></div>
+          </div>
         </div>
       </div>
       
@@ -696,7 +717,7 @@
     let cotasData = null;
     let ultimaCota = null;
     let patrimonio = 0;
-    let dataCorteC3 = null; // NOVO: Variável para armazenar a data de corte da célula C3
+    let dataCorteC3 = null;
     let aplicacoesProcessadas = [];
     let morpheusDataPoints = [];
     let chartDataPoints = [];
@@ -734,7 +755,6 @@
     let customTooltip = null;
     let aplicacaoTooltip = null;
 
-    // FUNÇÃO PARA CORRIGIR NÚMEROS DA PLANILHA
     function corrigirNumeroPlanilha(valorStr) {
       if (!valorStr || valorStr.trim() === '') return 0;
       
@@ -760,7 +780,6 @@
       return isNaN(resultado) ? 0 : resultado;
     }
 
-    // FUNÇÃO PARA BUSCAR PATRIMÔNIO NA PLANILHA - AGORA NA CÉLULA D9
     async function buscarDadosPlanilha() {
       try {
         const response = await fetch(csvUrl);
@@ -773,7 +792,6 @@
         
         console.log("Total de linhas na planilha:", rows.length);
         
-        // BUSCAR DATA DE CORTE DA CÉLULA C3 (linha 3, coluna 3)
         if (rows.length >= 3) {
           const linha3 = rows[2].split(",");
           console.log("Linha 3 (C3):", linha3);
@@ -784,18 +802,15 @@
           }
         }
         
-        // BUSCAR PATRIMÔNIO NA CÉLULA D9 (linha 9, coluna 4)
         if (rows.length >= 9) {
           const linha9 = rows[8].split(",");
           console.log("Linha 9 (D9/C9):", linha9);
           
-          // Patrimônio na coluna D (índice 3)
           if (linha9.length >= 4) {
             patrimonio = corrigirNumeroPlanilha(linha9[3]);
             console.log("Patrimônio encontrado na linha 9, coluna D (índice 3):", patrimonio);
           }
           
-          // Última cota na coluna C (índice 2)
           if (linha9.length >= 3) {
             ultimaCota = corrigirNumeroPlanilha(linha9[2]);
             console.log("Última cota encontrada na linha 9, coluna C (C9):", ultimaCota);
@@ -810,7 +825,6 @@
       }
     }
 
-    // FUNÇÃO PARA VERIFICAR SE A DATA DA APLICAÇÃO É POSTERIOR À DATA DE CORTE C3
     function isDataPosteriorACorte(dataAplicacao) {
       if (!dataCorteC3 || !dataAplicacao) return false;
       
@@ -828,7 +842,6 @@
       }
     }
 
-    // FUNÇÃO PARA CALCULAR E EXIBIR "VOCÊ PODE INVESTIR MAIS" EM DUAS LINHAS
     function calcularEExibirValorDisponivel() {
       console.log("Calculando valor disponível para investir:", {
         patrimonio: patrimonio,
@@ -867,7 +880,6 @@
       
       const disponivelFormatado = Math.max(0, investimentoDisponivel).toLocaleString('pt-BR', formatoMoeda);
       
-      // EXIBIR EM DUAS LINHAS
       const elementoDisponivel = document.getElementById('investimentoDisponivel');
       
       if (elementoDisponivel) {
@@ -1115,7 +1127,6 @@
       });
     }
 
-    // FUNÇÃO PARA ENCONTRAR COTA POR DATA
     function encontrarCotaPorData(dataAplicacao) {
       if (!cotasData || cotasData.length === 0) return null;
       
@@ -1145,9 +1156,7 @@
       return cotaEncontrada;
     }
 
-    // FUNÇÃO MODIFICADA: CALCULAR VALOR ATUAL CONSIDERANDO DATA DE CORTE C3
     function calcularValorAtual(valorAplicado, cotaAplicacao, dataAplicacao) {
-      // SE A DATA DA APLICAÇÃO FOR POSTERIOR À DATA DE CORTE C3, RETORNA O PRÓPRIO VALOR APLICADO
       if (isDataPosteriorACorte(dataAplicacao)) {
         console.log(`Aplicação em ${dataAplicacao} é posterior à data de corte ${dataCorteC3}. Valor atual = valor aplicado.`);
         return valorAplicado;
@@ -1296,7 +1305,6 @@
           });
 
           if (cotaAplicacao && valorNumerico) {
-            // PASSA A DATA DA APLICAÇÃO PARA A FUNÇÃO CALCULARVALORATUAL
             valorAtual = calcularValorAtual(valorNumerico, cotaAplicacao, data);
             if (valorAtual !== null) {
               totalAtual += valorAtual;
@@ -1376,7 +1384,6 @@
 
         console.log("Total de linhas no CSV:", rows.length);
         
-        // BUSCAR DADOS DA PLANILHA (DATA CORTE C3, PATRIMÔNIO, ÚLTIMA COTA)
         await buscarDadosPlanilha();
 
         if (rows.length < 2) {
@@ -1645,7 +1652,6 @@
   </script>
 
   <script>
-    // SCRIPT DE DETECÇÃO DE DISPOSITIVO
     let orientationChangeTimeout;
 
     function detectarDispositivo() {
