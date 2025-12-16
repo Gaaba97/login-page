@@ -1529,7 +1529,7 @@
       chartDataPoints = morpheusData;
 
       const canvas = document.getElementById("performanceChart");
-      const ctx = canvas.getContext("2d"); // CORREÇÃO AQUI
+      const ctx = canvas.getContext("2d");
 
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
@@ -1578,7 +1578,7 @@
               data: ibovData,
               borderColor: "#000000",
               borderWidth: 1.5,
-              pointRadius: 0;
+              pointRadius: 0,
               tension: 0.15,
               fill: false,
               order: 1,
