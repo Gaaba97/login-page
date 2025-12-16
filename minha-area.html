@@ -169,6 +169,7 @@
       margin: 0 0 2px 0;
       text-align: left;
       font-weight: bold;
+      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
     }
 
     .user-descricao {
@@ -221,6 +222,7 @@
     .header-user-info {
       flex: 1;
       text-align: left;
+      padding-top: 2px; /* AJUSTE: Compensa a diferença de alinhamento de fonte */
     }
 
     /* MODIFICADO: Container do investimento agora alinhado à direita e ajustado para cima */
@@ -229,7 +231,7 @@
       margin-left: 20px;
       flex-shrink: 0;
       align-self: flex-start; /* Garante alinhamento pelo topo */
-      margin-top: -4px; /* AJUSTE: Move o texto para cima para alinhar com fonte maior do nome */
+      padding-top: 0; /* AJUSTE: Alinha pelo topo exato */
     }
 
     /* MODIFICADO: Estilo para o investimento item */
@@ -241,6 +243,7 @@
       color: #000000;
       text-align: right;
       white-space: nowrap;
+      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
     }
 
     /* NOVO: ESTILOS PARA AS DUAS LINHAS DO TEXTO */
@@ -249,12 +252,14 @@
       font-weight: bold;
       margin-bottom: 2px;
       text-align: right;
+      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
     }
 
     .investimento-item .linha2 {
       font-size: 18px;
       font-weight: bold;
       text-align: right;
+      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
     }
 
     .investimento-item .valor-disponivel {
@@ -268,12 +273,16 @@
         flex-direction: column;
       }
       
+      .header-user-info {
+        padding-top: 0; /* Remove ajuste no mobile */
+      }
+      
       .investimento-disponivel-container {
         margin-left: 0;
         margin-top: 20px;
         text-align: left;
         width: 100%;
-        margin-top: 0; /* Remove o ajuste no mobile */
+        padding-top: 0; /* Remove ajuste no mobile */
       }
       
       .investimento-item {
