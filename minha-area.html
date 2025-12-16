@@ -135,12 +135,32 @@
       min-height: calc(100vh - 80px);
     }
 
+    /* AUMENTAR ESPAÇAMENTO NO CELULAR */
+    .mobile-device .container {
+      margin-top: 90px;
+      padding-top: 30px;
+    }
+
+    .mobile-landscape .container {
+      margin-top: 80px;
+      padding-top: 25px;
+    }
+
     .header-info {
       width: 95%;
       max-width: 1200px;
       text-align: left;
       margin-bottom: 20px;
       position: relative;
+    }
+
+    /* MAIOR ESPAÇAMENTO PARA NOME E DESCRIÇÃO NO MOBILE */
+    .mobile-device .header-info {
+      margin-bottom: 30px;
+    }
+
+    .mobile-landscape .header-info {
+      margin-bottom: 25px;
     }
 
     .user-nome {
@@ -157,6 +177,15 @@
       margin: 0 0 30px 0;
       text-align: left;
       font-weight: 400;
+    }
+
+    /* AUMENTAR ESPAÇAMENTO ENTRE DESCRIÇÃO E PRÓXIMO CONTEÚDO NO MOBILE */
+    .mobile-device .user-descricao {
+      margin-bottom: 40px;
+    }
+
+    .mobile-landscape .user-descricao {
+      margin-bottom: 35px;
     }
 
     .clube-nome {
@@ -191,16 +220,14 @@
       gap: 8px;
     }
 
+    /* MODIFICADO: REMOVIDA BORDA VERMELHA, TEXTO PRETO, SEM BACKGROUND ESPECIAL */
     .investimento-item {
       font-size: 18px;
       font-weight: bold;
-      background-color: #f8f9fa;
       padding: 12px 16px;
       border-radius: 8px;
-      border: 2px solid #e74c3c;
       min-width: 300px;
-      color: #e74c3c;
-      background-color: #fff5f5;
+      color: #000000; /* TEXTO PRETO */
       text-align: center;
     }
 
@@ -209,7 +236,7 @@
       .investimento-disponivel-container {
         position: static;
         text-align: left;
-        margin-top: 10px;
+        margin-top: 20px;
         flex-direction: column;
       }
       
