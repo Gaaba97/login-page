@@ -213,7 +213,7 @@
     .header-top-container {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: flex-start; /* ALTERADO: Alinha pelo topo */
       width: 100%;
       margin-bottom: 20px;
     }
@@ -223,11 +223,12 @@
       text-align: left;
     }
 
-    /* MODIFICADO: Container do investimento agora alinhado à direita */
+    /* MODIFICADO: Container do investimento agora alinhado à direita e alinhado pelo topo */
     .investimento-disponivel-container {
       text-align: right;
       margin-left: 20px;
       flex-shrink: 0;
+      align-self: flex-start; /* Garante alinhamento pelo topo */
     }
 
     /* MODIFICADO: Estilo para o investimento item */
@@ -648,7 +649,7 @@
           <div class="user-descricao" id="userDescricao"></div>
         </div>
         
-        <!-- Container para "Você pode investir mais" - AGORA ALINHADO À DIREITA -->
+        <!-- Container para "Você pode investir mais" - AGORA ALINHADO À DIREITA E PELO TOPO -->
         <div class="investimento-disponivel-container">
           <div class="investimento-item disponivel" id="investimentoDisponivel">
             <div class="linha1">Você pode investir</div>
@@ -733,7 +734,17 @@
           userData = docSnap.data();
           const nome = userData.nome || "Usuário";
           const genero = (userData.genero || "masculino").toLowerCase();
-          const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
+          
+          // ALTERADO: Adicionada condição para gênero "plural"
+          let saudacao;
+          if (genero === "feminino") {
+            saudacao = "Bem-vinda";
+          } else if (genero === "plural") {
+            saudacao = "Bem-vindos";
+          } else {
+            saudacao = "Bem-vindo";
+          }
+          
           document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
           
           document.getElementById("userNome").textContent = nome;
