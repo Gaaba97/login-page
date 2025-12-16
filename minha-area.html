@@ -213,7 +213,7 @@
     .header-top-container {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start; /* ALTERADO: Alinha pelo topo */
+      align-items: flex-start; /* Alinha pelo topo */
       width: 100%;
       margin-bottom: 20px;
     }
@@ -223,12 +223,13 @@
       text-align: left;
     }
 
-    /* MODIFICADO: Container do investimento agora alinhado à direita e alinhado pelo topo */
+    /* MODIFICADO: Container do investimento agora alinhado à direita e ajustado para cima */
     .investimento-disponivel-container {
       text-align: right;
       margin-left: 20px;
       flex-shrink: 0;
       align-self: flex-start; /* Garante alinhamento pelo topo */
+      margin-top: -4px; /* AJUSTE: Move o texto para cima para alinhar com fonte maior do nome */
     }
 
     /* MODIFICADO: Estilo para o investimento item */
@@ -272,6 +273,7 @@
         margin-top: 20px;
         text-align: left;
         width: 100%;
+        margin-top: 0; /* Remove o ajuste no mobile */
       }
       
       .investimento-item {
@@ -649,7 +651,7 @@
           <div class="user-descricao" id="userDescricao"></div>
         </div>
         
-        <!-- Container para "Você pode investir mais" - AGORA ALINHADO À DIREITA E PELO TOPO -->
+        <!-- Container para "Você pode investir mais" - AGORA COM AJUSTE DE POSIÇÃO -->
         <div class="investimento-disponivel-container">
           <div class="investimento-item disponivel" id="investimentoDisponivel">
             <div class="linha1">Você pode investir</div>
@@ -892,10 +894,14 @@
       const disponivelFormatado = Math.max(0, investimentoDisponivel).toLocaleString('pt-BR', formatoMoeda);
       
       const elementoDisponivel = document.getElementById('investimentoDisponivel');
+      const genero = userData?.genero?.toLowerCase() || "masculino";
+      
+      // ALTERADO: Texto muda para "Vocês podem investir" se gênero for plural
+      const textoLinha1 = genero === "plural" ? "Vocês podem investir" : "Você pode investir";
       
       if (elementoDisponivel) {
         elementoDisponivel.innerHTML = `
-          <div class="linha1">Você pode investir</div>
+          <div class="linha1">${textoLinha1}</div>
           <div class="linha2">mais <span class="valor-disponivel">${disponivelFormatado}</span></div>
         `;
       }
@@ -903,10 +909,14 @@
 
     function exibirErroCalculo() {
       const elementoDisponivel = document.getElementById('investimentoDisponivel');
+      const genero = userData?.genero?.toLowerCase() || "masculino";
+      
+      // ALTERADO: Texto muda para "Vocês podem investir" se gênero for plural
+      const textoLinha1 = genero === "plural" ? "Vocês podem investir" : "Você pode investir";
       
       if (elementoDisponivel) {
         elementoDisponivel.innerHTML = `
-          <div class="linha1">Você pode investir</div>
+          <div class="linha1">${textoLinha1}</div>
           <div class="linha2">mais <span class="valor-disponivel">Dados indisponíveis</span></div>
         `;
       }
@@ -1561,7 +1571,7 @@
               data: ibovData,
               borderColor: "#000000",
               borderWidth: 1.5,
-              pointRadius: 0,
+              pointRadius: 0;
               tension: 0.15,
               fill: false,
               order: 1,
