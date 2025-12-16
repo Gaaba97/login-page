@@ -209,7 +209,7 @@
       text-align: left;
     }
 
-    /* ESTILO PARA O INVESTIMENTO DISPONÍVEL - AGORA APENAS UM ITEM */
+    /* ESTILO PARA O INVESTIMENTO DISPONÍVEL - AGORA COM DUAS LINHAS */
     .investimento-disponivel-container {
       position: absolute;
       right: 20px;
@@ -227,8 +227,27 @@
       padding: 12px 16px;
       border-radius: 8px;
       min-width: 300px;
-      color: #000000; /* TEXTO PRETO */
+      color: #000000;
       text-align: center;
+    }
+
+    /* NOVO: ESTILOS PARA AS DUAS LINHAS DO TEXTO */
+    .investimento-item .linha1 {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 2px;
+      text-align: center;
+    }
+
+    .investimento-item .linha2 {
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .investimento-item .valor-disponivel {
+      font-size: 18px;
+      font-weight: bold;
     }
 
     /* ESTILOS RESPONSIVOS PARA O INVESTIMENTO DISPONÍVEL */
@@ -246,6 +265,12 @@
         box-sizing: border-box;
         font-size: 16px;
         padding: 10px 14px;
+      }
+      
+      .investimento-item .linha1,
+      .investimento-item .linha2,
+      .investimento-item .valor-disponivel {
+        font-size: 16px;
       }
     }
 
@@ -508,7 +533,7 @@
       cursor: pointer;
       transition: background-color 0.2s ease, transform 0.2s ease;
       font-weight: 500;
-      top: 35px; /* Posicionado abaixo da legenda */
+      top: 35px;
     }
 
     .aplicacao-label:hover {
@@ -579,7 +604,7 @@
     .mobile-device .aplicacao-label {
       font-size: 14px;
       padding: 5px 10px;
-      top: 45px; /* Mais espaço para mobile */
+      top: 45px;
     }
 
     .mobile-landscape .aplicacao-label {
@@ -603,9 +628,12 @@
       <div class="user-nome" id="userNome"></div>
       <div class="user-descricao" id="userDescricao"></div>
       
-      <!-- Container apenas para "Pode investir mais " -->
+      <!-- Container para "Você pode investir mais" - AGORA COM DUAS LINHAS -->
       <div class="investimento-disponivel-container">
-        <div class="investimento-item disponivel" id="investimentoDisponivel">Pode investir mais calculando...</div>
+        <div class="investimento-item disponivel" id="investimentoDisponivel">
+          <div class="linha1">Você pode investir</div>
+          <div class="linha2">mais <span class="valor-disponivel">calculando...</span></div>
+        </div>
       </div>
       
       <h1 class="clube-nome">Morpheus Clube de Investimentos</h1>
@@ -668,6 +696,7 @@
     let cotasData = null;
     let ultimaCota = null;
     let patrimonio = 0;
+    let dataCorteC3 = null; // NOVO: Variável para armazenar a data de corte da célula C3
     let aplicacoesProcessadas = [];
     let morpheusDataPoints = [];
     let chartDataPoints = [];
@@ -686,7 +715,6 @@
           const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
           document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
           
-          // Exibir nome e descrição do usuário
           document.getElementById("userNome").textContent = nome;
           document.getElementById("userDescricao").textContent = userData.descricao || "";
           
@@ -710,39 +738,30 @@
     function corrigirNumeroPlanilha(valorStr) {
       if (!valorStr || valorStr.trim() === '') return 0;
       
-      // Remover espaços
       let valor = valorStr.trim();
-      
-      // Remover aspas se houver
       valor = valor.replace(/"/g, '');
       
-      // Verificar se é um número válido
       if (!isNaN(parseFloat(valor)) && isFinite(valor)) {
         return parseFloat(valor);
       }
       
-      // Se contém vírgula decimal, substituir por ponto
       if (valor.includes(',') && !valor.includes('.')) {
         valor = valor.replace(',', '.');
       }
       
-      // Se contém ambos, provavelmente é formato brasileiro: 500.000,00
       if (valor.includes('.') && valor.includes(',')) {
-        // Remover pontos de milhar
         valor = valor.replace(/\./g, '');
-        // Substituir vírgula decimal por ponto
         valor = valor.replace(',', '.');
       }
       
-      // Remover qualquer caractere não numérico exceto ponto e sinal negativo
       valor = valor.replace(/[^\d.-]/g, '');
       
       const resultado = parseFloat(valor);
       return isNaN(resultado) ? 0 : resultado;
     }
 
-    // FUNÇÃO PARA BUSCAR PATRIMÔNIO NA PLANILHA - AGORA NA CÉLULA D9 (linha 9, coluna 4)
-    async function buscarPatrimonioDaPlanilha() {
+    // FUNÇÃO PARA BUSCAR PATRIMÔNIO NA PLANILHA - AGORA NA CÉLULA D9
+    async function buscarDadosPlanilha() {
       try {
         const response = await fetch(csvUrl);
         if (!response.ok) {
@@ -754,85 +773,62 @@
         
         console.log("Total de linhas na planilha:", rows.length);
         
-        // Buscar na célula D9: linha 9 (índice 8), coluna D (índice 3, pois A=0, B=1, C=2, D=3)
+        // BUSCAR DATA DE CORTE DA CÉLULA C3 (linha 3, coluna 3)
+        if (rows.length >= 3) {
+          const linha3 = rows[2].split(",");
+          console.log("Linha 3 (C3):", linha3);
+          
+          if (linha3.length >= 3) {
+            dataCorteC3 = linha3[2].trim();
+            console.log("Data de corte C3 encontrada:", dataCorteC3);
+          }
+        }
+        
+        // BUSCAR PATRIMÔNIO NA CÉLULA D9 (linha 9, coluna 4)
         if (rows.length >= 9) {
           const linha9 = rows[8].split(",");
-          console.log("Linha 9 (índice 8):", linha9);
+          console.log("Linha 9 (D9/C9):", linha9);
           
-          // Tentar coluna D (índice 3)
+          // Patrimônio na coluna D (índice 3)
           if (linha9.length >= 4) {
             patrimonio = corrigirNumeroPlanilha(linha9[3]);
             console.log("Patrimônio encontrado na linha 9, coluna D (índice 3):", patrimonio);
-            return patrimonio;
           }
           
-          // Fallback para coluna C (índice 2) se D não existir
-          if (linha9.length >= 3) {
-            patrimonio = corrigirNumeroPlanilha(linha9[2]);
-            console.log("Patrimônio encontrado na linha 9, coluna C (fallback):", patrimonio);
-            return patrimonio;
-          }
-        }
-        
-        console.log("Patrimônio não encontrado na planilha");
-        return 0;
-        
-      } catch (error) {
-        console.error("Erro ao buscar patrimônio:", error);
-        return 0;
-      }
-    }
-
-    // FUNÇÃO PARA BUSCAR ÚLTIMA COTA DA CÉLULA C9 (linha 9, coluna 3)
-    async function buscarUltimaCota() {
-      try {
-        const response = await fetch(csvUrl);
-        if (!response.ok) {
-          throw new Error(`Erro HTTP: ${response.status}`);
-        }
-        
-        const data = await response.text();
-        const rows = data.split("\n").filter(row => row.trim() !== '');
-        
-        console.log("Buscando última cota na planilha. Total de linhas:", rows.length);
-        
-        // Buscar na célula C9: linha 9 (índice 8), coluna C (índice 2, pois A=0, B=1, C=2)
-        if (rows.length >= 9) {
-          const linha9 = rows[8].split(",");
-          console.log("Linha 9 (índice 8):", linha9);
-          
-          // Tentar coluna C (índice 2) - CÉLULA C9
+          // Última cota na coluna C (índice 2)
           if (linha9.length >= 3) {
             ultimaCota = corrigirNumeroPlanilha(linha9[2]);
             console.log("Última cota encontrada na linha 9, coluna C (C9):", ultimaCota);
-            return ultimaCota;
-          }
-          
-          // Fallback para coluna B (índice 1) se C não existir
-          if (linha9.length >= 2) {
-            ultimaCota = corrigirNumeroPlanilha(linha9[1]);
-            console.log("Última cota encontrada na linha 9, coluna B (fallback):", ultimaCota);
-            return ultimaCota;
           }
         }
         
-        // Se não encontrar em C9, tentar usar a última cota dos dados históricos como último recurso
-        if (cotasData && cotasData.length > 0) {
-          ultimaCota = cotasData[cotasData.length - 1].cota;
-          console.log("Última cota dos dados históricos (fallback):", ultimaCota);
-          return ultimaCota;
-        }
-        
-        console.log("Última cota não encontrada");
-        return 0;
+        return { patrimonio, ultimaCota, dataCorteC3 };
         
       } catch (error) {
-        console.error("Erro ao buscar última cota:", error);
-        return 0;
+        console.error("Erro ao buscar dados da planilha:", error);
+        return { patrimonio: 0, ultimaCota: 0, dataCorteC3: null };
       }
     }
 
-    // FUNÇÃO PARA CALCULAR E EXIBIR APENAS "PODE INVESTIR MAIS "
+    // FUNÇÃO PARA VERIFICAR SE A DATA DA APLICAÇÃO É POSTERIOR À DATA DE CORTE C3
+    function isDataPosteriorACorte(dataAplicacao) {
+      if (!dataCorteC3 || !dataAplicacao) return false;
+      
+      try {
+        const [diaCorte, mesCorte, anoCorte] = dataCorteC3.split('/');
+        const [diaAplic, mesAplic, anoAplic] = dataAplicacao.split('/');
+        
+        const dataCorteObj = new Date(anoCorte, mesCorte - 1, diaCorte);
+        const dataAplicObj = new Date(anoAplic, mesAplic - 1, diaAplic);
+        
+        return dataAplicObj > dataCorteObj;
+      } catch (error) {
+        console.error("Erro ao comparar datas:", error);
+        return false;
+      }
+    }
+
+    // FUNÇÃO PARA CALCULAR E EXIBIR "VOCÊ PODE INVESTIR MAIS" EM DUAS LINHAS
     function calcularEExibirValorDisponivel() {
       console.log("Calculando valor disponível para investir:", {
         patrimonio: patrimonio,
@@ -840,9 +836,8 @@
         ultimaCota: ultimaCota
       });
       
-      // Se patrimônio ainda não foi buscado, buscar agora
       if (patrimonio === 0) {
-        buscarPatrimonioDaPlanilha().then(() => {
+        buscarDadosPlanilha().then(() => {
           if (patrimonio > 0) {
             calcularValorDisponivelEFinalizar();
           } else {
@@ -855,8 +850,6 @@
     }
 
     function calcularValorDisponivelEFinalizar() {
-      // Cálculo do "Pode investir mais " com a fórmula correta
-      // [(0.4 × D9) ÷ 0.6] - (Total atual das aplicações ÷ 0.6)
       const investimentoDisponivel = ((0.4 * patrimonio) / 0.6) - (totalAtualGlobal / 0.6);
       
       console.log("Valor disponível calculado:", {
@@ -865,7 +858,6 @@
         investimentoDisponivel: investimentoDisponivel
       });
       
-      // Formatar o valor como moeda brasileira
       const formatoMoeda = {
         style: 'currency',
         currency: 'BRL',
@@ -875,11 +867,14 @@
       
       const disponivelFormatado = Math.max(0, investimentoDisponivel).toLocaleString('pt-BR', formatoMoeda);
       
-      // Exibir apenas no elemento "Pode investir mais "
+      // EXIBIR EM DUAS LINHAS
       const elementoDisponivel = document.getElementById('investimentoDisponivel');
       
       if (elementoDisponivel) {
-        elementoDisponivel.textContent = `Pode investir mais ${disponivelFormatado}`;
+        elementoDisponivel.innerHTML = `
+          <div class="linha1">Você pode investir</div>
+          <div class="linha2">mais <span class="valor-disponivel">${disponivelFormatado}</span></div>
+        `;
       }
     }
 
@@ -887,7 +882,10 @@
       const elementoDisponivel = document.getElementById('investimentoDisponivel');
       
       if (elementoDisponivel) {
-        elementoDisponivel.textContent = "Pode investir mais Dados indisponíveis";
+        elementoDisponivel.innerHTML = `
+          <div class="linha1">Você pode investir</div>
+          <div class="linha2">mais <span class="valor-disponivel">Dados indisponíveis</span></div>
+        `;
       }
     }
 
@@ -1007,7 +1005,6 @@
       let left = x - containerRect.left;
       let top = y - containerRect.top - tooltipEl.offsetHeight - 15;
       
-      // Ajustar posição se o tooltip sair da tela
       if (top < 10) {
         top = y - containerRect.top + 25;
         tooltipEl.style.setProperty('--arrow-position', 'top');
@@ -1040,11 +1037,9 @@
       const chartContainer = document.querySelector('.chart-container');
       const chartArea = chart.chartArea;
       
-      // Remover linhas anteriores
       const existingLines = chartContainer.querySelectorAll('.vertical-line, .aplicacao-label');
       existingLines.forEach(el => el.remove());
       
-      // Obter dados do gráfico Morpheus (dataset 0)
       const morpheusData = chart.data.datasets[0].data;
       
       aplicacoes.forEach((aplicacao, index) => {
@@ -1052,18 +1047,14 @@
         const valor = aplicacao.valorNumerico;
         const valorStr = aplicacao.valorStr;
         
-        // Converter data da aplicação de "DD/MM/YYYY" para objeto Date
         const [dia, mes, ano] = dataAplicacao.split('/');
         const dataAplicacaoObj = new Date(ano, mes - 1, dia);
         
-        // Encontrar o ponto EXATO ou mais próximo no gráfico
         let pontoEncontrado = null;
         let menorDiferenca = Infinity;
         
-        // Procurar pela data exata ou mais próxima no gráfico
         morpheusData.forEach((ponto) => {
           if (ponto && ponto.x) {
-            // Converter data do ponto do gráfico (YYYY-MM-DD) para Date
             const dataPonto = new Date(ponto.x);
             const diferenca = Math.abs(dataPonto - dataAplicacaoObj);
             
@@ -1076,38 +1067,26 @@
         
         if (!pontoEncontrado) return;
         
-        // Obter escalas do gráfico
         const xScale = chart.scales.x;
         const yScale = chart.scales.y;
         
-        // Converter data do ponto para timestamp para usar na escala
         const dataPontoTimestamp = new Date(pontoEncontrado.x).getTime();
         
-        // Obter posições em pixels DENTRO DO CANVAS
         const pixelXCanvas = xScale.getPixelForValue(dataPontoTimestamp);
         const pixelYCanvas = yScale.getPixelForValue(pontoEncontrado.y);
         
-        // Obter posições absolutas na página
         const canvasRect = chart.canvas.getBoundingClientRect();
         const containerRect = chartContainer.getBoundingClientRect();
         
-        // Calcular a posição X ABSOLUTA na página
         const posXAbsoluta = canvasRect.left + pixelXCanvas;
-        
-        // Calcular a posição X RELATIVA ao container
         const posXRelativa = posXAbsoluta - containerRect.left;
+        const posYTopo = 35;
         
-        // Calcular a posição Y RELATIVA ao container (começar um pouco abaixo do topo)
-        const posYTopo = 35; // 35px do topo do container (abaixo da legenda)
-        
-        // Calcular altura da linha (do topo até o ponto na linha do gráfico)
         const posYAbsoluta = canvasRect.top + pixelYCanvas;
         const posYRelativaPonto = posYAbsoluta - containerRect.top;
         const alturaLinha = Math.max(0, posYRelativaPonto - posYTopo);
         
-        // Verificar se está dentro da área visível do container
         if (posXRelativa >= 0 && posXRelativa <= containerRect.width) {
-          // Criar linha vertical
           const line = document.createElement('div');
           line.className = 'vertical-line';
           line.style.left = posXRelativa + 'px';
@@ -1115,15 +1094,13 @@
           line.style.height = alturaLinha + 'px';
           chartContainer.appendChild(line);
           
-          // Criar label da aplicação - APENAS O NÚMERO
           const label = document.createElement('div');
           label.className = 'aplicacao-label';
           label.style.left = (posXRelativa + 5) + 'px';
-          label.textContent = (index + 1).toString(); // Apenas o número
+          label.textContent = (index + 1).toString();
           label.setAttribute('data-index', index);
           label.setAttribute('data-aplicacao', JSON.stringify(aplicacao));
           
-          // Adicionar eventos de mouse
           label.addEventListener('mouseenter', (e) => {
             const rect = e.target.getBoundingClientRect();
             const x = rect.left + rect.width / 2;
@@ -1148,23 +1125,19 @@
       let cotaEncontrada = null;
       let menorDiferenca = Infinity;
       
-      // Procurar a cota mais próxima (anterior ou igual) à data da aplicação
       for (let i = 0; i < cotasData.length; i++) {
         const cotaData = cotasData[i];
         const [cotaDia, cotaMes, cotaAno] = cotaData.data.split('/');
         const dataCotaObj = new Date(cotaAno, cotaMes - 1, cotaDia);
         
-        // Calcular diferença em dias
         const diferenca = dataAplicacaoObj - dataCotaObj;
         
-        // Procurar data igual ou anterior mais próxima
         if (diferenca >= 0 && diferenca < menorDiferenca) {
           menorDiferenca = diferenca;
           cotaEncontrada = cotaData;
         }
       }
       
-      // Se não encontrou data anterior, usar a primeira cota disponível
       if (!cotaEncontrada && cotasData.length > 0) {
         cotaEncontrada = cotasData[0];
       }
@@ -1172,8 +1145,14 @@
       return cotaEncontrada;
     }
 
-    // FUNÇÃO PARA CALCULAR VALOR ATUAL - USANDO A ÚLTIMA COTA DE C9
-    function calcularValorAtual(valorAplicado, cotaAplicacao) {
+    // FUNÇÃO MODIFICADA: CALCULAR VALOR ATUAL CONSIDERANDO DATA DE CORTE C3
+    function calcularValorAtual(valorAplicado, cotaAplicacao, dataAplicacao) {
+      // SE A DATA DA APLICAÇÃO FOR POSTERIOR À DATA DE CORTE C3, RETORNA O PRÓPRIO VALOR APLICADO
+      if (isDataPosteriorACorte(dataAplicacao)) {
+        console.log(`Aplicação em ${dataAplicacao} é posterior à data de corte ${dataCorteC3}. Valor atual = valor aplicado.`);
+        return valorAplicado;
+      }
+      
       if (!cotaAplicacao || !ultimaCota || ultimaCota === 0) {
         console.log("Dados insuficientes para cálculo:", {
           cotaAplicacao: cotaAplicacao,
@@ -1184,10 +1163,7 @@
       }
       
       try {
-        // Calcular quantidade de cotas
         const quantidadeCotas = valorAplicado / cotaAplicacao.cota;
-        
-        // Calcular valor atual usando a última cota de C9
         const valorAtual = quantidadeCotas * ultimaCota;
         const valorAtualArredondado = Math.round(valorAtual * 100) / 100;
         
@@ -1245,12 +1221,10 @@
         let valorNumerico;
         
         if (valorStr.startsWith('-')) {
-          // É um resgate (valor negativo)
           const valorPositivoStr = valorStr.substring(1).replace('R$', '').trim();
           valorNumerico = -corrigirNumeroPlanilha(valorPositivoStr);
           valorStr = `-R$ ${Math.abs(valorNumerico).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
         } else {
-          // É uma aplicação (valor positivo)
           const valorPositivoStr = valorStr.replace('R$', '').trim();
           valorNumerico = corrigirNumeroPlanilha(valorPositivoStr);
           valorStr = `R$ ${Math.abs(valorNumerico).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
@@ -1280,7 +1254,6 @@
       
       if (aplicacoesProcessadas.length === 0) {
         noAplicacoesElement.style.display = 'block';
-        // Atualizar o valor disponível mesmo sem aplicações
         setTimeout(calcularEExibirValorDisponivel, 100);
         return;
       }
@@ -1291,9 +1264,12 @@
 
       tableBody.innerHTML = '';
 
-      // Buscar última cota de C9 antes de processar as aplicações
-      buscarUltimaCota().then(() => {
-        console.log("Última cota de C9 para cálculo:", ultimaCota);
+      buscarDadosPlanilha().then(() => {
+        console.log("Dados para cálculo:", {
+          ultimaCota: ultimaCota,
+          dataCorteC3: dataCorteC3,
+          patrimonio: patrimonio
+        });
         
         aplicacoesProcessadas.forEach((aplicacao, index) => {
           const data = aplicacao.data;
@@ -1314,11 +1290,14 @@
             data: data,
             valor: valorNumerico,
             cotaAplicacao: cotaAplicacao,
-            ultimaCota: ultimaCota
+            ultimaCota: ultimaCota,
+            dataCorteC3: dataCorteC3,
+            isPosterior: isDataPosteriorACorte(data)
           });
 
-          if (cotaAplicacao && valorNumerico && ultimaCota) {
-            valorAtual = calcularValorAtual(valorNumerico, cotaAplicacao);
+          if (cotaAplicacao && valorNumerico) {
+            // PASSA A DATA DA APLICAÇÃO PARA A FUNÇÃO CALCULARVALORATUAL
+            valorAtual = calcularValorAtual(valorNumerico, cotaAplicacao, data);
             if (valorAtual !== null) {
               totalAtual += valorAtual;
               valorAtualFormatado = `R$ ${valorAtual.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
@@ -1327,7 +1306,6 @@
 
           const row = document.createElement('tr');
           
-          // Número da ação
           const numeroCell = document.createElement('td');
           numeroCell.textContent = (index + 1).toString();
           
@@ -1375,16 +1353,12 @@
           
           tableBody.appendChild(totalRow);
           
-          // Armazenar o total atual globalmente
           totalAtualGlobal = totalAtualFinal;
         }
 
         tableElement.style.display = 'table';
         
-        // Buscar patrimônio e calcular valor disponível
-        buscarPatrimonioDaPlanilha().then(() => {
-          calcularEExibirValorDisponivel();
-        });
+        calcularEExibirValorDisponivel();
       });
     }
 
@@ -1402,10 +1376,8 @@
 
         console.log("Total de linhas no CSV:", rows.length);
         
-        // Log das primeiras 10 linhas para depuração
-        for (let i = 0; i < Math.min(10, rows.length); i++) {
-          console.log(`Linha ${i}:`, rows[i]);
-        }
+        // BUSCAR DADOS DA PLANILHA (DATA CORTE C3, PATRIMÔNIO, ÚLTIMA COTA)
+        await buscarDadosPlanilha();
 
         if (rows.length < 2) {
           throw new Error("Dados insuficientes no CSV");
@@ -1438,19 +1410,16 @@
 
         let ibovVariacao = [];
 
-        // Processar aplicações primeiro
         if (userData && userData.aplicacoes) {
           aplicacoesProcessadas = processarAplicacoesString(userData.aplicacoes);
         }
 
-        // Encontrar a data de início baseada na primeira aplicação
         let indexInicio = 0;
         if (aplicacoesProcessadas.length > 0) {
           const primeiraDataAplicacao = aplicacoesProcessadas[0].data;
           const [dia, mes, ano] = primeiraDataAplicacao.split('/');
           const primeiraDataObj = new Date(ano, mes - 1, dia);
           
-          // Encontrar o índice da data igual ou imediatamente posterior
           for (let i = 0; i < allDates.length; i++) {
             const [cotaDia, cotaMes, cotaAno] = allDates[i].split('/');
             const dataCotaObj = new Date(cotaAno, cotaMes - 1, cotaDia);
@@ -1475,7 +1444,6 @@
         }
 
         if (filteredDates.length === 0) {
-          // Fallback: usar dados completos se não encontrar correspondência
           const morpheusBase = morpheusValores[0];
           const ibovBase = ibovValores[0];
           
@@ -1496,14 +1464,12 @@
         const lastDate = filteredDates[filteredDates.length - 1];
         document.getElementById("subtitle").textContent = lastDate;
 
-        // Criar gráfico
         createMainChart(filteredDates, morpheusVariacao, ibovVariacao);
 
         if (userData && userData.aplicacoes) {
           carregarAplicacoes(userData.aplicacoes);
         } else {
-          // Atualizar o valor disponível mesmo sem aplicações
-          buscarPatrimonioDaPlanilha().then(() => {
+          buscarDadosPlanilha().then(() => {
             calcularEExibirValorDisponivel();
           });
         }
@@ -1525,7 +1491,6 @@
         y: ibov[i]
       }));
 
-      // Salvar os pontos de dados para uso posterior
       chartDataPoints = morpheusData;
 
       const canvas = document.getElementById("performanceChart");
@@ -1666,7 +1631,6 @@
             onComplete: function() {
               if (aplicacoesProcessadas.length > 0) {
                 console.log("Gráfico renderizado - Adicionando linhas");
-                // Pequeno delay para garantir
                 setTimeout(() => {
                   adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, chart);
                 }, 100);
@@ -1709,11 +1673,9 @@
         document.body.classList.add('desktop-device');
       }
       
-      // Redesenhar gráficos quando o dispositivo mudar
       if (window.chartInstances.performanceChart) {
         setTimeout(() => {
           window.chartInstances.performanceChart.resize();
-          // Redesenhar as linhas verticais quando o gráfico for redimensionado
           if (aplicacoesProcessadas && aplicacoesProcessadas.length > 0) {
             adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, window.chartInstances.performanceChart);
           }
@@ -1736,4 +1698,3 @@
   </script>
 </body>
 </html>
-
