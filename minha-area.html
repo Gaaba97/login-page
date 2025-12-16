@@ -169,9 +169,7 @@
       margin: 0 0 2px 0;
       text-align: left;
       font-weight: bold;
-      line-height: 1.2;
-      display: inline-block;
-      vertical-align: baseline;
+      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
     }
 
     .user-descricao {
@@ -180,7 +178,6 @@
       margin: 0 0 30px 0;
       text-align: left;
       font-weight: 400;
-      line-height: 1.4;
     }
 
     /* AUMENTAR ESPAÇAMENTO ENTRE DESCRIÇÃO E PRÓXIMO CONTEÚDO NO MOBILE */
@@ -197,7 +194,6 @@
       color: #1E4DB7;
       margin: 0 0 2px 0;
       text-align: left;
-      line-height: 1.2;
     }
 
     .cnpj {
@@ -205,7 +201,6 @@
       color: #555;
       margin: 0 0 2px 0;
       text-align: left;
-      line-height: 1.2;
     }
 
     .subtitle {
@@ -213,45 +208,42 @@
       color: #555;
       margin: 0;
       text-align: left;
-      line-height: 1.2;
     }
 
-    /* SOLUÇÃO: Container com display: table para alinhamento preciso */
+    /* ALTERADO: Container flex para alinhar horizontalmente nome/descrição com investimento */
     .header-top-container {
-      display: table;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start; /* Alinha pelo topo */
       width: 100%;
-      table-layout: fixed;
       margin-bottom: 20px;
     }
 
     .header-user-info {
-      display: table-cell;
-      vertical-align: baseline; /* Alinhamento perfeito por baseline */
+      flex: 1;
       text-align: left;
-      padding-right: 20px;
+      padding-top: 2px; /* AJUSTE: Compensa a diferença de alinhamento de fonte */
     }
 
-    /* Container do investimento agora como célula de tabela */
+    /* MODIFICADO: Container do investimento agora alinhado à direita e ajustado para cima */
     .investimento-disponivel-container {
-      display: table-cell;
-      vertical-align: baseline; /* Alinhamento perfeito por baseline */
       text-align: right;
-      width: auto;
-      white-space: nowrap;
+      margin-left: 20px;
+      flex-shrink: 0;
+      align-self: flex-start; /* Garante alinhamento pelo topo */
+      padding-top: 0; /* AJUSTE: Alinha pelo topo exato */
     }
 
-    /* Ajuste para o investimento item */
+    /* MODIFICADO: Estilo para o investimento item */
     .investimento-item {
       font-size: 18px;
       font-weight: bold;
+      padding: 12px 16px;
+      border-radius: 8px;
       color: #000000;
       text-align: right;
-      line-height: 1.2;
-      display: inline-block;
-      vertical-align: baseline; /* Alinhamento pela baseline */
-      padding: 0; /* Removemos padding que afetava o alinhamento */
-      border-radius: 8px;
-      background-color: transparent;
+      white-space: nowrap;
+      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
     }
 
     /* NOVO: ESTILOS PARA AS DUAS LINHAS DO TEXTO */
@@ -260,16 +252,14 @@
       font-weight: bold;
       margin-bottom: 2px;
       text-align: right;
-      line-height: 1.2;
-      display: block;
+      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
     }
 
     .investimento-item .linha2 {
       font-size: 18px;
       font-weight: bold;
       text-align: right;
-      line-height: 1.2;
-      display: block;
+      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
     }
 
     .investimento-item .valor-disponivel {
@@ -280,27 +270,27 @@
     /* ESTILOS RESPONSIVOS - MOBILE */
     @media (max-width: 768px) {
       .header-top-container {
-        display: block; /* Volta para block no mobile */
+        flex-direction: column;
       }
       
       .header-user-info {
-        display: block;
-        width: 100%;
-        padding-right: 0;
-        margin-bottom: 15px;
+        padding-top: 0; /* Remove ajuste no mobile */
       }
       
       .investimento-disponivel-container {
-        display: block;
+        margin-left: 0;
+        margin-top: 20px;
         text-align: left;
         width: 100%;
-        margin-top: 10px;
+        padding-top: 0; /* Remove ajuste no mobile */
       }
       
       .investimento-item {
         text-align: left;
         width: 100%;
+        box-sizing: border-box;
         font-size: 16px;
+        padding: 10px 14px;
         white-space: normal;
       }
       
@@ -663,14 +653,14 @@
 
   <div class="container">
     <div class="header-info">
-      <!-- SOLUÇÃO: Usando display: table para alinhamento preciso -->
+      <!-- ALTERADO: Container flex para alinhar horizontalmente -->
       <div class="header-top-container">
         <div class="header-user-info">
-          <div class="user-nome" id="userNome">Carregando...</div>
-          <div class="user-descricao" id="userDescricao">Carregando...</div>
+          <div class="user-nome" id="userNome"></div>
+          <div class="user-descricao" id="userDescricao"></div>
         </div>
         
-        <!-- Container para "Você pode investir mais" - AGORA COM DISPLAY: TABLE-CELL -->
+        <!-- Container para "Você pode investir mais" - AGORA COM AJUSTE DE POSIÇÃO -->
         <div class="investimento-disponivel-container">
           <div class="investimento-item disponivel" id="investimentoDisponivel">
             <div class="linha1">Você pode investir</div>
@@ -688,7 +678,6 @@
       <div class="main-chart-container">
         <div class="chart-container">
           <canvas id="performanceChart"></canvas>
-          <div class="loading" id="chartLoading">Carregando gráfico...</div>
         </div>
       </div>
     </div>
@@ -748,45 +737,31 @@
     let morpheusVariacao = [];
     let totalAtualGlobal = 0;
 
-    // Inicializar com valores padrão
-    window.chartInstances = {
-      performanceChart: null
-    };
-
-    let customTooltip = null;
-    let aplicacaoTooltip = null;
-
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        try {
-          const docRef = doc(db, "usuarios", user.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            userData = docSnap.data();
-            const nome = userData.nome || "Usuário";
-            const genero = (userData.genero || "masculino").toLowerCase();
-            
-            let saudacao;
-            if (genero === "feminino") {
-              saudacao = "Bem-vinda";
-            } else if (genero === "plural") {
-              saudacao = "Bem-vindos";
-            } else {
-              saudacao = "Bem-vindo";
-            }
-            
-            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
-            document.getElementById("userNome").textContent = nome;
-            document.getElementById("userDescricao").textContent = userData.descricao || "";
-            
-            await loadData();
+        const docRef = doc(db, "usuarios", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          userData = docSnap.data();
+          const nome = userData.nome || "Usuário";
+          const genero = (userData.genero || "masculino").toLowerCase();
+          
+          // ALTERADO: Adicionada condição para gênero "plural"
+          let saudacao;
+          if (genero === "feminino") {
+            saudacao = "Bem-vinda";
+          } else if (genero === "plural") {
+            saudacao = "Bem-vindos";
           } else {
-            console.error("Documento do usuário não encontrado");
-            window.location.href = "index.html";
+            saudacao = "Bem-vindo";
           }
-        } catch (error) {
-          console.error("Erro ao carregar dados do usuário:", error);
-          document.getElementById("subtitle").textContent = "Erro ao carregar dados do usuário";
+          
+          document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+          
+          document.getElementById("userNome").textContent = nome;
+          document.getElementById("userDescricao").textContent = userData.descricao || "";
+          
+          await loadData();
         }
       } else {
         window.location.href = "index.html";
@@ -794,6 +769,13 @@
     });
 
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
+
+    window.chartInstances = {
+      performanceChart: null
+    };
+
+    let customTooltip = null;
+    let aplicacaoTooltip = null;
 
     function corrigirNumeroPlanilha(valorStr) {
       if (!valorStr || valorStr.trim() === '') return 0;
@@ -822,7 +804,6 @@
 
     async function buscarDadosPlanilha() {
       try {
-        console.log("Buscando dados da planilha...");
         const response = await fetch(csvUrl);
         if (!response.ok) {
           throw new Error(`Erro HTTP: ${response.status}`);
@@ -890,10 +871,9 @@
         ultimaCota: ultimaCota
       });
       
-      if (patrimonio === 0 || ultimaCota === 0) {
-        console.log("Dados insuficientes, buscando da planilha...");
+      if (patrimonio === 0) {
         buscarDadosPlanilha().then(() => {
-          if (patrimonio > 0 && ultimaCota > 0) {
+          if (patrimonio > 0) {
             calcularValorDisponivelEFinalizar();
           } else {
             exibirErroCalculo();
@@ -905,44 +885,34 @@
     }
 
     function calcularValorDisponivelEFinalizar() {
-      try {
-        if (patrimonio <= 0 || totalAtualGlobal < 0) {
-          console.error("Dados inválidos para cálculo:", { patrimonio, totalAtualGlobal });
-          exibirErroCalculo();
-          return;
-        }
-        
-        const investimentoDisponivel = ((0.4 * patrimonio) / 0.6) - (totalAtualGlobal / 0.6);
-        
-        console.log("Valor disponível calculado:", {
-          patrimonio: patrimonio,
-          totalAtualGlobal: totalAtualGlobal,
-          investimentoDisponivel: investimentoDisponivel
-        });
-        
-        const formatoMoeda = {
-          style: 'currency',
-          currency: 'BRL',
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        };
-        
-        const disponivelFormatado = Math.max(0, investimentoDisponivel).toLocaleString('pt-BR', formatoMoeda);
-        
-        const elementoDisponivel = document.getElementById('investimentoDisponivel');
-        const genero = userData?.genero?.toLowerCase() || "masculino";
-        
-        const textoLinha1 = genero === "plural" ? "Vocês podem investir" : "Você pode investir";
-        
-        if (elementoDisponivel) {
-          elementoDisponivel.innerHTML = `
-            <div class="linha1">${textoLinha1}</div>
-            <div class="linha2">mais <span class="valor-disponivel">${disponivelFormatado}</span></div>
-          `;
-        }
-      } catch (error) {
-        console.error("Erro ao calcular valor disponível:", error);
-        exibirErroCalculo();
+      const investimentoDisponivel = ((0.4 * patrimonio) / 0.6) - (totalAtualGlobal / 0.6);
+      
+      console.log("Valor disponível calculado:", {
+        patrimonio: patrimonio,
+        totalAtualGlobal: totalAtualGlobal,
+        investimentoDisponivel: investimentoDisponivel
+      });
+      
+      const formatoMoeda = {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      };
+      
+      const disponivelFormatado = Math.max(0, investimentoDisponivel).toLocaleString('pt-BR', formatoMoeda);
+      
+      const elementoDisponivel = document.getElementById('investimentoDisponivel');
+      const genero = userData?.genero?.toLowerCase() || "masculino";
+      
+      // ALTERADO: Texto muda para "Vocês podem investir" se gênero for plural
+      const textoLinha1 = genero === "plural" ? "Vocês podem investir" : "Você pode investir";
+      
+      if (elementoDisponivel) {
+        elementoDisponivel.innerHTML = `
+          <div class="linha1">${textoLinha1}</div>
+          <div class="linha2">mais <span class="valor-disponivel">${disponivelFormatado}</span></div>
+        `;
       }
     }
 
@@ -950,6 +920,7 @@
       const elementoDisponivel = document.getElementById('investimentoDisponivel');
       const genero = userData?.genero?.toLowerCase() || "masculino";
       
+      // ALTERADO: Texto muda para "Vocês podem investir" se gênero for plural
       const textoLinha1 = genero === "plural" ? "Vocês podem investir" : "Você pode investir";
       
       if (elementoDisponivel) {
@@ -1106,6 +1077,8 @@
       if (!aplicacoes || aplicacoes.length === 0 || !chart) return;
       
       const chartContainer = document.querySelector('.chart-container');
+      const chartArea = chart.chartArea;
+      
       const existingLines = chartContainer.querySelectorAll('.vertical-line, .aplicacao-label');
       existingLines.forEach(el => el.remove());
       
@@ -1114,6 +1087,7 @@
       aplicacoes.forEach((aplicacao, index) => {
         const dataAplicacao = aplicacao.data;
         const valor = aplicacao.valorNumerico;
+        const valorStr = aplicacao.valorStr;
         
         const [dia, mes, ano] = dataAplicacao.split('/');
         const dataAplicacaoObj = new Date(ano, mes - 1, dia);
@@ -1247,6 +1221,13 @@
       }
     }
 
+    function formatarValorComEspaco(valorStr) {
+      if (valorStr.includes('R$') && !valorStr.includes('R$ ')) {
+        return valorStr.replace('R$', 'R$ ');
+      }
+      return valorStr;
+    }
+
     function processarAplicacoesString(aplicacoesString) {
       if (!aplicacoesString || aplicacoesString.trim() === '') return [];
       
@@ -1322,13 +1303,7 @@
 
       tableBody.innerHTML = '';
 
-      // Primeiro buscar os dados da planilha se necessário
-      const fetchPromises = [];
-      if (patrimonio === 0 || ultimaCota === 0) {
-        fetchPromises.push(buscarDadosPlanilha());
-      }
-      
-      Promise.all(fetchPromises).then(() => {
+      buscarDadosPlanilha().then(() => {
         console.log("Dados para cálculo:", {
           ultimaCota: ultimaCota,
           dataCorteC3: dataCorteC3,
@@ -1421,15 +1396,6 @@
 
         tableElement.style.display = 'table';
         
-        // Atualizar linhas no gráfico
-        if (window.chartInstances.performanceChart && aplicacoesProcessadas.length > 0) {
-          adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, window.chartInstances.performanceChart);
-        }
-        
-        calcularEExibirValorDisponivel();
-      }).catch(error => {
-        console.error("Erro ao carregar aplicações:", error);
-        noAplicacoesElement.style.display = 'block';
         calcularEExibirValorDisponivel();
       });
     }
@@ -1437,9 +1403,6 @@
     async function loadData() {
       try {
         console.log("Iniciando carregamento de dados...");
-        
-        // Primeiro buscar dados da planilha para ter patrimônio e última cota
-        await buscarDadosPlanilha();
         
         const response = await fetch(csvUrl);
         if (!response.ok) {
@@ -1451,6 +1414,8 @@
 
         console.log("Total de linhas no CSV:", rows.length);
         
+        await buscarDadosPlanilha();
+
         if (rows.length < 2) {
           throw new Error("Dados insuficientes no CSV");
         }
@@ -1541,13 +1506,14 @@
         if (userData && userData.aplicacoes) {
           carregarAplicacoes(userData.aplicacoes);
         } else {
-          calcularEExibirValorDisponivel();
+          buscarDadosPlanilha().then(() => {
+            calcularEExibirValorDisponivel();
+          });
         }
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         document.getElementById("subtitle").textContent = "Erro ao carregar dados";
-        document.getElementById("chartLoading").textContent = "Erro ao carregar gráfico";
       }
     }
 
@@ -1700,7 +1666,6 @@
           },
           animation: {
             onComplete: function() {
-              document.getElementById("chartLoading").style.display = "none";
               if (aplicacoesProcessadas.length > 0) {
                 console.log("Gráfico renderizado - Adicionando linhas");
                 setTimeout(() => {
