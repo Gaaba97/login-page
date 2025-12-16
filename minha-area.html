@@ -169,7 +169,7 @@
       margin: 0 0 2px 0;
       text-align: left;
       font-weight: bold;
-      line-height: 1.2; /* Alterado para melhor alinhamento */
+      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
     }
 
     .user-descricao {
@@ -178,7 +178,6 @@
       margin: 0 0 30px 0;
       text-align: left;
       font-weight: 400;
-      line-height: 1.4;
     }
 
     /* AUMENTAR ESPAÇAMENTO ENTRE DESCRIÇÃO E PRÓXIMO CONTEÚDO NO MOBILE */
@@ -195,7 +194,6 @@
       color: #1E4DB7;
       margin: 0 0 2px 0;
       text-align: left;
-      line-height: 1.2;
     }
 
     .cnpj {
@@ -203,7 +201,6 @@
       color: #555;
       margin: 0 0 2px 0;
       text-align: left;
-      line-height: 1.2;
     }
 
     .subtitle {
@@ -211,14 +208,13 @@
       color: #555;
       margin: 0;
       text-align: left;
-      line-height: 1.2;
     }
 
     /* ALTERADO: Container flex para alinhar horizontalmente nome/descrição com investimento */
     .header-top-container {
       display: flex;
       justify-content: space-between;
-      align-items: baseline; /* ALTERADO: baseline para alinhar pelo texto */
+      align-items: flex-start; /* Alinha pelo topo */
       width: 100%;
       margin-bottom: 20px;
     }
@@ -226,14 +222,16 @@
     .header-user-info {
       flex: 1;
       text-align: left;
+      padding-top: 2px; /* AJUSTE: Compensa a diferença de alinhamento de fonte */
     }
 
-    /* MODIFICADO: Container do investimento agora alinhado pela baseline */
+    /* MODIFICADO: Container do investimento agora alinhado à direita e ajustado para cima */
     .investimento-disponivel-container {
       text-align: right;
       margin-left: 20px;
       flex-shrink: 0;
-      align-self: baseline; /* ALTERADO: baseline para alinhar pelo texto */
+      align-self: flex-start; /* Garante alinhamento pelo topo */
+      padding-top: 0; /* AJUSTE: Alinha pelo topo exato */
     }
 
     /* MODIFICADO: Estilo para o investimento item */
@@ -245,9 +243,7 @@
       color: #000000;
       text-align: right;
       white-space: nowrap;
-      line-height: 1.2; /* Alterado para melhor alinhamento */
-      display: inline-block; /* Adicionado para melhor controle */
-      vertical-align: baseline; /* Adicionado para alinhamento correto */
+      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
     }
 
     /* NOVO: ESTILOS PARA AS DUAS LINHAS DO TEXTO */
@@ -256,16 +252,14 @@
       font-weight: bold;
       margin-bottom: 2px;
       text-align: right;
-      line-height: 1.2; /* Alterado para melhor alinhamento */
-      display: block;
+      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
     }
 
     .investimento-item .linha2 {
       font-size: 18px;
       font-weight: bold;
       text-align: right;
-      line-height: 1.2; /* Alterado para melhor alinhamento */
-      display: block;
+      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
     }
 
     .investimento-item .valor-disponivel {
@@ -277,11 +271,10 @@
     @media (max-width: 768px) {
       .header-top-container {
         flex-direction: column;
-        align-items: flex-start; /* Alterado para flex-start no mobile */
       }
       
       .header-user-info {
-        width: 100%;
+        padding-top: 0; /* Remove ajuste no mobile */
       }
       
       .investimento-disponivel-container {
@@ -289,7 +282,7 @@
         margin-top: 20px;
         text-align: left;
         width: 100%;
-        align-self: flex-start; /* Alterado para flex-start no mobile */
+        padding-top: 0; /* Remove ajuste no mobile */
       }
       
       .investimento-item {
@@ -299,7 +292,6 @@
         font-size: 16px;
         padding: 10px 14px;
         white-space: normal;
-        display: block; /* Alterado para block no mobile */
       }
       
       .investimento-item .linha1,
@@ -668,7 +660,7 @@
           <div class="user-descricao" id="userDescricao"></div>
         </div>
         
-        <!-- Container para "Você pode investir mais" - AGORA COM ALINHAMENTO POR BASELINE -->
+        <!-- Container para "Você pode investir mais" - AGORA COM AJUSTE DE POSIÇÃO -->
         <div class="investimento-disponivel-container">
           <div class="investimento-item disponivel" id="investimentoDisponivel">
             <div class="linha1">Você pode investir</div>
