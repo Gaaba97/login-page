@@ -603,9 +603,9 @@
       <div class="user-nome" id="userNome"></div>
       <div class="user-descricao" id="userDescricao"></div>
       
-      <!-- Container apenas para "Ainda pode investir" -->
+      <!-- Container apenas para "Pode investir mais " -->
       <div class="investimento-disponivel-container">
-        <div class="investimento-item disponivel" id="investimentoDisponivel">Ainda pode investir: calculando...</div>
+        <div class="investimento-item disponivel" id="investimentoDisponivel">Pode investir mais calculando...</div>
       </div>
       
       <h1 class="clube-nome">Morpheus Clube de Investimentos</h1>
@@ -832,7 +832,7 @@
       }
     }
 
-    // FUNÇÃO PARA CALCULAR E EXIBIR APENAS "AINDA PODE INVESTIR"
+    // FUNÇÃO PARA CALCULAR E EXIBIR APENAS "PODE INVESTIR MAIS "
     function calcularEExibirValorDisponivel() {
       console.log("Calculando valor disponível para investir:", {
         patrimonio: patrimonio,
@@ -855,7 +855,7 @@
     }
 
     function calcularValorDisponivelEFinalizar() {
-      // Cálculo do "Ainda pode investir" com a fórmula correta
+      // Cálculo do "Pode investir mais " com a fórmula correta
       // [(0.4 × D9) ÷ 0.6] - (Total atual das aplicações ÷ 0.6)
       const investimentoDisponivel = ((0.4 * patrimonio) / 0.6) - (totalAtualGlobal / 0.6);
       
@@ -875,11 +875,11 @@
       
       const disponivelFormatado = Math.max(0, investimentoDisponivel).toLocaleString('pt-BR', formatoMoeda);
       
-      // Exibir apenas no elemento "Ainda pode investir"
+      // Exibir apenas no elemento "Pode investir mais "
       const elementoDisponivel = document.getElementById('investimentoDisponivel');
       
       if (elementoDisponivel) {
-        elementoDisponivel.textContent = `Ainda pode investir: ${disponivelFormatado}`;
+        elementoDisponivel.textContent = `Pode investir mais ${disponivelFormatado}`;
       }
     }
 
@@ -887,7 +887,7 @@
       const elementoDisponivel = document.getElementById('investimentoDisponivel');
       
       if (elementoDisponivel) {
-        elementoDisponivel.textContent = "Ainda pode investir: Dados indisponíveis";
+        elementoDisponivel.textContent = "Pode investir mais Dados indisponíveis";
       }
     }
 
@@ -1578,7 +1578,7 @@
               data: ibovData,
               borderColor: "#000000",
               borderWidth: 1.5,
-              pointRadius: 0,
+              pointRadius: 0;
               tension: 0.15,
               fill: false,
               order: 1,
