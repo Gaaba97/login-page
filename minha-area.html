@@ -847,17 +847,18 @@
       }
     }
 
-    function isDataPosteriorACorte(dataAplicacao) {
-      if (!dataCorteC3 || !dataAplicacao) return false;
+    function isDataPosteriorAUltimaDataGrafico(dataAplicacao) {
+      if (!filteredDates || filteredDates.length === 0 || !dataAplicacao) return false;
       
       try {
-        const [diaCorte, mesCorte, anoCorte] = dataCorteC3.split('/');
+        const ultimaDataGrafico = filteredDates[filteredDates.length - 1];
         const [diaAplic, mesAplic, anoAplic] = dataAplicacao.split('/');
+        const [diaGrafico, mesGrafico, anoGrafico] = ultimaDataGrafico.split('/');
         
-        const dataCorteObj = new Date(anoCorte, mesCorte - 1, diaCorte);
         const dataAplicObj = new Date(anoAplic, mesAplic - 1, diaAplic);
+        const dataGraficoObj = new Date(anoGrafico, mesGrafico - 1, diaGrafico);
         
-        return dataAplicObj > dataCorteObj;
+        return dataAplicObj > dataGraficoObj;
       } catch (error) {
         console.error("Erro ao comparar datas:", error);
         return false;
@@ -1187,8 +1188,9 @@
     }
 
     function calcularValorAtual(valorAplicado, cotaAplicacao, dataAplicacao) {
-      if (isDataPosteriorACorte(dataAplicacao)) {
-        console.log(`Aplicação em ${dataAplicacao} é posterior à data de corte ${dataCorteC3}. Valor atual = valor aplicado.`);
+      // VERIFICAÇÃO MODIFICADA: Se a data da aplicação for posterior à última data do gráfico
+      if (isDataPosteriorAUltimaDataGrafico(dataAplicacao)) {
+        console.log(`Aplicação em ${dataAplicacao} é posterior à última data do gráfico. Valor atual = valor aplicado.`);
         return valorAplicado;
       }
       
@@ -1331,7 +1333,7 @@
             cotaAplicacao: cotaAplicacao,
             ultimaCota: ultimaCota,
             dataCorteC3: dataCorteC3,
-            isPosterior: isDataPosteriorACorte(data)
+            isPosterior: isDataPosteriorAUltimaDataGrafico(data)
           });
 
           if (cotaAplicacao && valorNumerico) {
@@ -1628,8 +1630,8 @@
               },
               ticks: {
                 color: "#000000",
-                maxRotation: 45,
-                minRotation: 45,
+                maxRotation: 45;
+                minRotation: 45;
                 font: {
                   family: "Montserrat",
                   size: axisFontSize,
