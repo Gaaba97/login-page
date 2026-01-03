@@ -1095,32 +1095,27 @@
       try {
         console.log("Carregando dados da tabela...");
 
-        if (rows.length < 9) {
+        if (rows.length < 9) { // Alterado para 9 para incluir as novas linhas
           throw new Error("Dados insuficientes para a tabela");
         }
 
         const headerRow = rows[1].split(",");
-        // Primeiro grupo: linhas X3-AL5 (índices 2,3,4)
-        const firstDataRows = [
+        const dataRows = [
           rows[2].split(","), // Linha 3 (X3)
           rows[3].split(","), // Linha 4 (X4)
-          rows[4].split(",")  // Linha 5 (X5)
-        ];
-        
-        // Segundo grupo: linhas X6-AL8 (índices 5,6,7)
-        const secondDataRows = [
-          rows[5].split(","), // Linha 6 (X6) - CORRIGIDO
-          rows[6].split(","), // Linha 7 (X7) - CORRIGIDO
-          rows[7].split(",")  // Linha 8 (X8) - CORRIGIDO
+          rows[4].split(","), // Linha 5 (X5)
+          rows[6].split(","), // Nova linha 6 (X6)
+          rows[7].split(","), // Nova linha 7 (X7)
+          rows[8].split(",")  // Nova linha 8 (X8)
         ];
 
         console.log("Cabeçalhos:", headerRow.slice(22, 38));
-        console.log("Primeiro grupo - X3:", firstDataRows[0].slice(22, 38));
-        console.log("Primeiro grupo - X4:", firstDataRows[1].slice(22, 38));
-        console.log("Primeiro grupo - X5:", firstDataRows[2].slice(22, 38));
-        console.log("Segundo grupo - X6:", secondDataRows[0].slice(22, 38));
-        console.log("Segundo grupo - X7:", secondDataRows[1].slice(22, 38));
-        console.log("Segundo grupo - X8:", secondDataRows[2].slice(22, 38));
+        console.log("Dados linha 3:", dataRows[0].slice(22, 38));
+        console.log("Dados linha 4:", dataRows[1].slice(22, 38));
+        console.log("Dados linha 5:", dataRows[2].slice(22, 38));
+        console.log("Dados linha 7:", dataRows[3].slice(22, 38));
+        console.log("Dados linha 8:", dataRows[4].slice(22, 38));
+        console.log("Dados linha 9:", dataRows[5].slice(22, 38));
 
         const tableHeaders = headerRow.slice(22, 38);
         
@@ -1145,25 +1140,25 @@
         
         // Primeiro grupo: três primeiras linhas (X3-X5)
         for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
-          const rowData = firstDataRows[rowIndex];
+          const rowData = dataRows[rowIndex];
           const dataRowElement = document.createElement("tr");
           
-          const rowCells = rowData.slice(22, 38); // X a AL
+          const rowCells = rowData.slice(22, 38);
           
           if (rowIndex === 0) {
             const mergedCell = document.createElement("td");
             mergedCell.className = "merged-cell";
             mergedCell.rowSpan = 3;
-            mergedCell.textContent = firstDataRows[0][21]?.trim() || ""; // Coluna W (índice 21)
+            mergedCell.textContent = rowCells[0]?.trim() || "";
             dataRowElement.appendChild(mergedCell);
             
-            rowCells.slice(0).forEach((cellData, cellIndex) => {
+            rowCells.slice(1).forEach((cellData, cellIndex) => {
               const td = document.createElement("td");
               td.textContent = cellData?.trim() || "";
               dataRowElement.appendChild(td);
             });
           } else {
-            rowCells.slice(0).forEach((cellData, cellIndex) => {
+            rowCells.slice(1).forEach((cellData, cellIndex) => {
               const td = document.createElement("td");
               td.textContent = cellData?.trim() || "";
               dataRowElement.appendChild(td);
@@ -1174,26 +1169,26 @@
         }
         
         // Segundo grupo: três novas linhas (X6-X8)
-        for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
-          const rowData = secondDataRows[rowIndex];
+        for (let rowIndex = 3; rowIndex < 6; rowIndex++) {
+          const rowData = dataRows[rowIndex];
           const dataRowElement = document.createElement("tr");
           
-          const rowCells = rowData.slice(22, 38); // X a AL
+          const rowCells = rowData.slice(22, 38);
           
-          if (rowIndex === 0) {
+          if (rowIndex === 3) {
             const mergedCell = document.createElement("td");
             mergedCell.className = "merged-cell";
             mergedCell.rowSpan = 3;
-            mergedCell.textContent = secondDataRows[0][21]?.trim() || ""; // Coluna W6 (índice 21)
+            mergedCell.textContent = rowCells[0]?.trim() || "";
             dataRowElement.appendChild(mergedCell);
             
-            rowCells.slice(0).forEach((cellData, cellIndex) => {
+            rowCells.slice(1).forEach((cellData, cellIndex) => {
               const td = document.createElement("td");
               td.textContent = cellData?.trim() || "";
               dataRowElement.appendChild(td);
             });
           } else {
-            rowCells.slice(0).forEach((cellData, cellIndex) => {
+            rowCells.slice(1).forEach((cellData, cellIndex) => {
               const td = document.createElement("td");
               td.textContent = cellData?.trim() || "";
               dataRowElement.appendChild(td);
