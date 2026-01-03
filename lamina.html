@@ -1095,21 +1095,27 @@
       try {
         console.log("Carregando dados da tabela...");
 
-        if (rows.length < 5) {
+        if (rows.length < 9) { // Alterado para 9 para incluir as novas linhas
           throw new Error("Dados insuficientes para a tabela");
         }
 
         const headerRow = rows[1].split(",");
         const dataRows = [
-          rows[2].split(","),
-          rows[3].split(","),
-          rows[4].split(",")
+          rows[2].split(","), // Linha 3 (X3)
+          rows[3].split(","), // Linha 4 (X4)
+          rows[4].split(","), // Linha 5 (X5)
+          rows[6].split(","), // Nova linha 6 (X6)
+          rows[7].split(","), // Nova linha 7 (X7)
+          rows[8].split(",")  // Nova linha 8 (X8)
         ];
 
         console.log("Cabeçalhos:", headerRow.slice(22, 38));
         console.log("Dados linha 3:", dataRows[0].slice(22, 38));
         console.log("Dados linha 4:", dataRows[1].slice(22, 38));
         console.log("Dados linha 5:", dataRows[2].slice(22, 38));
+        console.log("Dados linha 7:", dataRows[3].slice(22, 38));
+        console.log("Dados linha 8:", dataRows[4].slice(22, 38));
+        console.log("Dados linha 9:", dataRows[5].slice(22, 38));
 
         const tableHeaders = headerRow.slice(22, 38);
         
@@ -1132,7 +1138,9 @@
         
         table.appendChild(headerRowElement);
         
-        dataRows.forEach((rowData, rowIndex) => {
+        // Primeiro grupo: três primeiras linhas (X3-X5)
+        for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
+          const rowData = dataRows[rowIndex];
           const dataRowElement = document.createElement("tr");
           
           const rowCells = rowData.slice(22, 38);
@@ -1158,12 +1166,42 @@
           }
           
           table.appendChild(dataRowElement);
-        });
+        }
+        
+        // Segundo grupo: três novas linhas (X6-X8)
+        for (let rowIndex = 3; rowIndex < 6; rowIndex++) {
+          const rowData = dataRows[rowIndex];
+          const dataRowElement = document.createElement("tr");
+          
+          const rowCells = rowData.slice(22, 38);
+          
+          if (rowIndex === 3) {
+            const mergedCell = document.createElement("td");
+            mergedCell.className = "merged-cell";
+            mergedCell.rowSpan = 3;
+            mergedCell.textContent = rowCells[0]?.trim() || "";
+            dataRowElement.appendChild(mergedCell);
+            
+            rowCells.slice(1).forEach((cellData, cellIndex) => {
+              const td = document.createElement("td");
+              td.textContent = cellData?.trim() || "";
+              dataRowElement.appendChild(td);
+            });
+          } else {
+            rowCells.slice(1).forEach((cellData, cellIndex) => {
+              const td = document.createElement("td");
+              td.textContent = cellData?.trim() || "";
+              dataRowElement.appendChild(td);
+            });
+          }
+          
+          table.appendChild(dataRowElement);
+        }
 
         table.style.display = "table";
         tableLoading.style.display = "none";
         
-        console.log("Tabela criada com sucesso");
+        console.log("Tabela criada com sucesso com 6 linhas");
 
       } catch (error) {
         console.error("Erro ao criar tabela:", error);
