@@ -1095,21 +1095,33 @@
       try {
         console.log("Carregando dados da tabela...");
 
-        if (rows.length < 5) {
+        if (rows.length < 9) {
           throw new Error("Dados insuficientes para a tabela");
         }
 
         const headerRow = rows[1].split(",");
-        const dataRows = [
+        
+        // Dados do NOVO ANO (ano que se inicia) - linhas 2, 3, 4
+        const newYearData = [
           rows[2].split(","),
           rows[3].split(","),
           rows[4].split(",")
         ];
+        
+        // Dados do ANO ANTERIOR - linhas 6, 7, 8 (desceu 4 linhas)
+        const oldYearData = [
+          rows[6].split(","),
+          rows[7].split(","),
+          rows[8].split(",")
+        ];
 
         console.log("Cabeçalhos:", headerRow.slice(22, 38));
-        console.log("Dados linha 3:", dataRows[0].slice(22, 38));
-        console.log("Dados linha 4:", dataRows[1].slice(22, 38));
-        console.log("Dados linha 5:", dataRows[2].slice(22, 38));
+        console.log("Novo Ano - linha 1:", newYearData[0].slice(22, 38));
+        console.log("Novo Ano - linha 2:", newYearData[1].slice(22, 38));
+        console.log("Novo Ano - linha 3:", newYearData[2].slice(22, 38));
+        console.log("Ano Anterior - linha 1:", oldYearData[0].slice(22, 38));
+        console.log("Ano Anterior - linha 2:", oldYearData[1].slice(22, 38));
+        console.log("Ano Anterior - linha 3:", oldYearData[2].slice(22, 38));
 
         const tableHeaders = headerRow.slice(22, 38);
         
@@ -1118,6 +1130,7 @@
         
         table.innerHTML = "";
         
+        // Criar linha de cabeçalho
         const headerRowElement = document.createElement("tr");
         headerRowElement.className = "header-row";
         
@@ -1132,38 +1145,71 @@
         
         table.appendChild(headerRowElement);
         
-        dataRows.forEach((rowData, rowIndex) => {
-          const dataRowElement = document.createElement("tr");
+        // Função auxiliar para criar uma seção da tabela
+        function createSection(sectionData, isNewYearSection) {
+          const firstRow = document.createElement("tr");
           
-          const rowCells = rowData.slice(22, 38);
-          
-          if (rowIndex === 0) {
+          if (isNewYearSection) {
+            // Para a primeira linha da seção do novo ano, criar célula mesclada
             const mergedCell = document.createElement("td");
             mergedCell.className = "merged-cell";
             mergedCell.rowSpan = 3;
-            mergedCell.textContent = rowCells[0]?.trim() || "";
-            dataRowElement.appendChild(mergedCell);
+            mergedCell.textContent = sectionData[0][22]?.trim() || "";
+            firstRow.appendChild(mergedCell);
             
-            rowCells.slice(1).forEach((cellData, cellIndex) => {
+            // Adicionar as demais células da primeira linha (coluna X até AL)
+            for (let i = 23; i <= 37; i++) {
               const td = document.createElement("td");
-              td.textContent = cellData?.trim() || "";
-              dataRowElement.appendChild(td);
-            });
+              td.textContent = sectionData[0][i]?.trim() || "";
+              firstRow.appendChild(td);
+            }
           } else {
-            rowCells.slice(1).forEach((cellData, cellIndex) => {
+            // Para a seção do ano anterior, também criar célula mesclada
+            const mergedCell = document.createElement("td");
+            mergedCell.className = "merged-cell";
+            mergedCell.rowSpan = 3;
+            mergedCell.textContent = sectionData[0][22]?.trim() || "";
+            firstRow.appendChild(mergedCell);
+            
+            // Adicionar as demais células da primeira linha (coluna X até AL)
+            for (let i = 23; i <= 37; i++) {
               const td = document.createElement("td");
-              td.textContent = cellData?.trim() || "";
-              dataRowElement.appendChild(td);
-            });
+              td.textContent = sectionData[0][i]?.trim() || "";
+              firstRow.appendChild(td);
+            }
           }
           
-          table.appendChild(dataRowElement);
-        });
+          table.appendChild(firstRow);
+          
+          // Segunda linha da seção (sem a primeira célula, pois está mesclada)
+          const secondRow = document.createElement("tr");
+          for (let i = 23; i <= 37; i++) {
+            const td = document.createElement("td");
+            td.textContent = sectionData[1][i]?.trim() || "";
+            secondRow.appendChild(td);
+          }
+          table.appendChild(secondRow);
+          
+          // Terceira linha da seção (sem a primeira célula, pois está mesclada)
+          const thirdRow = document.createElement("tr");
+          for (let i = 23; i <= 37; i++) {
+            const td = document.createElement("td");
+            td.textContent = sectionData[2][i]?.trim() || "";
+            thirdRow.appendChild(td);
+          }
+          table.appendChild(thirdRow);
+        }
+        
+        // Adicionar seção do NOVO ANO (ano que se inicia) - PRIMEIRO
+        createSection(newYearData, true);
+        
+        // Adicionar seção do ANO ANTERIOR (ano que passou) - DEPOIS
+        createSection(oldYearData, false);
 
         table.style.display = "table";
         tableLoading.style.display = "none";
         
-        console.log("Tabela criada com sucesso");
+        console.log("Tabela criada com sucesso - Total de 6 linhas de dados");
 
       } catch (error) {
         console.error("Erro ao criar tabela:", error);
