@@ -1095,33 +1095,21 @@
       try {
         console.log("Carregando dados da tabela...");
 
-        if (rows.length < 10) {
+        if (rows.length < 5) {
           throw new Error("Dados insuficientes para a tabela");
         }
 
         const headerRow = rows[1].split(",");
-        
-        // Primeiro conjunto de dados (antigo - agora 4 linhas abaixo)
-        const dataRowsOld = [
-          rows[6].split(","), // Antiga linha 2 agora é linha 6
-          rows[7].split(","), // Antiga linha 3 agora é linha 7
-          rows[8].split(",")  // Antiga linha 4 agora é linha 8
-        ];
-        
-        // Novo conjunto de dados (nas posições antigas)
-        const dataRowsNew = [
-          rows[2].split(","), // Nova linha na posição antiga da linha 2
-          rows[3].split(","), // Nova linha na posição antiga da linha 3
-          rows[4].split(",")  // Nova linha na posição antiga da linha 4
+        const dataRows = [
+          rows[2].split(","),
+          rows[3].split(","),
+          rows[4].split(",")
         ];
 
         console.log("Cabeçalhos:", headerRow.slice(22, 38));
-        console.log("Dados novos linha 1:", dataRowsNew[0].slice(22, 38));
-        console.log("Dados novos linha 2:", dataRowsNew[1].slice(22, 38));
-        console.log("Dados novos linha 3:", dataRowsNew[2].slice(22, 38));
-        console.log("Dados antigos linha 1:", dataRowsOld[0].slice(22, 38));
-        console.log("Dados antigos linha 2:", dataRowsOld[1].slice(22, 38));
-        console.log("Dados antigos linha 3:", dataRowsOld[2].slice(22, 38));
+        console.log("Dados linha 3:", dataRows[0].slice(22, 38));
+        console.log("Dados linha 4:", dataRows[1].slice(22, 38));
+        console.log("Dados linha 5:", dataRows[2].slice(22, 38));
 
         const tableHeaders = headerRow.slice(22, 38);
         
@@ -1130,7 +1118,6 @@
         
         table.innerHTML = "";
         
-        // Criar linha de cabeçalho
         const headerRowElement = document.createElement("tr");
         headerRowElement.className = "header-row";
         
@@ -1145,65 +1132,38 @@
         
         table.appendChild(headerRowElement);
         
-        // Função auxiliar para criar linhas da tabela
-        function createTableRows(dataRows, isFirstSection = true) {
-          // Primeira linha da seção
-          const firstRowElement = document.createElement("tr");
+        dataRows.forEach((rowData, rowIndex) => {
+          const dataRowElement = document.createElement("tr");
           
-          if (isFirstSection) {
-            // Para a primeira seção, criar célula mesclada
+          const rowCells = rowData.slice(22, 38);
+          
+          if (rowIndex === 0) {
             const mergedCell = document.createElement("td");
             mergedCell.className = "merged-cell";
             mergedCell.rowSpan = 3;
-            mergedCell.textContent = dataRows[0][22]?.trim() || "";
-            firstRowElement.appendChild(mergedCell);
+            mergedCell.textContent = rowCells[0]?.trim() || "";
+            dataRowElement.appendChild(mergedCell);
             
-            // Adicionar células restantes
-            for (let i = 23; i <= 37; i++) {
+            rowCells.slice(1).forEach((cellData, cellIndex) => {
               const td = document.createElement("td");
-              td.textContent = dataRows[0][i]?.trim() || "";
-              firstRowElement.appendChild(td);
-            }
+              td.textContent = cellData?.trim() || "";
+              dataRowElement.appendChild(td);
+            });
           } else {
-            // Para a segunda seção, adicionar todas as células
-            for (let i = 22; i <= 37; i++) {
+            rowCells.slice(1).forEach((cellData, cellIndex) => {
               const td = document.createElement("td");
-              td.textContent = dataRows[0][i]?.trim() || "";
-              firstRowElement.appendChild(td);
-            }
+              td.textContent = cellData?.trim() || "";
+              dataRowElement.appendChild(td);
+            });
           }
           
-          table.appendChild(firstRowElement);
-          
-          // Segunda linha da seção
-          const secondRowElement = document.createElement("tr");
-          for (let i = (isFirstSection ? 23 : 22); i <= 37; i++) {
-            const td = document.createElement("td");
-            td.textContent = dataRows[1][i]?.trim() || "";
-            secondRowElement.appendChild(td);
-          }
-          table.appendChild(secondRowElement);
-          
-          // Terceira linha da seção
-          const thirdRowElement = document.createElement("tr");
-          for (let i = (isFirstSection ? 23 : 22); i <= 37; i++) {
-            const td = document.createElement("td");
-            td.textContent = dataRows[2][i]?.trim() || "";
-            thirdRowElement.appendChild(td);
-          }
-          table.appendChild(thirdRowElement);
-        }
-        
-        // Adicionar nova seção (dados nas posições antigas)
-        createTableRows(dataRowsNew, false);
-        
-        // Adicionar seção antiga (dados 4 linhas abaixo)
-        createTableRows(dataRowsOld, true);
+          table.appendChild(dataRowElement);
+        });
 
         table.style.display = "table";
         tableLoading.style.display = "none";
         
-        console.log("Tabela criada com sucesso - Total de linhas: 6");
+        console.log("Tabela criada com sucesso");
 
       } catch (error) {
         console.error("Erro ao criar tabela:", error);
