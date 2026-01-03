@@ -1104,18 +1104,18 @@
           rows[2].split(","), // Linha 3 (X3)
           rows[3].split(","), // Linha 4 (X4)
           rows[4].split(","), // Linha 5 (X5)
-          rows[6].split(","), // Nova linha 6 (X6)
-          rows[7].split(","), // Nova linha 7 (X7)
-          rows[8].split(",")  // Nova linha 8 (X8)
+      rows[5].split(","), // Linha 6 (X6) - CORRIGIDO
+      rows[6].split(","), // Linha 7 (X7) - CORRIGIDO
+      rows[7].split(",")  // Linha 8 (X8) - CORRIGIDO
         ];
 
         console.log("Cabeçalhos:", headerRow.slice(22, 38));
         console.log("Dados linha 3:", dataRows[0].slice(22, 38));
         console.log("Dados linha 4:", dataRows[1].slice(22, 38));
         console.log("Dados linha 5:", dataRows[2].slice(22, 38));
-        console.log("Dados linha 7:", dataRows[3].slice(22, 38));
-        console.log("Dados linha 8:", dataRows[4].slice(22, 38));
-        console.log("Dados linha 9:", dataRows[5].slice(22, 38));
+    console.log("Dados linha 6:", dataRows[3].slice(22, 38)); // CORRIGIDO
+    console.log("Dados linha 7:", dataRows[4].slice(22, 38)); // CORRIGIDO
+    console.log("Dados linha 8:", dataRows[5].slice(22, 38)); // CORRIGIDO
 
         const tableHeaders = headerRow.slice(22, 38);
         
@@ -1169,7 +1169,7 @@
         }
         
         // Segundo grupo: três novas linhas (X6-X8)
-        for (let rowIndex = 3; rowIndex < 6; rowIndex++) {
+for (let rowIndex = 3; rowIndex < 6; rowIndex++) {
           const rowData = dataRows[rowIndex];
           const dataRowElement = document.createElement("tr");
           
@@ -1288,3 +1288,4 @@
   </script>
 </body>
 </html>
+
