@@ -910,8 +910,8 @@
               },
               ticks: {
                 color: "#000000",
-                maxRotation: 45;
-                minRotation: 45;
+                maxRotation: 45,
+                minRotation: 45,
                 font: {
                   family: "Montserrat",
                   size: axisFontSize,
@@ -1109,9 +1109,9 @@
         
         // Segundo grupo: linhas X6-AL8 (índices 5,6,7)
         const secondDataRows = [
-          rows[5].split(","), // Linha 6 (X6) - CORRIGIDO: era índice 6, agora é 5
-          rows[6].split(","), // Linha 7 (X7) - CORRIGIDO: era índice 7, agora é 6
-          rows[7].split(",")  // Linha 8 (X8) - CORRIGIDO: era índice 8, agora é 7
+          rows[5].split(","), // Linha 6 (X6) - CORRIGIDO
+          rows[6].split(","), // Linha 7 (X7) - CORRIGIDO
+          rows[7].split(",")  // Linha 8 (X8) - CORRIGIDO
         ];
 
         console.log("Cabeçalhos:", headerRow.slice(22, 38));
