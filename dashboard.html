@@ -169,7 +169,7 @@
       padding: 10px 14px;
       text-align: center;
       vertical-align: middle;
-      width: 25%;
+      width: 20%;
     }
 
     thead th {
@@ -243,6 +243,7 @@
             <th id="dataReferencia">Dia</th>
             <th>Mês</th>
             <th>Ano*</th>
+            <th>Desde o início*</th>
           </tr>
         </thead>
         <tbody>
@@ -251,18 +252,21 @@
             <td id="morpheusDia">...</td>
             <td id="morpheusMes">...</td>
             <td id="morpheusAno">...</td>
+            <td id="morpheusInicio">...</td>
           </tr>
           <tr>
             <td>IBOV</td>
             <td id="ibovDia">...</td>
             <td id="ibovMes">...</td>
             <td id="ibovAno">...</td>
+            <td id="ibovInicio">...</td>
           </tr>
           <tr class="highlight">
             <td>p.p. IBOV</td>
             <td id="ppDia">...</td>
             <td id="ppMes">...</td>
             <td id="ppAno">...</td>
+            <td id="ppInicio">...</td>
           </tr>
         </tbody>
       </table>
@@ -335,24 +339,30 @@
         const morpheusDia = rows[3]?.[2] || "...";
         const morpheusMes = rows[3]?.[3] || "...";
         const morpheusAno = rows[3]?.[4] || "...";
+        const morpheusInicio = rows[3]?.[6] || "...";
         const ibovDia = rows[4]?.[2] || "...";
         const ibovMes = rows[4]?.[3] || "...";
         const ibovAno = rows[4]?.[4] || "...";
+        const ibovInicio = rows[4]?.[6] || "...";
         const ppDia = rows[5]?.[2] || "...";
         const ppMes = rows[5]?.[3] || "...";
         const ppAno = rows[5]?.[4] || "...";
+        const ppInicio = rows[5]?.[6] || "...";
         const cota = rows[8]?.[2] || "...";
 
         document.getElementById("dataReferencia").textContent = dataReferencia;
         document.getElementById("morpheusDia").textContent = morpheusDia;
         document.getElementById("morpheusMes").textContent = morpheusMes;
         document.getElementById("morpheusAno").textContent = morpheusAno;
+        document.getElementById("morpheusInicio").textContent = morpheusInicio;
         document.getElementById("ibovDia").textContent = ibovDia;
         document.getElementById("ibovMes").textContent = ibovMes;
         document.getElementById("ibovAno").textContent = ibovAno;
+        document.getElementById("ibovInicio").textContent = ibovInicio;
         document.getElementById("ppDia").textContent = ppDia;
         document.getElementById("ppMes").textContent = ppMes;
         document.getElementById("ppAno").textContent = ppAno;
+        document.getElementById("ppInicio").textContent = ppInicio;
         document.getElementById("cotaValor").textContent = `Cota: ${cota}`;
       })
       .catch((err) => {
@@ -405,4 +415,3 @@
   </script>
 </body>
 </html>
-
