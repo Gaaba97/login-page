@@ -682,7 +682,8 @@
         // Adicionar dados de cada dataset
         tooltip.dataPoints.forEach((dataPoint, index) => {
           const dataset = chart.data.datasets[dataPoint.datasetIndex];
-          const value = dataPoint.formattedValue || dataPoint.raw.y.toFixed(2) + '%';
+          // CORREÇÃO: Formatar para 2 casas decimais (X,XX) em vez de 3 (X,XXX)
+          const value = dataPoint.raw.y.toFixed(2).replace('.', ',') + '%';
           const label = dataset.label || '';
           const color = dataset.borderColor || '#164CAD';
           
@@ -1288,4 +1289,3 @@ for (let rowIndex = 3; rowIndex < 6; rowIndex++) {
   </script>
 </body>
 </html>
-
