@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Clube Morpheus</title>
+  <title>Clube Morpheus - Gráfico de Performance</title>
   <link rel="icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
@@ -91,352 +91,69 @@
       text-align: left;
     }
 
-    /* CORREÇÃO: Garantir mesma largura para gráficos e tabela */
-    .charts-main-container,
-    .data-table-container {
+    /* Container principal do gráfico */
+    .main-chart-full-container {
       width: 95%;
       max-width: 1200px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .charts-main-container {
+      margin: 0 auto;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .main-chart-container {
-      flex: 2;
-      display: flex;
-      flex-direction: column;
       align-items: center;
       position: relative;
     }
 
-    .chart-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    .chart-container-full {
       width: 100%;
-      height: 400px;
+      height: 500px;
       background-color: #fff;
       border-radius: 8px;
-      padding: 10px;
-      box-sizing: border-box;
-    }
-
-    canvas {
-      width: 100%;
-      height: 380px !important;
-    }
-
-    .side-charts-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      min-width: 250px;
-    }
-
-    .side-chart {
-      background-color: #fff;
-      border-radius: 0;
       padding: 15px;
-      box-shadow: none;
+      box-sizing: border-box;
+      position: relative;
     }
 
-    .side-chart h3 {
-      font-size: 14px;
-      color: #000000;
-      margin: 0 0 15px 0;
-      text-align: center;
-      font-weight: 600;
-      font-family: "Montserrat", sans-serif;
-      letter-spacing: 0.5px;
-    }
-
-    .side-chart canvas {
-      height: 120px !important;
-    }
-
-    .data-table-container {
-      margin-top: 30px;
-      overflow: visible;
-    }
-
-    .data-table {
+    .chart-container-full canvas {
       width: 100%;
-      border-collapse: collapse;
-      font-family: "Montserrat", sans-serif;
-      margin-bottom: 20px;
-      border: none;
-      table-layout: fixed;
+      height: 470px !important;
     }
 
-    .data-table th {
-      background-color: #164CAD;
-      color: white;
-      padding: 8px 4px;
-      text-align: center;
-      font-weight: bold;
-      border: none;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    /* Ajustes para mobile vertical */
+    .mobile-device .chart-container-full {
+      height: 450px;
+      padding: 12px;
     }
 
-    .data-table td {
-      padding: 6px 4px;
-      text-align: center;
-      border: none;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .mobile-device .chart-container-full canvas {
+      height: 420px !important;
     }
 
-    .data-table tr:nth-child(even) {
-      background-color: #f9f9f9;
+    /* Ajustes para mobile landscape */
+    .mobile-landscape .chart-container-full {
+      height: 400px;
     }
 
-    .data-table tr:hover {
-      background-color: #f1f1f1;
-    }
-
-    .data-table .header-row {
-      background-color: #164CAD;
-      color: white;
-    }
-
-    .data-table .column-w {
-      background-color: #164CAD;
-      color: white;
-      font-weight: bold;
-    }
-
-    .data-table th:nth-last-child(3),
-    .data-table td:nth-last-child(3) {
-      border-right: 2px solid #a3a3a3;
-    }
-
-    .data-table .merged-cell {
-      vertical-align: middle;
-    }
-
-    .data-table th:nth-child(n+4),
-    .data-table td:nth-child(n+4) {
-      width: 50px;
-      min-width: 50px;
-      max-width: 50px;
-    }
-
-    .data-table th:nth-child(1),
-    .data-table td:nth-child(1) {
-      width: 80px;
-    }
-
-    .data-table th:nth-child(2),
-    .data-table td:nth-child(2) {
-      width: 70px;
-    }
-
-    .data-table th:nth-child(3),
-    .data-table td:nth-child(3) {
-      width: 60px;
-    }
-
-    .desktop-device .data-table {
-      font-size: 14px;
-    }
-
-    .desktop-device .data-table th,
-    .desktop-device .data-table td {
-      padding: 10px 6px;
-    }
-
-    /* ESTILOS PARA SMARTPHONE VERTICAL */
-    .mobile-device .charts-main-container,
-    .mobile-device .data-table-container {
-      width: 98%;
-      max-width: none;
-    }
-
-    .mobile-device .charts-main-container {
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .mobile-device .main-chart-container {
-      flex: none;
-      width: 100%;
-    }
-
-    .mobile-device .chart-container {
-      width: 100%;
-      height: 380px; /* Aumentado */
-    }
-
-    .mobile-device .main-chart-container canvas {
-      height: 360px !important; /* Aumentado */
-    }
-
-    .mobile-device .side-charts-container {
-      flex: none;
-      flex-direction: row;
-      gap: 15px;
-      width: 100%;
-    }
-
-    .mobile-device .side-chart {
-      flex: 1;
-      width: 50%;
-    }
-
-    .mobile-device .side-chart h3 {
-      font-size: 18px; /* Aumentado */
-      margin-bottom: 18px;
-    }
-
-    .mobile-device .side-chart canvas {
-      height: 160px !important; /* Aumentado */
-    }
-
-    .mobile-device .data-table-container {
-      padding: 0 10px;
-    }
-
-    .mobile-device .data-table {
-      font-size: 12px; /* Aumentado */
-      margin: 0 auto;
-    }
-
-    .mobile-device .data-table th,
-    .mobile-device .data-table td {
-      padding: 5px 3px; /* Aumentado */
-    }
-
-    .mobile-device .data-table th:nth-child(n+4),
-    .mobile-device .data-table td:nth-child(n+4) {
-      width: 45px;
-      min-width: 45px;
-      max-width: 45px;
-    }
-
-    .mobile-device .data-table th:nth-child(1),
-    .mobile-device .data-table td:nth-child(1) {
-      width: 70px;
-    }
-
-    .mobile-device .data-table th:nth-child(2),
-    .mobile-device .data-table td:nth-child(2) {
-      width: 60px;
-    }
-
-    .mobile-device .data-table th:nth-child(3),
-    .mobile-device .data-table td:nth-child(3) {
-      width: 50px;
+    .mobile-landscape .chart-container-full canvas {
+      height: 370px !important;
     }
 
     /* NAVBAR E FONTES AUMENTADAS NO MOBILE VERTICAL */
     .mobile-device .navbar {
-      padding: 18px 20px; /* Aumentado para acomodar fontes maiores */
-      min-height: 75px; /* Aumentado para acomodar fontes maiores */
+      padding: 18px 20px;
+      min-height: 75px;
     }
 
     .mobile-device .navbar .welcome {
-      font-size: 24px; /* Aumentado */
-      font-weight: bold; /* Alterado de 600 para bold */
+      font-size: 24px;
+      font-weight: bold;
     }
 
     .mobile-device .navbar .links {
-      gap: 20px; /* Aumentado */
+      gap: 20px;
     }
 
     .mobile-device .navbar a {
-      font-size: 24px; /* Aumentado - mesmo tamanho do Bem-vindo */
-      font-weight: bold; /* Mesmo peso do Bem-vindo */
-    }
-
-    /* ESTILOS PARA MOBILE LANDSCAPE */
-    .mobile-landscape .charts-main-container,
-    .mobile-landscape .data-table-container {
-      width: 98%;
-      max-width: 1200px;
-    }
-
-    .mobile-landscape .charts-main-container {
-      flex-direction: row;
-      gap: 15px;
-    }
-
-    .mobile-landscape .main-chart-container {
-      flex: 1.8;
-    }
-
-    .mobile-landscape .side-charts-container {
-      flex: 1;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .mobile-landscape .side-chart {
-      width: 100%;
-    }
-
-    .mobile-landscape .side-chart h3 {
-      font-size: 16px; /* Aumentado */
-    }
-
-    .mobile-landscape .side-chart canvas {
-      height: 120px !important; /* Aumentado */
-    }
-
-    .mobile-landscape .chart-container {
-      height: 320px; /* Aumentado */
-    }
-
-    .mobile-landscape .main-chart-container canvas {
-      height: 300px !important; /* Aumentado */
-    }
-
-    /* CORREÇÃO: Garantir alinhamento perfeito da tabela em landscape */
-    .mobile-landscape .data-table-container {
-      padding: 0;
-    }
-
-    .mobile-landscape .data-table {
-      font-size: 11px; /* Aumentado */
-      width: 100%;
-      table-layout: fixed;
-    }
-
-    .mobile-landscape .data-table th,
-    .mobile-landscape .data-table td {
-      padding: 5px 3px; /* Aumentado */
-    }
-
-    .mobile-landscape .data-table th:nth-child(n+4),
-    .mobile-landscape .data-table td:nth-child(n+4) {
-      width: 40px;
-      min-width: 40px;
-      max-width: 40px;
-    }
-
-    .mobile-landscape .data-table th:nth-child(1),
-    .mobile-landscape .data-table td:nth-child(1) {
-      width: 60px;
-    }
-
-    .mobile-landscape .data-table th:nth-child(2),
-    .mobile-landscape .data-table td:nth-child(2) {
-      width: 50px;
-    }
-
-    .mobile-landscape .data-table th:nth-child(3),
-    .mobile-landscape .data-table td:nth-child(3) {
-      width: 45px;
+      font-size: 24px;
+      font-weight: bold;
     }
 
     .loading {
@@ -575,31 +292,11 @@
       <div class="subtitle" id="subtitle">Carregando dados...</div>
     </div>
     
-    <div class="charts-main-container">
-      <div class="main-chart-container">
-        <div class="chart-container">
-          <canvas id="performanceChart"></canvas>
-        </div>
+    <div class="main-chart-full-container">
+      <div class="chart-container-full">
+        <canvas id="performanceChart"></canvas>
         <!-- Tooltip personalizado será inserido aqui via JavaScript -->
       </div>
-      
-      <div class="side-charts-container">
-        <div class="side-chart">
-          <h3>Concentração da Carteira</h3>
-          <canvas id="concentracaoChart"></canvas>
-        </div>
-        
-        <div class="side-chart">
-          <h3>Concentração da Carteira Ex Nasdaq-100</h3>
-          <canvas id="concentracaoExNasdaqChart"></canvas>
-        </div>
-      </div>
-    </div>
-    
-    <div class="data-table-container">
-      <div class="loading" id="tableLoading">Carregando tabela...</div>
-      <table class="data-table" id="dataTable" style="display: none;">
-      </table>
     </div>
 
     <div id="deviceInfo"></div>
@@ -643,12 +340,8 @@
 
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
-    // Variável global para armazenar as instâncias dos gráficos
-    window.chartInstances = {
-      performanceChart: null,
-      concentracaoChart: null,
-      concentracaoExNasdaqChart: null
-    };
+    // Variável global para armazenar a instância do gráfico
+    window.chartInstance = null;
 
     // Tooltip personalizado
     let customTooltip = null;
@@ -658,7 +351,7 @@
       
       customTooltip = document.createElement('div');
       customTooltip.className = 'custom-tooltip';
-      document.querySelector('.main-chart-container').appendChild(customTooltip);
+      document.querySelector('.main-chart-full-container').appendChild(customTooltip);
       return customTooltip;
     }
 
@@ -682,7 +375,7 @@
         // Adicionar dados de cada dataset
         tooltip.dataPoints.forEach((dataPoint, index) => {
           const dataset = chart.data.datasets[dataPoint.datasetIndex];
-          // CORREÇÃO: Formatar para 2 casas decimais (X,XX) em vez de 3 (X,XXX)
+          // Formatar para 2 casas decimais (X,XX)
           const value = dataPoint.raw.y.toFixed(2).replace('.', ',') + '%';
           const label = dataset.label || '';
           const color = dataset.borderColor || '#164CAD';
@@ -703,7 +396,7 @@
 
       // Posicionar o tooltip
       const position = chart.canvas.getBoundingClientRect();
-      const chartContainer = document.querySelector('.main-chart-container');
+      const chartContainer = document.querySelector('.main-chart-full-container');
       const containerRect = chartContainer.getBoundingClientRect();
       
       // Posição relativa ao container do gráfico
@@ -762,53 +455,50 @@
 
         const allDates = [];
         const morpheus = [];
-        const ibov = [];
+        const teoria = [];
 
+        // Colunas: AN = índice 39, AP = índice 41, AQ = índice 42 (considerando índice 0)
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
-          if (cols.length >= 12) {
-            const date = cols[9]?.trim();
-            const f1 = parseFloat(cols[10]);
-            const f2 = parseFloat(cols[11]);
+          if (cols.length >= 43) {
+            const date = cols[39]?.trim();  // Coluna AN
+            const morpheusVal = parseFloat(cols[41]);  // Coluna AP
+            const teoriaVal = parseFloat(cols[42]);  // Coluna AQ
             
-            if (date && !isNaN(f1) && !isNaN(f2)) {
+            if (date && !isNaN(morpheusVal) && !isNaN(teoriaVal)) {
               allDates.push(date);
-              morpheus.push((f1 - 1) * 100);
-              ibov.push((f2 - 1) * 100);
+              morpheus.push((morpheusVal - 1) * 100);
+              teoria.push((teoriaVal - 1) * 100);
             }
           }
         }
 
-        console.log("Dados processados - Datas:", allDates.length, "Morpheus:", morpheus.length, "IBOV:", ibov.length);
+        console.log("Dados processados - Datas:", allDates.length, "Morpheus:", morpheus.length, "Teoria:", teoria.length);
 
         if (allDates.length === 0) {
           throw new Error("Nenhum dado válido encontrado para o gráfico");
         }
 
         const lastDate = allDates[allDates.length - 1];
-        document.getElementById("subtitle").textContent = lastDate;
+        document.getElementById("subtitle").textContent = `Última atualização: ${lastDate}`;
 
-        createMainChart(allDates, morpheus, ibov);
-        createSideCharts(rows);
-        loadTableData(rows);
+        createMainChart(allDates, morpheus, teoria);
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         document.getElementById("subtitle").textContent = "Erro ao carregar dados";
-        document.getElementById("tableLoading").textContent = `Erro: ${error.message}`;
-        document.getElementById("tableLoading").className = "error";
       }
     }
 
-    function createMainChart(allDates, morpheus, ibov) {
+    function createMainChart(allDates, morpheus, teoria) {
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
       }));
 
-      const ibovData = allDates.map((date, i) => ({
+      const teoriaData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
-        y: ibov[i]
+        y: teoria[i]
       }));
 
       const canvas = document.getElementById("performanceChart");
@@ -824,8 +514,8 @@
                           !document.body.classList.contains('mobile-landscape');
       
       // Aumentar significativamente as fontes no mobile vertical
-      const axisFontSize = isMobileVertical ? 22 : 15; // Aumentado para 22px no mobile vertical
-      const legendFontSize = isMobileVertical ? 20 : 12; // Aumentado para 20px no mobile vertical
+      const axisFontSize = isMobileVertical ? 22 : 15;
+      const legendFontSize = isMobileVertical ? 20 : 12;
 
       const createGradient = (ctx, chartArea) => {
         const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
@@ -835,7 +525,7 @@
         return gradient;
       };
 
-      window.chartInstances.performanceChart = new Chart(ctx, {
+      window.chartInstance = new Chart(ctx, {
         type: "line",
         data: {
           datasets: [
@@ -843,7 +533,7 @@
               label: "Morpheus",
               data: morpheusData,
               borderColor: "#164CAD",
-              borderWidth: 1.5,
+              borderWidth: 2,
               pointRadius: 0,
               tension: 0.15,
               fill: true,
@@ -858,10 +548,10 @@
               order: 2,
             },
             {
-              label: "IBOV",
-              data: ibovData,
+              label: "Teoria",
+              data: teoriaData,
               borderColor: "#000000",
-              borderWidth: 1.5,
+              borderWidth: 2,
               pointRadius: 0,
               tension: 0.15,
               fill: false,
@@ -892,9 +582,8 @@
               reverse: true
             },
             tooltip: {
-              enabled: false, // Desabilitar tooltip padrão
+              enabled: false,
               external: (context) => {
-                // Tooltip externo personalizado
                 showCustomTooltip(context.chart, context.tooltip);
               }
             },
@@ -918,7 +607,6 @@
                   size: axisFontSize,
                   weight: "300",
                 },
-                // CORREÇÃO: Mapear meses para português
                 callback: function(value, index, values) {
                   const date = new Date(value);
                   const month = date.getMonth();
@@ -954,263 +642,6 @@
       console.log("Gráfico principal criado com sucesso");
     }
 
-    function createSideCharts(rows) {
-      try {
-        const concentracaoLabels = [];
-        const concentracaoData = [];
-        
-        for (let i = 11; i <= 13; i++) {
-          if (rows[i] && rows[i].length > 2) {
-            const cols = rows[i].split(",");
-            if (cols[1] && cols[2]) {
-              concentracaoLabels.push(cols[1].trim());
-              concentracaoData.push(parseFloat(cols[2].replace(",", ".")) || 0);
-            }
-          }
-        }
-
-        const concentracaoExNasdaqLabels = [];
-        const concentracaoExNasdaqData = [];
-        
-        for (let i = 15; i <= 17; i++) {
-          if (rows[i] && rows[i].length > 2) {
-            const cols = rows[i].split(",");
-            if (cols[1] && cols[2]) {
-              concentracaoExNasdaqLabels.push(cols[1].trim());
-              concentracaoExNasdaqData.push(parseFloat(cols[2].replace(",", ".")) || 0);
-            }
-          }
-        }
-
-        console.log("Dados Concentração:", concentracaoLabels, concentracaoData);
-        console.log("Dados Concentração Ex Nasdaq:", concentracaoExNasdaqLabels, concentracaoExNasdaqData);
-
-        createBarChart('concentracaoChart', concentracaoLabels, concentracaoData, 'Concentração da Carteira');
-        createBarChart('concentracaoExNasdaqChart', concentracaoExNasdaqLabels, concentracaoExNasdaqData, 'Concentração da Carteira Ex Nasdaq-100');
-
-      } catch (error) {
-        console.error("Erro ao criar gráficos laterais:", error);
-      }
-    }
-
-    function createBarChart(canvasId, labels, data, title) {
-      const canvas = document.getElementById(canvasId);
-      const ctx = canvas.getContext("2d");
-
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
-
-      const isMobileVertical = document.body.classList.contains('mobile-device') && 
-                          !document.body.classList.contains('mobile-landscape');
-      
-      // Aumentar significativamente as fontes no mobile vertical
-      const axisFontSize = isMobileVertical ? 22 : 15; // Aumentado para 22px no mobile vertical
-
-      const chart = new Chart(ctx, {
-        type: "bar",
-        data: {
-          labels: labels,
-          datasets: [{
-            data: data,
-            backgroundColor: [
-              '#164CAD',
-              '#164CAD', 
-              '#164CAD'
-            ],
-            borderColor: [
-              '#164CAD',
-              '#164CAD',
-              '#164CAD'
-            ],
-            borderWidth: 0.0, // 
-            borderRadius: 4,
-            borderSkipped: false,
-            barPercentage: 0.4, // 
-            categoryPercentage: 0.6,
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false
-            },
-            tooltip: {
-              enabled: false
-            }
-          },
-          scales: {
-            x: {
-              display: false,
-            },
-            y: {
-              position: 'left',
-              ticks: {
-                color: '#000',
-                font: {
-                  family: 'Montserrat',
-                  size: axisFontSize,
-                  weight: '300'
-                },
-                padding: 5
-              },
-              grid: {
-                display: false
-              }
-            },
-            xRight: {
-              position: 'right',
-              ticks: {
-                color: '#000',
-                font: {
-                  family: 'Montserrat',
-                  size: axisFontSize,
-                  weight: '300'
-                },
-                callback: function(value, index) {
-                  return data[index] + '%';
-                }
-              },
-              grid: {
-                display: false
-              }
-            }
-          }
-        }
-      });
-
-      // Armazenar a instância do gráfico
-      if (canvasId === 'concentracaoChart') {
-        window.chartInstances.concentracaoChart = chart;
-      } else if (canvasId === 'concentracaoExNasdaqChart') {
-        window.chartInstances.concentracaoExNasdaqChart = chart;
-      }
-    }
-
-    function loadTableData(rows) {
-      try {
-        console.log("Carregando dados da tabela...");
-
-        if (rows.length < 9) { // Alterado para 9 para incluir as novas linhas
-          throw new Error("Dados insuficientes para a tabela");
-        }
-
-        const headerRow = rows[1].split(",");
-        const dataRows = [
-          rows[2].split(","), // Linha 3 (X3)
-          rows[3].split(","), // Linha 4 (X4)
-          rows[4].split(","), // Linha 5 (X5)
-      rows[5].split(","), // Linha 6 (X6) - CORRIGIDO
-      rows[6].split(","), // Linha 7 (X7) - CORRIGIDO
-      rows[7].split(",")  // Linha 8 (X8) - CORRIGIDO
-        ];
-
-        console.log("Cabeçalhos:", headerRow.slice(22, 38));
-        console.log("Dados linha 3:", dataRows[0].slice(22, 38));
-        console.log("Dados linha 4:", dataRows[1].slice(22, 38));
-        console.log("Dados linha 5:", dataRows[2].slice(22, 38));
-    console.log("Dados linha 6:", dataRows[3].slice(22, 38)); // CORRIGIDO
-    console.log("Dados linha 7:", dataRows[4].slice(22, 38)); // CORRIGIDO
-    console.log("Dados linha 8:", dataRows[5].slice(22, 38)); // CORRIGIDO
-
-        const tableHeaders = headerRow.slice(22, 38);
-        
-        const table = document.getElementById("dataTable");
-        const tableLoading = document.getElementById("tableLoading");
-        
-        table.innerHTML = "";
-        
-        const headerRowElement = document.createElement("tr");
-        headerRowElement.className = "header-row";
-        
-        tableHeaders.forEach((header, index) => {
-          const th = document.createElement("th");
-          th.textContent = header?.trim() || "";
-          if (index === 0) {
-            th.className = "column-w";
-          }
-          headerRowElement.appendChild(th);
-        });
-        
-        table.appendChild(headerRowElement);
-        
-        // Primeiro grupo: três primeiras linhas (X3-X5)
-        for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
-          const rowData = dataRows[rowIndex];
-          const dataRowElement = document.createElement("tr");
-          
-          const rowCells = rowData.slice(22, 38);
-          
-          if (rowIndex === 0) {
-            const mergedCell = document.createElement("td");
-            mergedCell.className = "merged-cell";
-            mergedCell.rowSpan = 3;
-            mergedCell.textContent = rowCells[0]?.trim() || "";
-            dataRowElement.appendChild(mergedCell);
-            
-            rowCells.slice(1).forEach((cellData, cellIndex) => {
-              const td = document.createElement("td");
-              td.textContent = cellData?.trim() || "";
-              dataRowElement.appendChild(td);
-            });
-          } else {
-            rowCells.slice(1).forEach((cellData, cellIndex) => {
-              const td = document.createElement("td");
-              td.textContent = cellData?.trim() || "";
-              dataRowElement.appendChild(td);
-            });
-          }
-          
-          table.appendChild(dataRowElement);
-        }
-        
-        // Segundo grupo: três novas linhas (X6-X8)
-for (let rowIndex = 3; rowIndex < 6; rowIndex++) {
-          const rowData = dataRows[rowIndex];
-          const dataRowElement = document.createElement("tr");
-          
-          const rowCells = rowData.slice(22, 38);
-          
-          if (rowIndex === 3) {
-            const mergedCell = document.createElement("td");
-            mergedCell.className = "merged-cell";
-            mergedCell.rowSpan = 3;
-            mergedCell.textContent = rowCells[0]?.trim() || "";
-            dataRowElement.appendChild(mergedCell);
-            
-            rowCells.slice(1).forEach((cellData, cellIndex) => {
-              const td = document.createElement("td");
-              td.textContent = cellData?.trim() || "";
-              dataRowElement.appendChild(td);
-            });
-          } else {
-            rowCells.slice(1).forEach((cellData, cellIndex) => {
-              const td = document.createElement("td");
-              td.textContent = cellData?.trim() || "";
-              dataRowElement.appendChild(td);
-            });
-          }
-          
-          table.appendChild(dataRowElement);
-        }
-
-        table.style.display = "table";
-        tableLoading.style.display = "none";
-        
-        console.log("Tabela criada com sucesso com 6 linhas");
-
-      } catch (error) {
-        console.error("Erro ao criar tabela:", error);
-        document.getElementById("tableLoading").textContent = `Erro na tabela: ${error.message}`;
-        document.getElementById("tableLoading").className = "error";
-      }
-    }
-
     loadData();
   </script>
 
@@ -1220,7 +651,6 @@ for (let rowIndex = 3; rowIndex < 6; rowIndex++) {
     function detectarDispositivo() {
       const largura = window.innerWidth;
       const altura = window.innerHeight;
-      const deviceInfo = document.getElementById('deviceInfo');
       const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
       
       const isMobileSize = largura <= 1024 || 
@@ -1242,36 +672,18 @@ for (let rowIndex = 3; rowIndex < 6; rowIndex++) {
         document.body.classList.add('desktop-device');
       }
 
-      // Redesenhar gráficos sempre que mudar o dispositivo para aplicar as novas fontes
-      setTimeout(redesenharGraficosSuave, 100);
+      // Redesenhar gráfico sempre que mudar o dispositivo para aplicar as novas fontes
+      setTimeout(redesenharGraficoSuave, 100);
     }
 
-    function ajustarAlinhamentoTabela() {
-      const chartsContainer = document.querySelector('.charts-main-container');
-      const tableContainer = document.querySelector('.data-table-container');
-      
-      if (chartsContainer && tableContainer) {
-        // Forçar a mesma largura
-        const chartsWidth = chartsContainer.offsetWidth;
-        tableContainer.style.width = chartsWidth + 'px';
-      }
-    }
-
-    function redesenharGraficosSuave() {
-      // Recriar os gráficos para aplicar as novas configurações de fonte
-      if (window.chartInstances.performanceChart || 
-          window.chartInstances.concentracaoChart || 
-          window.chartInstances.concentracaoExNasdaqChart) {
-        
-        // Recarregar os dados para recriar os gráficos com as novas configurações
+    function redesenharGraficoSuave() {
+      // Recriar o gráfico para aplicar as novas configurações de fonte
+      if (window.chartInstance) {
         setTimeout(() => {
           const event = new Event('resize');
           window.dispatchEvent(event);
         }, 100);
       }
-      
-      // Ajustar alinhamento da tabela
-      setTimeout(ajustarAlinhamentoTabela, 50);
     }
 
     window.addEventListener('resize', function() {
