@@ -52,78 +52,6 @@
       transform: scale(1.1);
     }
 
-    /* ESTILOS PARA SMARTPHONE VERTICAL */
-    .mobile-device .navbar {
-      padding: 18px 20px;
-      min-height: 75px;
-    }
-
-    .mobile-device .navbar .welcome {
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    .mobile-device .navbar .links {
-      gap: 20px;
-    }
-
-    .mobile-device .navbar a {
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    /* ESTILOS PARA SMARTPHONE HORIZONTAL */
-    .mobile-landscape .navbar {
-      padding: 12px 20px;
-    }
-
-    .mobile-landscape .navbar .welcome {
-      font-size: 18px;
-    }
-
-    .mobile-landscape .navbar .links {
-      gap: 15px;
-    }
-
-    .mobile-landscape .navbar a {
-      font-size: 18px;
-    }
-
-    /* ESTILOS PARA COMPUTADOR (DEFAULT) */
-    .desktop-device .navbar {
-      padding: 10px 20px;
-    }
-
-    .desktop-device .navbar .welcome {
-      font-size: 16px;
-    }
-
-    .desktop-device .navbar .links {
-      gap: 20px;
-    }
-
-    .desktop-device .navbar a {
-      font-size: 16px;
-    }
-
-    @media (max-width: 768px) {
-      .navbar {
-        padding: 8px 15px;
-      }
-
-      .navbar .welcome {
-        font-size: 14px;
-      }
-
-      .navbar .links {
-        gap: 10px;
-      }
-
-      .navbar a {
-        font-size: 14px;
-      }
-    }
-
     .container {
       margin-top: 60px;
       text-align: center;
@@ -135,61 +63,14 @@
       min-height: calc(100vh - 80px);
     }
 
-    /* AUMENTAR ESPAÇAMENTO NO CELULAR */
-    .mobile-device .container {
-      margin-top: 90px;
-      padding-top: 30px;
-    }
-
-    .mobile-landscape .container {
-      margin-top: 80px;
-      padding-top: 25px;
-    }
-
     .header-info {
       width: 95%;
       max-width: 1200px;
       text-align: left;
       margin-bottom: 20px;
-      position: relative;
     }
 
-    /* MAIOR ESPAÇAMENTO PARA NOME E DESCRIÇÃO NO MOBILE */
-    .mobile-device .header-info {
-      margin-bottom: 30px;
-    }
-
-    .mobile-landscape .header-info {
-      margin-bottom: 25px;
-    }
-
-    .user-nome {
-      font-size: 22px;
-      color: #000000;
-      margin: 0 0 2px 0;
-      text-align: left;
-      font-weight: bold;
-      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
-    }
-
-    .user-descricao {
-      font-size: 16px;
-      color: #555;
-      margin: 0 0 30px 0;
-      text-align: left;
-      font-weight: 400;
-    }
-
-    /* AUMENTAR ESPAÇAMENTO ENTRE DESCRIÇÃO E PRÓXIMO CONTEÚDO NO MOBILE */
-    .mobile-device .user-descricao {
-      margin-bottom: 40px;
-    }
-
-    .mobile-landscape .user-descricao {
-      margin-bottom: 35px;
-    }
-
-    .clube-nome {
+    .header-info h1 {
       font-size: 22px;
       color: #1E4DB7;
       margin: 0 0 2px 0;
@@ -210,103 +91,16 @@
       text-align: left;
     }
 
-    /* ALTERADO: Container flex para alinhar horizontalmente nome/descrição com investimento */
-    .header-top-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start; /* Alinha pelo topo */
-      width: 100%;
-      margin-bottom: 20px;
-    }
-
-    .header-user-info {
-      flex: 1;
-      text-align: left;
-      padding-top: 2px; /* AJUSTE: Compensa a diferença de alinhamento de fonte */
-    }
-
-    /* MODIFICADO: Container do investimento agora alinhado à direita e ajustado para cima */
-    .investimento-disponivel-container {
-      text-align: right;
-      margin-left: 20px;
-      flex-shrink: 0;
-      align-self: flex-start; /* Garante alinhamento pelo topo */
-      padding-top: 0; /* AJUSTE: Alinha pelo topo exato */
-    }
-
-    /* MODIFICADO: Estilo para o investimento item */
-    .investimento-item {
-      font-size: 18px;
-      font-weight: bold;
-      padding: 12px 16px;
-      border-radius: 8px;
-      color: #000000;
-      text-align: right;
-      white-space: nowrap;
-      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
-    }
-
-    /* NOVO: ESTILOS PARA AS DUAS LINHAS DO TEXTO */
-    .investimento-item .linha1 {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 2px;
-      text-align: right;
-      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
-    }
-
-    .investimento-item .linha2 {
-      font-size: 18px;
-      font-weight: bold;
-      text-align: right;
-      line-height: 1; /* AJUSTE: Remove espaçamento extra da linha */
-    }
-
-    .investimento-item .valor-disponivel {
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    /* ESTILOS RESPONSIVOS - MOBILE */
-    @media (max-width: 768px) {
-      .header-top-container {
-        flex-direction: column;
-      }
-      
-      .header-user-info {
-        padding-top: 0; /* Remove ajuste no mobile */
-      }
-      
-      .investimento-disponivel-container {
-        margin-left: 0;
-        margin-top: 20px;
-        text-align: left;
-        width: 100%;
-        padding-top: 0; /* Remove ajuste no mobile */
-      }
-      
-      .investimento-item {
-        text-align: left;
-        width: 100%;
-        box-sizing: border-box;
-        font-size: 16px;
-        padding: 10px 14px;
-        white-space: normal;
-      }
-      
-      .investimento-item .linha1,
-      .investimento-item .linha2,
-      .investimento-item .valor-disponivel {
-        font-size: 16px;
-        text-align: left;
-      }
-    }
-
-    .charts-main-container {
+    /* CORREÇÃO: Garantir mesma largura para gráficos e tabela */
+    .charts-main-container,
+    .data-table-container {
       width: 95%;
       max-width: 1200px;
       margin-left: auto;
       margin-right: auto;
+    }
+
+    .charts-main-container {
       display: flex;
       justify-content: center;
       align-items: flex-start;
@@ -315,7 +109,7 @@
     }
 
     .main-chart-container {
-      flex: 1;
+      flex: 2;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -332,16 +126,317 @@
       border-radius: 8px;
       padding: 10px;
       box-sizing: border-box;
-      position: relative;
-      overflow: visible;
     }
 
     canvas {
       width: 100%;
       height: 380px !important;
-      display: block;
-      position: relative;
-      z-index: 1;
+    }
+
+    .side-charts-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-width: 250px;
+    }
+
+    .side-chart {
+      background-color: #fff;
+      border-radius: 0;
+      padding: 15px;
+      box-shadow: none;
+    }
+
+    .side-chart h3 {
+      font-size: 14px;
+      color: #000000;
+      margin: 0 0 15px 0;
+      text-align: center;
+      font-weight: 600;
+      font-family: "Montserrat", sans-serif;
+      letter-spacing: 0.5px;
+    }
+
+    .side-chart canvas {
+      height: 120px !important;
+    }
+
+    .data-table-container {
+      margin-top: 30px;
+      overflow: visible;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: "Montserrat", sans-serif;
+      margin-bottom: 20px;
+      border: none;
+      table-layout: fixed;
+    }
+
+    .data-table th {
+      background-color: #164CAD;
+      color: white;
+      padding: 8px 4px;
+      text-align: center;
+      font-weight: bold;
+      border: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 6px 4px;
+      text-align: center;
+      border: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .data-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .data-table tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .data-table .header-row {
+      background-color: #164CAD;
+      color: white;
+    }
+
+    .data-table .column-w {
+      background-color: #164CAD;
+      color: white;
+      font-weight: bold;
+    }
+
+    .data-table th:nth-last-child(3),
+    .data-table td:nth-last-child(3) {
+      border-right: 2px solid #a3a3a3;
+    }
+
+    .data-table .merged-cell {
+      vertical-align: middle;
+    }
+
+    .data-table th:nth-child(n+4),
+    .data-table td:nth-child(n+4) {
+      width: 50px;
+      min-width: 50px;
+      max-width: 50px;
+    }
+
+    .data-table th:nth-child(1),
+    .data-table td:nth-child(1) {
+      width: 80px;
+    }
+
+    .data-table th:nth-child(2),
+    .data-table td:nth-child(2) {
+      width: 70px;
+    }
+
+    .data-table th:nth-child(3),
+    .data-table td:nth-child(3) {
+      width: 60px;
+    }
+
+    .desktop-device .data-table {
+      font-size: 14px;
+    }
+
+    .desktop-device .data-table th,
+    .desktop-device .data-table td {
+      padding: 10px 6px;
+    }
+
+    /* ESTILOS PARA SMARTPHONE VERTICAL */
+    .mobile-device .charts-main-container,
+    .mobile-device .data-table-container {
+      width: 98%;
+      max-width: none;
+    }
+
+    .mobile-device .charts-main-container {
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .mobile-device .main-chart-container {
+      flex: none;
+      width: 100%;
+    }
+
+    .mobile-device .chart-container {
+      width: 100%;
+      height: 380px; /* Aumentado */
+    }
+
+    .mobile-device .main-chart-container canvas {
+      height: 360px !important; /* Aumentado */
+    }
+
+    .mobile-device .side-charts-container {
+      flex: none;
+      flex-direction: row;
+      gap: 15px;
+      width: 100%;
+    }
+
+    .mobile-device .side-chart {
+      flex: 1;
+      width: 50%;
+    }
+
+    .mobile-device .side-chart h3 {
+      font-size: 18px; /* Aumentado */
+      margin-bottom: 18px;
+    }
+
+    .mobile-device .side-chart canvas {
+      height: 160px !important; /* Aumentado */
+    }
+
+    .mobile-device .data-table-container {
+      padding: 0 10px;
+    }
+
+    .mobile-device .data-table {
+      font-size: 12px; /* Aumentado */
+      margin: 0 auto;
+    }
+
+    .mobile-device .data-table th,
+    .mobile-device .data-table td {
+      padding: 5px 3px; /* Aumentado */
+    }
+
+    .mobile-device .data-table th:nth-child(n+4),
+    .mobile-device .data-table td:nth-child(n+4) {
+      width: 45px;
+      min-width: 45px;
+      max-width: 45px;
+    }
+
+    .mobile-device .data-table th:nth-child(1),
+    .mobile-device .data-table td:nth-child(1) {
+      width: 70px;
+    }
+
+    .mobile-device .data-table th:nth-child(2),
+    .mobile-device .data-table td:nth-child(2) {
+      width: 60px;
+    }
+
+    .mobile-device .data-table th:nth-child(3),
+    .mobile-device .data-table td:nth-child(3) {
+      width: 50px;
+    }
+
+    /* NAVBAR E FONTES AUMENTADAS NO MOBILE VERTICAL */
+    .mobile-device .navbar {
+      padding: 18px 20px; /* Aumentado para acomodar fontes maiores */
+      min-height: 75px; /* Aumentado para acomodar fontes maiores */
+    }
+
+    .mobile-device .navbar .welcome {
+      font-size: 24px; /* Aumentado */
+      font-weight: bold; /* Alterado de 600 para bold */
+    }
+
+    .mobile-device .navbar .links {
+      gap: 20px; /* Aumentado */
+    }
+
+    .mobile-device .navbar a {
+      font-size: 24px; /* Aumentado - mesmo tamanho do Bem-vindo */
+      font-weight: bold; /* Mesmo peso do Bem-vindo */
+    }
+
+    /* ESTILOS PARA MOBILE LANDSCAPE */
+    .mobile-landscape .charts-main-container,
+    .mobile-landscape .data-table-container {
+      width: 98%;
+      max-width: 1200px;
+    }
+
+    .mobile-landscape .charts-main-container {
+      flex-direction: row;
+      gap: 15px;
+    }
+
+    .mobile-landscape .main-chart-container {
+      flex: 1.8;
+    }
+
+    .mobile-landscape .side-charts-container {
+      flex: 1;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .mobile-landscape .side-chart {
+      width: 100%;
+    }
+
+    .mobile-landscape .side-chart h3 {
+      font-size: 16px; /* Aumentado */
+    }
+
+    .mobile-landscape .side-chart canvas {
+      height: 120px !important; /* Aumentado */
+    }
+
+    .mobile-landscape .chart-container {
+      height: 320px; /* Aumentado */
+    }
+
+    .mobile-landscape .main-chart-container canvas {
+      height: 300px !important; /* Aumentado */
+    }
+
+    /* CORREÇÃO: Garantir alinhamento perfeito da tabela em landscape */
+    .mobile-landscape .data-table-container {
+      padding: 0;
+    }
+
+    .mobile-landscape .data-table {
+      font-size: 11px; /* Aumentado */
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .mobile-landscape .data-table th,
+    .mobile-landscape .data-table td {
+      padding: 5px 3px; /* Aumentado */
+    }
+
+    .mobile-landscape .data-table th:nth-child(n+4),
+    .mobile-landscape .data-table td:nth-child(n+4) {
+      width: 40px;
+      min-width: 40px;
+      max-width: 40px;
+    }
+
+    .mobile-landscape .data-table th:nth-child(1),
+    .mobile-landscape .data-table td:nth-child(1) {
+      width: 60px;
+    }
+
+    .mobile-landscape .data-table th:nth-child(2),
+    .mobile-landscape .data-table td:nth-child(2) {
+      width: 50px;
+    }
+
+    .mobile-landscape .data-table th:nth-child(3),
+    .mobile-landscape .data-table td:nth-child(3) {
+      width: 45px;
     }
 
     .loading {
@@ -355,74 +450,6 @@
       padding: 10px;
       border-radius: 5px;
       margin: 10px 0;
-    }
-
-    /* ESTILOS DA TABELA DE APLICAÇÕES */
-    .aplicacoes-container {
-      width: 95%;
-      max-width: 800px;
-      margin: 30px auto;
-      background-color: #fff;
-      border-radius: 8px;
-      padding: 20px;
-    }
-
-    .aplicacoes-container h2 {
-      color: #1E4DB7;
-      margin-bottom: 20px;
-      text-align: center;
-      font-family: "DM Sans", sans-serif;
-    }
-
-    .aplicacoes-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: "Montserrat", sans-serif;
-    }
-
-    .aplicacoes-table th {
-      background-color: #164CAD;
-      color: white;
-      padding: 12px 15px;
-      text-align: left;
-      font-weight: bold;
-      border: none;
-    }
-
-    .aplicacoes-table td {
-      padding: 10px 15px;
-      text-align: left;
-      border: none;
-      border-bottom: 1px solid #e0e0e0;
-      color: #000000;
-      font-weight: normal;
-    }
-
-    .aplicacoes-table tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-
-    .aplicacoes-table tr:hover {
-      background-color: #f1f1f1;
-    }
-
-    .aplicacoes-table .total-row {
-      background-color: #164CAD !important;
-      color: white;
-      font-weight: bold;
-    }
-
-    .aplicacoes-table .total-row td {
-      border-bottom: none;
-      background-color: #164CAD !important;
-      color: white;
-    }
-
-    .no-aplicacoes {
-      text-align: center;
-      color: #666;
-      font-style: italic;
-      padding: 20px;
     }
 
     #deviceInfo {
@@ -529,116 +556,6 @@
       color: #00000;
       margin-left: 12px;
     }
-
-    /* ESTILOS PARA AS LINHAS VERTICAIS DAS APLICAÇÕES - CORRIGIDAS */
-    .vertical-line {
-      position: absolute;
-      width: 1px;
-      background: repeating-linear-gradient(
-        to bottom,
-        transparent,
-        transparent 3px,
-        #000 3px,
-        #000 6px
-      );
-      z-index: 2;
-      pointer-events: none;
-      transform: translateX(-0.5px);
-    }
-
-    .aplicacao-label {
-      position: absolute;
-      background: rgba(255, 255, 255, 0.95);
-      border: 1px solid #000;
-      border-radius: 3px;
-      padding: 4px 8px;
-      font-size: 12px;
-      font-family: "Montserrat", sans-serif;
-      white-space: nowrap;
-      z-index: 3;
-      pointer-events: none;
-      transform: translateY(0);
-      cursor: pointer;
-      transition: background-color 0.2s ease, transform 0.2s ease;
-      font-weight: 500;
-      top: 35px;
-    }
-
-    .aplicacao-label:hover {
-      background: rgba(255, 255, 255, 1);
-      transform: scale(1.1);
-      z-index: 10;
-    }
-
-    /* NOVO TOOLTIP PARA APLICAÇÕES NO GRÁFICO */
-    .aplicacao-tooltip {
-      position: absolute;
-      background: rgba(255, 255, 255, 0.98);
-      border: 2px solid #164CAD;
-      border-radius: 8px;
-      padding: 10px 14px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-      pointer-events: none;
-      z-index: 1000;
-      font-family: "Montserrat", sans-serif;
-      backdrop-filter: blur(10px);
-      transition: opacity 0.2s ease;
-      opacity: 0;
-      min-width: 180px;
-    }
-
-    .aplicacao-tooltip.visible {
-      opacity: 1;
-    }
-
-    .aplicacao-tooltip::before {
-      content: '';
-      position: absolute;
-      bottom: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-style: solid;
-      border-width: 8px 8px 0 8px;
-      border-color: #164CAD transparent transparent transparent;
-    }
-
-    .tooltip-acao-numero {
-      font-weight: bold;
-      color: #164CAD;
-      font-size: 14px;
-      margin-bottom: 6px;
-      text-align: center;
-    }
-
-    .tooltip-acao-detalhe {
-      font-size: 12px;
-      color: #333;
-      margin-bottom: 4px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .tooltip-acao-detalhe .label {
-      font-weight: 500;
-    }
-
-    .tooltip-acao-detalhe .value {
-      font-weight: 400;
-    }
-
-    /* Ajuste para mobile */
-    .mobile-device .aplicacao-label {
-      font-size: 14px;
-      padding: 5px 10px;
-      top: 45px;
-    }
-
-    .mobile-landscape .aplicacao-label {
-      font-size: 11px;
-      top: 30px;
-    }
   </style>
 </head>
 <body>
@@ -653,23 +570,7 @@
 
   <div class="container">
     <div class="header-info">
-      <!-- ALTERADO: Container flex para alinhar horizontalmente -->
-      <div class="header-top-container">
-        <div class="header-user-info">
-          <div class="user-nome" id="userNome"></div>
-          <div class="user-descricao" id="userDescricao"></div>
-        </div>
-        
-        <!-- Container para "Você pode investir mais" - AGORA COM AJUSTE DE POSIÇÃO -->
-        <div class="investimento-disponivel-container">
-          <div class="investimento-item disponivel" id="investimentoDisponivel">
-            <div class="linha1">Você pode investir</div>
-            <div class="linha2">mais <span class="valor-disponivel">calculando...</span></div>
-          </div>
-        </div>
-      </div>
-      
-      <h1 class="clube-nome">Morpheus Clube de Investimentos</h1>
+      <h1>Morpheus Clube de Investimentos</h1>
       <div class="cnpj">61.043.820/0001-55</div>
       <div class="subtitle" id="subtitle">Carregando dados...</div>
     </div>
@@ -679,27 +580,26 @@
         <div class="chart-container">
           <canvas id="performanceChart"></canvas>
         </div>
+        <!-- Tooltip personalizado será inserido aqui via JavaScript -->
+      </div>
+      
+      <div class="side-charts-container">
+        <div class="side-chart">
+          <h3>Concentração da Carteira</h3>
+          <canvas id="concentracaoChart"></canvas>
+        </div>
+        
+        <div class="side-chart">
+          <h3>Concentração da Carteira Ex Nasdaq-100</h3>
+          <canvas id="concentracaoExNasdaqChart"></canvas>
+        </div>
       </div>
     </div>
-
-    <div class="aplicacoes-container">
-      <h2>Minhas Aplicações</h2>
-      <div class="loading" id="aplicacoesLoading">Carregando aplicações...</div>
-      <table class="aplicacoes-table" id="aplicacoesTable" style="display: none;">
-        <thead>
-          <tr>
-            <th>Referência</th>
-            <th>Data</th>
-            <th>Valor Aplicado</th>
-            <th>Valor Atual</th>
-          </tr>
-        </thead>
-        <tbody id="aplicacoesTableBody">
-        </tbody>
+    
+    <div class="data-table-container">
+      <div class="loading" id="tableLoading">Carregando tabela...</div>
+      <table class="data-table" id="dataTable" style="display: none;">
       </table>
-      <div class="no-aplicacoes" id="noAplicacoes" style="display: none;">
-        Nenhuma aplicação encontrada.
-      </div>
     </div>
 
     <div id="deviceInfo"></div>
@@ -725,43 +625,16 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let userData = null;
-    let cotasData = null;
-    let ultimaCota = null;
-    let patrimonio = 0;
-    let dataCorteC3 = null;
-    let aplicacoesProcessadas = [];
-    let morpheusDataPoints = [];
-    let chartDataPoints = [];
-    let filteredDates = [];
-    let morpheusVariacao = [];
-    let totalAtualGlobal = 0;
-
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const docRef = doc(db, "usuarios", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          userData = docSnap.data();
-          const nome = userData.nome || "Usuário";
-          const genero = (userData.genero || "masculino").toLowerCase();
-          
-          // ALTERADO: Adicionada condição para gênero "plural"
-          let saudacao;
-          if (genero === "feminino") {
-            saudacao = "Bem-vinda";
-          } else if (genero === "plural") {
-            saudacao = "Bem-vindos";
-          } else {
-            saudacao = "Bem-vindo";
-          }
-          
+          const data = docSnap.data();
+          const nome = data.nome || "Usuário";
+          const genero = (data.genero || "masculino").toLowerCase();
+          const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
           document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
-          
-          document.getElementById("userNome").textContent = nome;
-          document.getElementById("userDescricao").textContent = userData.descricao || "";
-          
-          await loadData();
         }
       } else {
         window.location.href = "index.html";
@@ -770,167 +643,15 @@
 
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
+    // Variável global para armazenar as instâncias dos gráficos
     window.chartInstances = {
-      performanceChart: null
+      performanceChart: null,
+      concentracaoChart: null,
+      concentracaoExNasdaqChart: null
     };
 
+    // Tooltip personalizado
     let customTooltip = null;
-    let aplicacaoTooltip = null;
-
-    function corrigirNumeroPlanilha(valorStr) {
-      if (!valorStr || valorStr.trim() === '') return 0;
-      
-      let valor = valorStr.trim();
-      valor = valor.replace(/"/g, '');
-      
-      if (!isNaN(parseFloat(valor)) && isFinite(valor)) {
-        return parseFloat(valor);
-      }
-      
-      if (valor.includes(',') && !valor.includes('.')) {
-        valor = valor.replace(',', '.');
-      }
-      
-      if (valor.includes('.') && valor.includes(',')) {
-        valor = valor.replace(/\./g, '');
-        valor = valor.replace(',', '.');
-      }
-      
-      valor = valor.replace(/[^\d.-]/g, '');
-      
-      const resultado = parseFloat(valor);
-      return isNaN(resultado) ? 0 : resultado;
-    }
-
-    async function buscarDadosPlanilha() {
-      try {
-        const response = await fetch(csvUrl);
-        if (!response.ok) {
-          throw new Error(`Erro HTTP: ${response.status}`);
-        }
-        
-        const data = await response.text();
-        const rows = data.split("\n").filter(row => row.trim() !== '');
-        
-        console.log("Total de linhas na planilha:", rows.length);
-        
-        if (rows.length >= 3) {
-          const linha3 = rows[2].split(",");
-          console.log("Linha 3 (C3):", linha3);
-          
-          if (linha3.length >= 3) {
-            dataCorteC3 = linha3[2].trim();
-            console.log("Data de corte C3 encontrada:", dataCorteC3);
-          }
-        }
-        
-        if (rows.length >= 9) {
-          const linha9 = rows[8].split(",");
-          console.log("Linha 9 (D9/C9):", linha9);
-          
-          if (linha9.length >= 4) {
-            patrimonio = corrigirNumeroPlanilha(linha9[3]);
-            console.log("Patrimônio encontrado na linha 9, coluna D (índice 3):", patrimonio);
-          }
-          
-          if (linha9.length >= 3) {
-            ultimaCota = corrigirNumeroPlanilha(linha9[2]);
-            console.log("Última cota encontrada na linha 9, coluna C (C9):", ultimaCota);
-          }
-        }
-        
-        return { patrimonio, ultimaCota, dataCorteC3 };
-        
-      } catch (error) {
-        console.error("Erro ao buscar dados da planilha:", error);
-        return { patrimonio: 0, ultimaCota: 0, dataCorteC3: null };
-      }
-    }
-
-    function isDataPosteriorAUltimaDataGrafico(dataAplicacao) {
-      if (!filteredDates || filteredDates.length === 0 || !dataAplicacao) return false;
-      
-      try {
-        const ultimaDataGrafico = filteredDates[filteredDates.length - 1];
-        const [diaAplic, mesAplic, anoAplic] = dataAplicacao.split('/');
-        const [diaGrafico, mesGrafico, anoGrafico] = ultimaDataGrafico.split('/');
-        
-        const dataAplicObj = new Date(anoAplic, mesAplic - 1, diaAplic);
-        const dataGraficoObj = new Date(anoGrafico, mesGrafico - 1, diaGrafico);
-        
-        return dataAplicObj > dataGraficoObj;
-      } catch (error) {
-        console.error("Erro ao comparar datas:", error);
-        return false;
-      }
-    }
-
-    function calcularEExibirValorDisponivel() {
-      console.log("Calculando valor disponível para investir:", {
-        patrimonio: patrimonio,
-        totalAtualGlobal: totalAtualGlobal,
-        ultimaCota: ultimaCota
-      });
-      
-      if (patrimonio === 0) {
-        buscarDadosPlanilha().then(() => {
-          if (patrimonio > 0) {
-            calcularValorDisponivelEFinalizar();
-          } else {
-            exibirErroCalculo();
-          }
-        });
-      } else {
-        calcularValorDisponivelEFinalizar();
-      }
-    }
-
-    function calcularValorDisponivelEFinalizar() {
-      const investimentoDisponivel = ((0.4 * patrimonio) / 0.6) - (totalAtualGlobal / 0.6);
-      
-      console.log("Valor disponível calculado:", {
-        patrimonio: patrimonio,
-        totalAtualGlobal: totalAtualGlobal,
-        investimentoDisponivel: investimentoDisponivel
-      });
-      
-      const formatoMoeda = {
-        style: 'currency',
-        currency: 'BRL',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      };
-      
-      const disponivelFormatado = Math.max(0, investimentoDisponivel).toLocaleString('pt-BR', formatoMoeda);
-      
-      const elementoDisponivel = document.getElementById('investimentoDisponivel');
-      const genero = userData?.genero?.toLowerCase() || "masculino";
-      
-      // ALTERADO: Texto muda para "Vocês podem investir" se gênero for plural
-      const textoLinha1 = genero === "plural" ? "Vocês podem investir" : "Você pode investir";
-      
-      if (elementoDisponivel) {
-        elementoDisponivel.innerHTML = `
-          <div class="linha1">${textoLinha1}</div>
-          <div class="linha2">mais <span class="valor-disponivel">${disponivelFormatado}</span></div>
-        `;
-      }
-    }
-
-    function exibirErroCalculo() {
-      const elementoDisponivel = document.getElementById('investimentoDisponivel');
-      const genero = userData?.genero?.toLowerCase() || "masculino";
-      
-      // ALTERADO: Texto muda para "Vocês podem investir" se gênero for plural
-      const textoLinha1 = genero === "plural" ? "Vocês podem investir" : "Você pode investir";
-      
-      if (elementoDisponivel) {
-        elementoDisponivel.innerHTML = `
-          <div class="linha1">${textoLinha1}</div>
-          <div class="linha2">mais <span class="valor-disponivel">Dados indisponíveis</span></div>
-        `;
-      }
-    }
 
     function createCustomTooltip() {
       if (customTooltip) return customTooltip;
@@ -941,33 +662,28 @@
       return customTooltip;
     }
 
-    function createAplicacaoTooltip() {
-      if (aplicacaoTooltip) return aplicacaoTooltip;
-      
-      aplicacaoTooltip = document.createElement('div');
-      aplicacaoTooltip.className = 'aplicacao-tooltip';
-      document.querySelector('.main-chart-container').appendChild(aplicacaoTooltip);
-      return aplicacaoTooltip;
-    }
-
     function showCustomTooltip(chart, tooltip) {
+      // Criar ou obter o tooltip personalizado
       const tooltipEl = createCustomTooltip();
       
+      // Esconder tooltip se não há dados
       if (tooltip.opacity === 0) {
         tooltipEl.classList.remove('visible');
         return;
       }
 
+      // Configurar conteúdo do tooltip
       if (tooltip.body) {
         const title = tooltip.title[0] || '';
         const bodyLines = tooltip.body.map(b => b.lines);
         
         let tooltipHTML = `<div class="tooltip-header">${title}</div>`;
         
+        // Adicionar dados de cada dataset
         tooltip.dataPoints.forEach((dataPoint, index) => {
           const dataset = chart.data.datasets[dataPoint.datasetIndex];
-          const rawValue = dataPoint.raw.y;
-          const value = typeof rawValue === 'number' ? rawValue.toFixed(2).replace('.', ',') : '0,00';
+          // CORREÇÃO: Formatar para 2 casas decimais (X,XX) em vez de 3 (X,XXX)
+          const value = dataPoint.raw.y.toFixed(2).replace('.', ',') + '%';
           const label = dataset.label || '';
           const color = dataset.borderColor || '#164CAD';
           
@@ -985,18 +701,23 @@
         tooltipEl.innerHTML = tooltipHTML;
       }
 
+      // Posicionar o tooltip
       const position = chart.canvas.getBoundingClientRect();
       const chartContainer = document.querySelector('.main-chart-container');
       const containerRect = chartContainer.getBoundingClientRect();
       
+      // Posição relativa ao container do gráfico
       let left = position.left + tooltip.caretX - containerRect.left;
       let top = position.top + tooltip.caretY - containerRect.top;
       
+      // Ajustar posição para não sair da tela
       const tooltipWidth = tooltipEl.offsetWidth;
       const tooltipHeight = tooltipEl.offsetHeight;
       
+      // Definir posição padrão (acima do ponto)
       let placement = 'top';
       
+      // Verificar se precisa ajustar a posição
       if (top - tooltipHeight - 10 < 0) {
         placement = 'bottom';
         top += 20;
@@ -1004,6 +725,7 @@
         top -= tooltipHeight + 10;
       }
       
+      // Ajustar horizontalmente para não sair da tela
       if (left + tooltipWidth > containerRect.width) {
         left = containerRect.width - tooltipWidth - 10;
       } else if (left < 0) {
@@ -1014,392 +736,9 @@
       
       tooltipEl.style.left = left + 'px';
       tooltipEl.style.top = top + 'px';
+      
+      // Atualizar classe de posicionamento
       tooltipEl.className = `custom-tooltip ${placement} visible`;
-    }
-
-    function showAplicacaoTooltip(aplicacao, numero, x, y) {
-      const tooltipEl = createAplicacaoTooltip();
-      
-      const tipo = aplicacao.valorNumerico >= 0 ? 'Aplicação' : 'Resgate';
-      const valorFormatado = aplicacao.valorNumerico.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-      });
-      
-      tooltipEl.innerHTML = `
-        <div class="tooltip-acao-numero">Ação ${numero}</div>
-        <div class="tooltip-acao-detalhe">
-          <span class="label">Tipo:</span>
-          <span class="value">${tipo}</span>
-        </div>
-        <div class="tooltip-acao-detalhe">
-          <span class="label">Data:</span>
-          <span class="value">${aplicacao.data}</span>
-        </div>
-        <div class="tooltip-acao-detalhe">
-          <span class="label">Valor:</span>
-          <span class="value">${valorFormatado}</span>
-        </div>
-      `;
-      
-      const chartContainer = document.querySelector('.main-chart-container');
-      const containerRect = chartContainer.getBoundingClientRect();
-      
-      let left = x - containerRect.left;
-      let top = y - containerRect.top - tooltipEl.offsetHeight - 15;
-      
-      if (top < 10) {
-        top = y - containerRect.top + 25;
-        tooltipEl.style.setProperty('--arrow-position', 'top');
-      } else {
-        tooltipEl.style.setProperty('--arrow-position', 'bottom');
-      }
-      
-      if (left + tooltipEl.offsetWidth > containerRect.width - 10) {
-        left = containerRect.width - tooltipEl.offsetWidth - 10;
-      }
-      
-      if (left < 10) {
-        left = 10;
-      }
-      
-      tooltipEl.style.left = left + 'px';
-      tooltipEl.style.top = top + 'px';
-      tooltipEl.classList.add('visible');
-    }
-
-    function hideAplicacaoTooltip() {
-      if (aplicacaoTooltip) {
-        aplicacaoTooltip.classList.remove('visible');
-      }
-    }
-
-    function adicionarLinhasAplicacoesNoGrafico(aplicacoes, chart) {
-      if (!aplicacoes || aplicacoes.length === 0 || !chart) return;
-      
-      const chartContainer = document.querySelector('.chart-container');
-      const chartArea = chart.chartArea;
-      
-      const existingLines = chartContainer.querySelectorAll('.vertical-line, .aplicacao-label');
-      existingLines.forEach(el => el.remove());
-      
-      const morpheusData = chart.data.datasets[0].data;
-      
-      aplicacoes.forEach((aplicacao, index) => {
-        const dataAplicacao = aplicacao.data;
-        const valor = aplicacao.valorNumerico;
-        const valorStr = aplicacao.valorStr;
-        
-        const [dia, mes, ano] = dataAplicacao.split('/');
-        const dataAplicacaoObj = new Date(ano, mes - 1, dia);
-        
-        let pontoEncontrado = null;
-        let menorDiferenca = Infinity;
-        
-        morpheusData.forEach((ponto) => {
-          if (ponto && ponto.x) {
-            const dataPonto = new Date(ponto.x);
-            const diferenca = Math.abs(dataPonto - dataAplicacaoObj);
-            
-            if (diferenca < menorDiferenca) {
-              menorDiferenca = diferenca;
-              pontoEncontrado = ponto;
-            }
-          }
-        });
-        
-        if (!pontoEncontrado) return;
-        
-        const xScale = chart.scales.x;
-        const yScale = chart.scales.y;
-        
-        const dataPontoTimestamp = new Date(pontoEncontrado.x).getTime();
-        
-        const pixelXCanvas = xScale.getPixelForValue(dataPontoTimestamp);
-        const pixelYCanvas = yScale.getPixelForValue(pontoEncontrado.y);
-        
-        const canvasRect = chart.canvas.getBoundingClientRect();
-        const containerRect = chartContainer.getBoundingClientRect();
-        
-        const posXAbsoluta = canvasRect.left + pixelXCanvas;
-        const posXRelativa = posXAbsoluta - containerRect.left;
-        const posYTopo = 35;
-        
-        const posYAbsoluta = canvasRect.top + pixelYCanvas;
-        const posYRelativaPonto = posYAbsoluta - containerRect.top;
-        const alturaLinha = Math.max(0, posYRelativaPonto - posYTopo);
-        
-        if (posXRelativa >= 0 && posXRelativa <= containerRect.width) {
-          const line = document.createElement('div');
-          line.className = 'vertical-line';
-          line.style.left = posXRelativa + 'px';
-          line.style.top = posYTopo + 'px';
-          line.style.height = alturaLinha + 'px';
-          chartContainer.appendChild(line);
-          
-          const label = document.createElement('div');
-          label.className = 'aplicacao-label';
-          label.style.left = (posXRelativa + 5) + 'px';
-          label.textContent = (index + 1).toString();
-          label.setAttribute('data-index', index);
-          label.setAttribute('data-aplicacao', JSON.stringify(aplicacao));
-          
-          label.addEventListener('mouseenter', (e) => {
-            const rect = e.target.getBoundingClientRect();
-            const x = rect.left + rect.width / 2;
-            const y = rect.top;
-            showAplicacaoTooltip(aplicacao, index + 1, x, y);
-          });
-          
-          label.addEventListener('mouseleave', hideAplicacaoTooltip);
-          
-          chartContainer.appendChild(label);
-        }
-      });
-    }
-
-    function encontrarCotaPorData(dataAplicacao) {
-      if (!cotasData || cotasData.length === 0) return null;
-      
-      const [dia, mes, ano] = dataAplicacao.split('/');
-      const dataAplicacaoObj = new Date(ano, mes - 1, dia);
-      
-      let cotaEncontrada = null;
-      let menorDiferenca = Infinity;
-      
-      for (let i = 0; i < cotasData.length; i++) {
-        const cotaData = cotasData[i];
-        const [cotaDia, cotaMes, cotaAno] = cotaData.data.split('/');
-        const dataCotaObj = new Date(cotaAno, cotaMes - 1, cotaDia);
-        
-        const diferenca = dataAplicacaoObj - dataCotaObj;
-        
-        if (diferenca >= 0 && diferenca < menorDiferenca) {
-          menorDiferenca = diferenca;
-          cotaEncontrada = cotaData;
-        }
-      }
-      
-      if (!cotaEncontrada && cotasData.length > 0) {
-        cotaEncontrada = cotasData[0];
-      }
-      
-      return cotaEncontrada;
-    }
-
-    function calcularValorAtual(valorAplicado, cotaAplicacao, dataAplicacao) {
-      // VERIFICAÇÃO MODIFICADA: Se a data da aplicação for posterior à última data do gráfico
-      if (isDataPosteriorAUltimaDataGrafico(dataAplicacao)) {
-        console.log(`Aplicação em ${dataAplicacao} é posterior à última data do gráfico. Valor atual = valor aplicado.`);
-        return valorAplicado;
-      }
-      
-      if (!cotaAplicacao || !ultimaCota || ultimaCota === 0) {
-        console.log("Dados insuficientes para cálculo:", {
-          cotaAplicacao: cotaAplicacao,
-          ultimaCota: ultimaCota,
-          valorAplicado: valorAplicado
-        });
-        return null;
-      }
-      
-      try {
-        const quantidadeCotas = valorAplicado / cotaAplicacao.cota;
-        const valorAtual = quantidadeCotas * ultimaCota;
-        const valorAtualArredondado = Math.round(valorAtual * 100) / 100;
-        
-        console.log("Cálculo do valor atual (usando C9):", {
-          valorAplicado: valorAplicado,
-          cotaAplicacao: cotaAplicacao.cota,
-          ultimaCota: ultimaCota,
-          quantidadeCotas: quantidadeCotas,
-          valorAtual: valorAtualArredondado
-        });
-        
-        return valorAtualArredondado;
-      } catch (error) {
-        console.error("Erro no cálculo do valor atual:", error);
-        return null;
-      }
-    }
-
-    function formatarValorComEspaco(valorStr) {
-      if (valorStr.includes('R$') && !valorStr.includes('R$ ')) {
-        return valorStr.replace('R$', 'R$ ');
-      }
-      return valorStr;
-    }
-
-    function processarAplicacoesString(aplicacoesString) {
-      if (!aplicacoesString || aplicacoesString.trim() === '') return [];
-      
-      let aplicacoesProcessada = aplicacoesString.trim();
-      
-      if (aplicacoesProcessada.startsWith('"')) {
-        aplicacoesProcessada = aplicacoesProcessada.substring(1);
-      }
-      
-      if (aplicacoesProcessada.endsWith('"')) {
-        aplicacoesProcessada = aplicacoesProcessada.substring(0, aplicacoesProcessada.length - 1);
-      }
-      
-      aplicacoesProcessada = aplicacoesProcessada.trim();
-
-      const aplicacoes = aplicacoesProcessada.split(';').filter(ap => ap.trim() !== '');
-      
-      const aplicacoesProcessadas = [];
-      
-      aplicacoes.forEach((aplicacao, index) => {
-        const dataRegex = /(\d{2}\/\d{2}\/\d{4})/;
-        const match = aplicacao.match(dataRegex);
-        
-        if (!match) return;
-        
-        const data = match[1];
-        const restante = aplicacao.substring(data.length).trim();
-        
-        let valorStr = restante;
-        let valorNumerico;
-        
-        if (valorStr.startsWith('-')) {
-          const valorPositivoStr = valorStr.substring(1).replace('R$', '').trim();
-          valorNumerico = -corrigirNumeroPlanilha(valorPositivoStr);
-          valorStr = `-R$ ${Math.abs(valorNumerico).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-        } else {
-          const valorPositivoStr = valorStr.replace('R$', '').trim();
-          valorNumerico = corrigirNumeroPlanilha(valorPositivoStr);
-          valorStr = `R$ ${Math.abs(valorNumerico).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-        }
-        
-        if (!isNaN(valorNumerico)) {
-          aplicacoesProcessadas.push({
-            data: data,
-            valorStr: valorStr,
-            valorNumerico: valorNumerico
-          });
-        }
-      });
-      
-      return aplicacoesProcessadas;
-    }
-
-    function carregarAplicacoes(aplicacoesString) {
-      const loadingElement = document.getElementById('aplicacoesLoading');
-      const tableElement = document.getElementById('aplicacoesTable');
-      const tableBody = document.getElementById('aplicacoesTableBody');
-      const noAplicacoesElement = document.getElementById('noAplicacoes');
-
-      loadingElement.style.display = 'none';
-
-      aplicacoesProcessadas = processarAplicacoesString(aplicacoesString);
-      
-      if (aplicacoesProcessadas.length === 0) {
-        noAplicacoesElement.style.display = 'block';
-        setTimeout(calcularEExibirValorDisponivel, 100);
-        return;
-      }
-
-      let totalAplicado = 0;
-      let totalAtual = 0;
-      let temDadosValidos = false;
-
-      tableBody.innerHTML = '';
-
-      buscarDadosPlanilha().then(() => {
-        console.log("Dados para cálculo:", {
-          ultimaCota: ultimaCota,
-          dataCorteC3: dataCorteC3,
-          patrimonio: patrimonio
-        });
-        
-        aplicacoesProcessadas.forEach((aplicacao, index) => {
-          const data = aplicacao.data;
-          const valorStr = aplicacao.valorStr;
-          const valorNumerico = aplicacao.valorNumerico;
-          
-          if (!isNaN(valorNumerico)) {
-            totalAplicado += valorNumerico;
-            temDadosValidos = true;
-          }
-
-          const cotaAplicacao = encontrarCotaPorData(data);
-          let valorAtual = null;
-          let valorAtualFormatado = 'N/A';
-
-          console.log("Processando aplicação:", {
-            index: index,
-            data: data,
-            valor: valorNumerico,
-            cotaAplicacao: cotaAplicacao,
-            ultimaCota: ultimaCota,
-            dataCorteC3: dataCorteC3,
-            isPosterior: isDataPosteriorAUltimaDataGrafico(data)
-          });
-
-          if (cotaAplicacao && valorNumerico) {
-            valorAtual = calcularValorAtual(valorNumerico, cotaAplicacao, data);
-            if (valorAtual !== null) {
-              totalAtual += valorAtual;
-              valorAtualFormatado = `R$ ${valorAtual.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            }
-          }
-
-          const row = document.createElement('tr');
-          
-          const numeroCell = document.createElement('td');
-          numeroCell.textContent = (index + 1).toString();
-          
-          const dataCell = document.createElement('td');
-          dataCell.textContent = data;
-          
-          const valorCell = document.createElement('td');
-          valorCell.textContent = valorStr;
-          
-          const valorAtualCell = document.createElement('td');
-          valorAtualCell.textContent = valorAtualFormatado;
-          
-          row.appendChild(numeroCell);
-          row.appendChild(dataCell);
-          row.appendChild(valorCell);
-          row.appendChild(valorAtualCell);
-          
-          tableBody.appendChild(row);
-        });
-
-        if (temDadosValidos) {
-          const totalRow = document.createElement('tr');
-          totalRow.className = 'total-row';
-          
-          const totalLabelCell = document.createElement('td');
-          totalLabelCell.textContent = 'Total';
-          totalLabelCell.style.fontWeight = 'bold';
-          
-          const totalVazioCell = document.createElement('td');
-          totalVazioCell.textContent = '';
-          
-          const totalAplicadoCell = document.createElement('td');
-          totalAplicadoCell.textContent = `R$ ${totalAplicado.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-          totalAplicadoCell.style.fontWeight = 'bold';
-          
-          const totalAtualCell = document.createElement('td');
-          const totalAtualFinal = totalAtual > 0 ? totalAtual : 0;
-          totalAtualCell.textContent = `R$ ${totalAtualFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-          totalAtualCell.style.fontWeight = 'bold';
-          
-          totalRow.appendChild(totalLabelCell);
-          totalRow.appendChild(totalVazioCell);
-          totalRow.appendChild(totalAplicadoCell);
-          totalRow.appendChild(totalAtualCell);
-          
-          tableBody.appendChild(totalRow);
-          
-          totalAtualGlobal = totalAtualFinal;
-        }
-
-        tableElement.style.display = 'table';
-        
-        calcularEExibirValorDisponivel();
-      });
     }
 
     async function loadData() {
@@ -1412,120 +751,56 @@
         }
         
         const data = await response.text();
-        const rows = data.split("\n").filter(row => row.trim() !== '');
-
-        console.log("Total de linhas no CSV:", rows.length);
+        console.log("Dados CSV carregados:", data.substring(0, 200));
         
-        await buscarDadosPlanilha();
+        const rows = data.split("\n").filter(row => row.trim() !== '');
+        console.log("Número de linhas:", rows.length);
 
         if (rows.length < 2) {
           throw new Error("Dados insuficientes no CSV");
         }
 
         const allDates = [];
-        const morpheusValores = [];
-        const ibovValores = [];
-        cotasData = [];
+        const morpheus = [];
+        const ibov = [];
 
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
           if (cols.length >= 12) {
             const date = cols[9]?.trim();
-            const cotaMorpheus = corrigirNumeroPlanilha(cols[10]);
-            const valorIbov = corrigirNumeroPlanilha(cols[11]);
+            const f1 = parseFloat(cols[10]);
+            const f2 = parseFloat(cols[11]);
             
-            if (date && !isNaN(cotaMorpheus) && !isNaN(valorIbov)) {
+            if (date && !isNaN(f1) && !isNaN(f2)) {
               allDates.push(date);
-              morpheusValores.push(cotaMorpheus);
-              ibovValores.push(valorIbov);
-              
-              cotasData.push({
-                data: date,
-                cota: cotaMorpheus
-              });
+              morpheus.push((f1 - 1) * 100);
+              ibov.push((f2 - 1) * 100);
             }
           }
         }
 
-        let ibovVariacao = [];
+        console.log("Dados processados - Datas:", allDates.length, "Morpheus:", morpheus.length, "IBOV:", ibov.length);
 
-        if (userData && userData.aplicacoes) {
-          aplicacoesProcessadas = processarAplicacoesString(userData.aplicacoes);
-        }
-
-        let indexInicio = 0;
-        if (aplicacoesProcessadas.length > 0) {
-          const primeiraDataAplicacao = aplicacoesProcessadas[0].data;
-          const [dia, mes, ano] = primeiraDataAplicacao.split('/');
-          const primeiraDataObj = new Date(ano, mes - 1, dia);
-          
-          for (let i = 0; i < allDates.length; i++) {
-            const [cotaDia, cotaMes, cotaAno] = allDates[i].split('/');
-            const dataCotaObj = new Date(cotaAno, cotaMes - 1, cotaDia);
-            
-            if (dataCotaObj >= primeiraDataObj) {
-              indexInicio = i;
-              break;
-            }
-          }
-        }
-
-        const morpheusBase = morpheusValores[indexInicio];
-        const ibovBase = ibovValores[indexInicio];
-
-        for (let i = indexInicio; i < allDates.length; i++) {
-          const variacaoMorpheus = ((morpheusValores[i] / morpheusBase) - 1) * 100;
-          const variacaoIbov = ((ibovValores[i] / ibovBase) - 1) * 100;
-          
-          morpheusVariacao.push(variacaoMorpheus);
-          ibovVariacao.push(variacaoIbov);
-          filteredDates.push(allDates[i]);
-        }
-
-        if (filteredDates.length === 0) {
-          // Se não encontrou dados a partir da primeira aplicação, usar todos os dados
-          const morpheusBase = morpheusValores[0];
-          const ibovBase = ibovValores[0];
-          
-          for (let i = 0; i < allDates.length; i++) {
-            const variacaoMorpheus = ((morpheusValores[i] / morpheusBase) - 1) * 100;
-            const variacaoIbov = ((ibovValores[i] / ibovBase) - 1) * 100;
-            
-            morpheusVariacao.push(variacaoMorpheus);
-            ibovVariacao.push(variacaoIbov);
-            filteredDates.push(allDates[i]);
-          }
-        }
-
-        if (filteredDates.length === 0) {
+        if (allDates.length === 0) {
           throw new Error("Nenhum dado válido encontrado para o gráfico");
         }
 
-        const lastDate = filteredDates[filteredDates.length - 1];
+        const lastDate = allDates[allDates.length - 1];
         document.getElementById("subtitle").textContent = lastDate;
 
-        createMainChart(filteredDates, morpheusVariacao, ibovVariacao);
-
-        if (userData && userData.aplicacoes) {
-          carregarAplicacoes(userData.aplicacoes);
-        } else {
-          buscarDadosPlanilha().then(() => {
-            calcularEExibirValorDisponivel();
-          });
-        }
+        createMainChart(allDates, morpheus, ibov);
+        createSideCharts(rows);
+        loadTableData(rows);
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         document.getElementById("subtitle").textContent = "Erro ao carregar dados";
+        document.getElementById("tableLoading").textContent = `Erro: ${error.message}`;
+        document.getElementById("tableLoading").className = "error";
       }
     }
 
     function createMainChart(allDates, morpheus, ibov) {
-      // Limpar gráfico anterior se existir
-      if (window.chartInstances.performanceChart) {
-        window.chartInstances.performanceChart.destroy();
-      }
-      
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
@@ -1535,8 +810,6 @@
         x: date.split("/").reverse().join("-"),
         y: ibov[i]
       }));
-
-      chartDataPoints = morpheusData;
 
       const canvas = document.getElementById("performanceChart");
       const ctx = canvas.getContext("2d");
@@ -1550,8 +823,9 @@
       const isMobileVertical = document.body.classList.contains('mobile-device') && 
                           !document.body.classList.contains('mobile-landscape');
       
-      const axisFontSize = isMobileVertical ? 22 : 15;
-      const legendFontSize = isMobileVertical ? 20 : 12;
+      // Aumentar significativamente as fontes no mobile vertical
+      const axisFontSize = isMobileVertical ? 22 : 15; // Aumentado para 22px no mobile vertical
+      const legendFontSize = isMobileVertical ? 20 : 12; // Aumentado para 20px no mobile vertical
 
       const createGradient = (ctx, chartArea) => {
         const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
@@ -1561,7 +835,7 @@
         return gradient;
       };
 
-      const chart = new Chart(ctx, {
+      window.chartInstances.performanceChart = new Chart(ctx, {
         type: "line",
         data: {
           datasets: [
@@ -1618,8 +892,9 @@
               reverse: true
             },
             tooltip: {
-              enabled: false,
+              enabled: false, // Desabilitar tooltip padrão
               external: (context) => {
+                // Tooltip externo personalizado
                 showCustomTooltip(context.chart, context.tooltip);
               }
             },
@@ -1643,6 +918,7 @@
                   size: axisFontSize,
                   weight: "300",
                 },
+                // CORREÇÃO: Mapear meses para português
                 callback: function(value, index, values) {
                   const date = new Date(value);
                   const month = date.getMonth();
@@ -1672,21 +948,270 @@
               grid: { color: "rgba(0,0,0,0.05)" },
             },
           },
-          animation: {
-            onComplete: function() {
-              if (aplicacoesProcessadas.length > 0) {
-                console.log("Gráfico renderizado - Adicionando linhas");
-                setTimeout(() => {
-                  adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, chart);
-                }, 100);
-              }
-            }
-          }
         },
       });
 
-      window.chartInstances.performanceChart = chart;
+      console.log("Gráfico principal criado com sucesso");
     }
+
+    function createSideCharts(rows) {
+      try {
+        const concentracaoLabels = [];
+        const concentracaoData = [];
+        
+        for (let i = 11; i <= 13; i++) {
+          if (rows[i] && rows[i].length > 2) {
+            const cols = rows[i].split(",");
+            if (cols[1] && cols[2]) {
+              concentracaoLabels.push(cols[1].trim());
+              concentracaoData.push(parseFloat(cols[2].replace(",", ".")) || 0);
+            }
+          }
+        }
+
+        const concentracaoExNasdaqLabels = [];
+        const concentracaoExNasdaqData = [];
+        
+        for (let i = 15; i <= 17; i++) {
+          if (rows[i] && rows[i].length > 2) {
+            const cols = rows[i].split(",");
+            if (cols[1] && cols[2]) {
+              concentracaoExNasdaqLabels.push(cols[1].trim());
+              concentracaoExNasdaqData.push(parseFloat(cols[2].replace(",", ".")) || 0);
+            }
+          }
+        }
+
+        console.log("Dados Concentração:", concentracaoLabels, concentracaoData);
+        console.log("Dados Concentração Ex Nasdaq:", concentracaoExNasdaqLabels, concentracaoExNasdaqData);
+
+        createBarChart('concentracaoChart', concentracaoLabels, concentracaoData, 'Concentração da Carteira');
+        createBarChart('concentracaoExNasdaqChart', concentracaoExNasdaqLabels, concentracaoExNasdaqData, 'Concentração da Carteira Ex Nasdaq-100');
+
+      } catch (error) {
+        console.error("Erro ao criar gráficos laterais:", error);
+      }
+    }
+
+    function createBarChart(canvasId, labels, data, title) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext("2d");
+
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const isMobileVertical = document.body.classList.contains('mobile-device') && 
+                          !document.body.classList.contains('mobile-landscape');
+      
+      // Aumentar significativamente as fontes no mobile vertical
+      const axisFontSize = isMobileVertical ? 22 : 15; // Aumentado para 22px no mobile vertical
+
+      const chart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: [
+              '#164CAD',
+              '#164CAD', 
+              '#164CAD'
+            ],
+            borderColor: [
+              '#164CAD',
+              '#164CAD',
+              '#164CAD'
+            ],
+            borderWidth: 0.0, // 
+            borderRadius: 4,
+            borderSkipped: false,
+            barPercentage: 0.4, // 
+            categoryPercentage: 0.6,
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              enabled: false
+            }
+          },
+          scales: {
+            x: {
+              display: false,
+            },
+            y: {
+              position: 'left',
+              ticks: {
+                color: '#000',
+                font: {
+                  family: 'Montserrat',
+                  size: axisFontSize,
+                  weight: '300'
+                },
+                padding: 5
+              },
+              grid: {
+                display: false
+              }
+            },
+            xRight: {
+              position: 'right',
+              ticks: {
+                color: '#000',
+                font: {
+                  family: 'Montserrat',
+                  size: axisFontSize,
+                  weight: '300'
+                },
+                callback: function(value, index) {
+                  return data[index] + '%';
+                }
+              },
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
+
+      // Armazenar a instância do gráfico
+      if (canvasId === 'concentracaoChart') {
+        window.chartInstances.concentracaoChart = chart;
+      } else if (canvasId === 'concentracaoExNasdaqChart') {
+        window.chartInstances.concentracaoExNasdaqChart = chart;
+      }
+    }
+
+    function loadTableData(rows) {
+      try {
+        console.log("Carregando dados da tabela...");
+
+        if (rows.length < 9) { // Alterado para 9 para incluir as novas linhas
+          throw new Error("Dados insuficientes para a tabela");
+        }
+
+        const headerRow = rows[1].split(",");
+        const dataRows = [
+          rows[2].split(","), // Linha 3 (X3)
+          rows[3].split(","), // Linha 4 (X4)
+          rows[4].split(","), // Linha 5 (X5)
+      rows[5].split(","), // Linha 6 (X6) - CORRIGIDO
+      rows[6].split(","), // Linha 7 (X7) - CORRIGIDO
+      rows[7].split(",")  // Linha 8 (X8) - CORRIGIDO
+        ];
+
+        console.log("Cabeçalhos:", headerRow.slice(22, 38));
+        console.log("Dados linha 3:", dataRows[0].slice(22, 38));
+        console.log("Dados linha 4:", dataRows[1].slice(22, 38));
+        console.log("Dados linha 5:", dataRows[2].slice(22, 38));
+    console.log("Dados linha 6:", dataRows[3].slice(22, 38)); // CORRIGIDO
+    console.log("Dados linha 7:", dataRows[4].slice(22, 38)); // CORRIGIDO
+    console.log("Dados linha 8:", dataRows[5].slice(22, 38)); // CORRIGIDO
+
+        const tableHeaders = headerRow.slice(22, 38);
+        
+        const table = document.getElementById("dataTable");
+        const tableLoading = document.getElementById("tableLoading");
+        
+        table.innerHTML = "";
+        
+        const headerRowElement = document.createElement("tr");
+        headerRowElement.className = "header-row";
+        
+        tableHeaders.forEach((header, index) => {
+          const th = document.createElement("th");
+          th.textContent = header?.trim() || "";
+          if (index === 0) {
+            th.className = "column-w";
+          }
+          headerRowElement.appendChild(th);
+        });
+        
+        table.appendChild(headerRowElement);
+        
+        // Primeiro grupo: três primeiras linhas (X3-X5)
+        for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
+          const rowData = dataRows[rowIndex];
+          const dataRowElement = document.createElement("tr");
+          
+          const rowCells = rowData.slice(22, 38);
+          
+          if (rowIndex === 0) {
+            const mergedCell = document.createElement("td");
+            mergedCell.className = "merged-cell";
+            mergedCell.rowSpan = 3;
+            mergedCell.textContent = rowCells[0]?.trim() || "";
+            dataRowElement.appendChild(mergedCell);
+            
+            rowCells.slice(1).forEach((cellData, cellIndex) => {
+              const td = document.createElement("td");
+              td.textContent = cellData?.trim() || "";
+              dataRowElement.appendChild(td);
+            });
+          } else {
+            rowCells.slice(1).forEach((cellData, cellIndex) => {
+              const td = document.createElement("td");
+              td.textContent = cellData?.trim() || "";
+              dataRowElement.appendChild(td);
+            });
+          }
+          
+          table.appendChild(dataRowElement);
+        }
+        
+        // Segundo grupo: três novas linhas (X6-X8)
+for (let rowIndex = 3; rowIndex < 6; rowIndex++) {
+          const rowData = dataRows[rowIndex];
+          const dataRowElement = document.createElement("tr");
+          
+          const rowCells = rowData.slice(22, 38);
+          
+          if (rowIndex === 3) {
+            const mergedCell = document.createElement("td");
+            mergedCell.className = "merged-cell";
+            mergedCell.rowSpan = 3;
+            mergedCell.textContent = rowCells[0]?.trim() || "";
+            dataRowElement.appendChild(mergedCell);
+            
+            rowCells.slice(1).forEach((cellData, cellIndex) => {
+              const td = document.createElement("td");
+              td.textContent = cellData?.trim() || "";
+              dataRowElement.appendChild(td);
+            });
+          } else {
+            rowCells.slice(1).forEach((cellData, cellIndex) => {
+              const td = document.createElement("td");
+              td.textContent = cellData?.trim() || "";
+              dataRowElement.appendChild(td);
+            });
+          }
+          
+          table.appendChild(dataRowElement);
+        }
+
+        table.style.display = "table";
+        tableLoading.style.display = "none";
+        
+        console.log("Tabela criada com sucesso com 6 linhas");
+
+      } catch (error) {
+        console.error("Erro ao criar tabela:", error);
+        document.getElementById("tableLoading").textContent = `Erro na tabela: ${error.message}`;
+        document.getElementById("tableLoading").className = "error";
+      }
+    }
+
+    loadData();
   </script>
 
   <script>
@@ -1716,15 +1241,37 @@
       } else {
         document.body.classList.add('desktop-device');
       }
+
+      // Redesenhar gráficos sempre que mudar o dispositivo para aplicar as novas fontes
+      setTimeout(redesenharGraficosSuave, 100);
+    }
+
+    function ajustarAlinhamentoTabela() {
+      const chartsContainer = document.querySelector('.charts-main-container');
+      const tableContainer = document.querySelector('.data-table-container');
       
-      if (window.chartInstances.performanceChart) {
+      if (chartsContainer && tableContainer) {
+        // Forçar a mesma largura
+        const chartsWidth = chartsContainer.offsetWidth;
+        tableContainer.style.width = chartsWidth + 'px';
+      }
+    }
+
+    function redesenharGraficosSuave() {
+      // Recriar os gráficos para aplicar as novas configurações de fonte
+      if (window.chartInstances.performanceChart || 
+          window.chartInstances.concentracaoChart || 
+          window.chartInstances.concentracaoExNasdaqChart) {
+        
+        // Recarregar os dados para recriar os gráficos com as novas configurações
         setTimeout(() => {
-          window.chartInstances.performanceChart.resize();
-          if (aplicacoesProcessadas && aplicacoesProcessadas.length > 0) {
-            adicionarLinhasAplicacoesNoGrafico(aplicacoesProcessadas, window.chartInstances.performanceChart);
-          }
+          const event = new Event('resize');
+          window.dispatchEvent(event);
         }, 100);
       }
+      
+      // Ajustar alinhamento da tabela
+      setTimeout(ajustarAlinhamentoTabela, 50);
     }
 
     window.addEventListener('resize', function() {
