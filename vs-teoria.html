@@ -479,7 +479,7 @@
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
-        document.getElementById("subtitle").textContent = "Erro ao carregar dados";
+        document.getElementById("subtitle").textContent = "Erro ao carregar dados: " + error.message;
       }
     }
 
@@ -525,43 +525,16 @@
       // Encontrar valores mínimos e máximos para ajustar escalas
       const maxAO = Math.max(...dadosAO);
       const minAO = Math.min(...dadosAO);
-      const maxMorpheus = Math.max(...morpheus);
-      const minMorpheus = Math.min(...morpheus);
       
       // Ajustar escala AO para múltiplos de 0.5
       const aoStep = 0.5;
       const aoMax = Math.ceil(maxAO / aoStep) * aoStep;
       const aoMin = Math.floor(minAO / aoStep) * aoStep;
 
-      // Criar um plugin para adicionar uma linha divisória entre as áreas
-      const dividerPlugin = {
-        id: 'chartDivider',
-        beforeDraw(chart, args, options) {
-          const {ctx, chartArea: {top, bottom, left, right}} = chart;
-          const scale = chart.scales['y-ao'];
-          
-          if (!scale) return;
-          
-          // Calcular a posição onde o gráfico AO termina (topo do seu espaço)
-          const aoTopPixel = scale.getPixelForValue(aoMax);
-          
-          // Desenhar uma linha divisória
-          ctx.save();
-          ctx.beginPath();
-          ctx.moveTo(left, aoTopPixel);
-          ctx.lineTo(right, aoTopPixel);
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-          ctx.stroke();
-          ctx.restore();
-          
-          // Adicionar um fundo diferente para a área dos Dados AO
-          ctx.save();
-          ctx.fillStyle = 'rgba(77, 127, 219, 0.05)';
-          ctx.fillRect(left, aoTopPixel, right - left, bottom - aoTopPixel);
-          ctx.restore();
-        }
-      };
+      // Destruir gráfico anterior se existir
+      if (window.chartInstance) {
+        window.chartInstance.destroy();
+      }
 
       window.chartInstance = new Chart(ctx, {
         type: "line",
@@ -696,20 +669,6 @@
                 color: "rgba(0,0,0,0.05)",
                 drawBorder: false
               },
-              // Ajustar a posição para ficar acima da área AO
-              afterFit: function(axis) {
-                const aoScale = this.chart.scales['y-ao'];
-                if (aoScale) {
-                  // Limitar o eixo Y principal para não invadir a área AO
-                  const aoTop = aoScale.getPixelForValue(aoMax);
-                  const chartBottom = this.chart.chartArea.bottom;
-                  const availableHeight = aoTop - this.chart.chartArea.top;
-                  
-                  // Ajustar a escala para usar apenas a parte superior
-                  this.top = this.chart.chartArea.top;
-                  this.bottom = aoTop - 10; // Deixar um pequeno gap
-                }
-              }
             },
             'y-ao': {
               type: 'linear',
@@ -729,14 +688,8 @@
               },
               grid: {
                 drawOnChartArea: true,
-                color: "rgba(0,0,0,0.02)",
+                color: "rgba(0,0,0,0.03)",
               },
-              // Posicionar o eixo AO na parte inferior
-              afterFit: function(axis) {
-                // Manter o eixo na direita, mas ajustar sua área de desenho
-                this.top = this.chart.chartArea.top + (this.chart.chartArea.bottom - this.chart.chartArea.top) * 0.6;
-                this.bottom = this.chart.chartArea.bottom - 10;
-              }
             }
           },
           layout: {
@@ -748,7 +701,6 @@
             }
           }
         },
-        plugins: [dividerPlugin]
       });
 
       console.log("Gráfico criado com sucesso");
@@ -787,8 +739,7 @@
     function redesenharGraficoSuave() {
       if (window.chartInstance) {
         setTimeout(() => {
-          const event = new Event('resize');
-          window.dispatchEvent(event);
+          window.chartInstance.resize();
         }, 100);
       }
     }
