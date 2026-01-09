@@ -104,7 +104,7 @@
 
     .chart-container-full {
       width: 100%;
-      height: 530px; /* Aumentei a altura para acomodar o eixo secundário */
+      height: 500px;
       background-color: #fff;
       border-radius: 8px;
       padding: 15px;
@@ -114,26 +114,26 @@
 
     .chart-container-full canvas {
       width: 100%;
-      height: 500px !important;
+      height: 470px !important;
     }
 
     /* Ajustes para mobile vertical */
     .mobile-device .chart-container-full {
-      height: 480px;
+      height: 450px;
       padding: 12px;
     }
 
     .mobile-device .chart-container-full canvas {
-      height: 450px !important;
+      height: 420px !important;
     }
 
     /* Ajustes para mobile landscape */
     .mobile-landscape .chart-container-full {
-      height: 430px;
+      height: 400px;
     }
 
     .mobile-landscape .chart-container-full canvas {
-      height: 400px !important;
+      height: 370px !important;
     }
 
     /* NAVBAR E FONTES AUMENTADAS NO MOBILE VERTICAL */
@@ -273,20 +273,6 @@
       color: #00000;
       margin-left: 12px;
     }
-
-    /* Estilos para os labels do eixo secundário */
-    .secondary-axis-label {
-      position: absolute;
-      font-family: "Montserrat", sans-serif;
-      font-size: 11px;
-      color: #666;
-      background-color: rgba(255, 255, 255, 0.8);
-      padding: 2px 4px;
-      border-radius: 3px;
-      pointer-events: none;
-      white-space: nowrap;
-      transform: translateX(-50%);
-    }
   </style>
 </head>
 <body>
@@ -310,7 +296,6 @@
       <div class="chart-container-full">
         <canvas id="performanceChart"></canvas>
         <!-- Tooltip personalizado será inserido aqui via JavaScript -->
-        <!-- Os labels do eixo secundário serão inseridos dinamicamente -->
       </div>
     </div>
 
@@ -357,8 +342,6 @@
 
     // Variável global para armazenar a instância do gráfico
     window.chartInstance = null;
-    // Armazenar dados do eixo secundário
-    let secondaryAxisData = [];
 
     // Tooltip personalizado
     let customTooltip = null;
@@ -473,14 +456,12 @@
         const allDates = [];
         const morpheus = [];
         const teoria = [];
-        secondaryAxisData = []; // Resetar dados do eixo secundário
 
-        // Colunas: AN = índice 39, AO = índice 40, AP = índice 41, AQ = índice 42 (considerando índice 0)
+        // Colunas: AN = índice 39, AP = índice 41, AQ = índice 42 (considerando índice 0)
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
           if (cols.length >= 43) {
             const date = cols[39]?.trim();  // Coluna AN
-            const secundarioVal = cols[40]?.trim();  // Coluna AO (eixo secundário)
             const morpheusVal = parseFloat(cols[41]);  // Coluna AP
             const teoriaVal = parseFloat(cols[42]);  // Coluna AQ
             
@@ -488,12 +469,11 @@
               allDates.push(date);
               morpheus.push((morpheusVal - 1) * 100);
               teoria.push((teoriaVal - 1) * 100);
-              secondaryAxisData.push(secundarioVal || '');
             }
           }
         }
 
-        console.log("Dados processados - Datas:", allDates.length, "Morpheus:", morpheus.length, "Teoria:", teoria.length, "Eixo Secundário:", secondaryAxisData.length);
+        console.log("Dados processados - Datas:", allDates.length, "Morpheus:", morpheus.length, "Teoria:", teoria.length);
 
         if (allDates.length === 0) {
           throw new Error("Nenhum dado válido encontrado para o gráfico");
@@ -508,42 +488,6 @@
         console.error("Erro ao carregar dados:", error);
         document.getElementById("subtitle").textContent = "Erro ao carregar dados";
       }
-    }
-
-    function drawSecondaryAxisLabels(chart) {
-      // Remover labels antigos
-      const container = document.querySelector('.chart-container-full');
-      const oldLabels = container.querySelectorAll('.secondary-axis-label');
-      oldLabels.forEach(label => label.remove());
-      
-      if (!secondaryAxisData.length) return;
-      
-      const xAxis = chart.scales.x;
-      const yAxis = chart.scales.y;
-      const chartArea = chart.chartArea;
-      
-      // Para cada ponto no eixo X, adicionar label do eixo secundário
-      const points = chart.data.datasets[0].data;
-      
-      points.forEach((point, index) => {
-        if (index >= secondaryAxisData.length) return;
-        
-        const value = secondaryAxisData[index];
-        if (!value || value.trim() === '') return;
-        
-        // Obter posição X do ponto
-        const pixelX = xAxis.getPixelForValue(point.x);
-        const pixelY = chartArea.bottom + 15; // Posicionar abaixo do gráfico
-        
-        // Criar label
-        const label = document.createElement('div');
-        label.className = 'secondary-axis-label';
-        label.textContent = value;
-        label.style.left = `${pixelX}px`;
-        label.style.top = `${pixelY}px`;
-        
-        container.appendChild(label);
-      });
     }
 
     function createMainChart(allDates, morpheus, teoria) {
@@ -580,11 +524,6 @@
         gradient.addColorStop(1, "#164CAD");
         return gradient;
       };
-
-      // Destruir gráfico anterior se existir
-      if (window.chartInstance) {
-        window.chartInstance.destroy();
-      }
 
       window.chartInstance = new Chart(ctx, {
         type: "line",
@@ -681,10 +620,7 @@
                   return `${mesesPortugues[month]} - ${year}`;
                 }
               },
-              grid: { 
-                color: "rgba(0,0,0,0.05)",
-                drawBorder: true,
-              },
+              grid: { color: "rgba(0,0,0,0.05)" },
             },
             y: {
               ticks: {
@@ -700,22 +636,7 @@
               grid: { color: "rgba(0,0,0,0.05)" },
             },
           },
-          animation: {
-            onComplete: function() {
-              // Após o gráfico ser renderizado, desenhar os labels do eixo secundário
-              setTimeout(() => drawSecondaryAxisLabels(this), 100);
-            }
-          }
         },
-      });
-
-      // Redesenhar labels quando o gráfico for redimensionado
-      window.addEventListener('resize', () => {
-        setTimeout(() => {
-          if (window.chartInstance) {
-            drawSecondaryAxisLabels(window.chartInstance);
-          }
-        }, 100);
       });
 
       console.log("Gráfico principal criado com sucesso");
