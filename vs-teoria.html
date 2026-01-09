@@ -456,12 +456,14 @@
         const allDates = [];
         const morpheus = [];
         const teoria = [];
+        const eixoSecundario = []; // Novo array para dados do eixo secundário
 
-        // Colunas: AN = índice 39, AP = índice 41, AQ = índice 42 (considerando índice 0)
+        // Colunas: AN = índice 39, AO = índice 40, AP = índice 41, AQ = índice 42 (considerando índice 0)
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
           if (cols.length >= 43) {
             const date = cols[39]?.trim();  // Coluna AN
+            const secundarioVal = cols[40]?.trim();  // Coluna AO (eixo secundário)
             const morpheusVal = parseFloat(cols[41]);  // Coluna AP
             const teoriaVal = parseFloat(cols[42]);  // Coluna AQ
             
@@ -469,11 +471,12 @@
               allDates.push(date);
               morpheus.push((morpheusVal - 1) * 100);
               teoria.push((teoriaVal - 1) * 100);
+              eixoSecundario.push(secundarioVal || '');
             }
           }
         }
 
-        console.log("Dados processados - Datas:", allDates.length, "Morpheus:", morpheus.length, "Teoria:", teoria.length);
+        console.log("Dados processados - Datas:", allDates.length, "Morpheus:", morpheus.length, "Teoria:", teoria.length, "Eixo Secundário:", eixoSecundario.length);
 
         if (allDates.length === 0) {
           throw new Error("Nenhum dado válido encontrado para o gráfico");
@@ -482,7 +485,7 @@
         const lastDate = allDates[allDates.length - 1];
         document.getElementById("subtitle").textContent = `Última atualização: ${lastDate}`;
 
-        createMainChart(allDates, morpheus, teoria);
+        createMainChart(allDates, morpheus, teoria, eixoSecundario);
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -490,7 +493,7 @@
       }
     }
 
-    function createMainChart(allDates, morpheus, teoria) {
+    function createMainChart(allDates, morpheus, teoria, eixoSecundario) {
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
@@ -516,6 +519,7 @@
       // Aumentar significativamente as fontes no mobile vertical
       const axisFontSize = isMobileVertical ? 22 : 15;
       const legendFontSize = isMobileVertical ? 20 : 12;
+      const secondaryAxisFontSize = isMobileVertical ? 18 : 11;
 
       const createGradient = (ctx, chartArea) => {
         const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
@@ -524,6 +528,20 @@
         gradient.addColorStop(1, "#164CAD");
         return gradient;
       };
+
+      // Configurar os labels do eixo secundário
+      const secondaryLabels = eixoSecundario.map((valor, index) => {
+        // Formatar o valor para exibição
+        if (!valor || valor.trim() === '') return '';
+        
+        // Se for um número, formatar com 2 casas decimais
+        const num = parseFloat(valor);
+        if (!isNaN(num)) {
+          return num.toFixed(2).replace('.', ',');
+        }
+        
+        return valor;
+      });
 
       window.chartInstance = new Chart(ctx, {
         type: "line",
@@ -622,6 +640,46 @@
               },
               grid: { color: "rgba(0,0,0,0.05)" },
             },
+            x2: {
+              type: "time",
+              position: "bottom",
+              time: {
+                unit: "month",
+                displayFormats: { 
+                  month: "MMM - yy" 
+                },
+              },
+              ticks: {
+                color: "#555555",
+                maxRotation: 45,
+                minRotation: 45,
+                font: {
+                  family: "Montserrat",
+                  size: secondaryAxisFontSize,
+                  weight: "300",
+                },
+                callback: function(value, index, values) {
+                  // Encontrar o índice correspondente à data
+                  const date = new Date(value);
+                  const dateStr = date.toISOString().split('T')[0];
+                  const dateParts = dateStr.split('-');
+                  const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+                  
+                  const primaryIndex = allDates.findIndex(d => d === formattedDate);
+                  
+                  if (primaryIndex !== -1 && secondaryLabels[primaryIndex]) {
+                    return secondaryLabels[primaryIndex];
+                  }
+                  return '';
+                },
+                autoSkip: true,
+                maxTicksLimit: 10
+              },
+              grid: {
+                display: false, // Não mostrar grid para o eixo secundário
+              },
+              offset: true,
+            },
             y: {
               ticks: {
                 color: "#000000",
@@ -639,7 +697,7 @@
         },
       });
 
-      console.log("Gráfico principal criado com sucesso");
+      console.log("Gráfico principal criado com sucesso com eixo secundário");
     }
 
     loadData();
