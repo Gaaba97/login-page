@@ -447,7 +447,7 @@
         const allDates = [];
         const morpheus = [];
         const teoria = [];
-        const dadosAO = []; // Dados da coluna AO
+        const dadosAO = [];
 
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
@@ -455,13 +455,12 @@
             const date = cols[39]?.trim();
             const morpheusVal = parseFloat(cols[41]);
             const teoriaVal = parseFloat(cols[42]);
-            const aoVal = parseFloat(cols[40]); // Coluna AO
+            const aoVal = parseFloat(cols[40]);
             
             if (date && !isNaN(morpheusVal) && !isNaN(teoriaVal)) {
               allDates.push(date);
               morpheus.push((morpheusVal - 1) * 100);
               teoria.push((teoriaVal - 1) * 100);
-              // Converter para porcentagem e ajustar escala para ficar na parte inferior
               dadosAO.push(!isNaN(aoVal) ? (aoVal * 100) : 0);
             }
           }
@@ -569,7 +568,7 @@
             {
               label: "Dados AO",
               data: aoData,
-              borderColor: "#4D7FDB", // Azul mais claro
+              borderColor: "#4D7FDB",
               borderWidth: 2,
               pointRadius: 0,
               tension: 0.15,
@@ -641,6 +640,7 @@
                 }
               },
               grid: { color: "rgba(0,0,0,0.05)" },
+              position: 'bottom',
             },
             y: {
               type: 'linear',
@@ -657,11 +657,15 @@
                 stepSize: 5
               },
               grid: { color: "rgba(0,0,0,0.05)" },
+              afterFit: function(axis) {
+                // Ajusta a posição do eixo principal para não sobrepor com o eixo secundário
+                axis.paddingLeft = 60;
+              }
             },
             'y-ao': {
               type: 'linear',
               display: true,
-              position: 'right',
+              position: 'left',
               ticks: {
                 color: "#4D7FDB",
                 font: {
@@ -675,10 +679,23 @@
                 max: aoMax
               },
               grid: {
-                drawOnChartArea: false, // Não desenhar grid para não sobrepor
+                drawOnChartArea: false,
               },
+              afterFit: function(axis) {
+                // Posiciona o eixo AO mais à esquerda
+                axis.paddingLeft = 0;
+                axis.left = 0;
+              }
             }
           },
+          layout: {
+            padding: {
+              left: 80, // Aumenta o padding esquerdo para acomodar os dois eixos
+              right: 40,
+              top: 30,
+              bottom: 30
+            }
+          }
         },
       });
 
