@@ -91,59 +91,49 @@
       text-align: left;
     }
 
-    /* Container principal dos gráficos */
-    .charts-container {
+    /* Container principal do gráfico */
+    .main-chart-full-container {
       width: 95%;
       max-width: 1200px;
       margin: 0 auto;
       display: flex;
-      flex-direction: column;
-      gap: 0;
+      justify-content: center;
+      align-items: center;
       position: relative;
     }
 
-    /* Container individual para cada gráfico */
-    .chart-container {
+    .chart-container-full {
       width: 100%;
+      height: 500px;
       background-color: #fff;
-      border-radius: 0;
+      border-radius: 8px;
+      padding: 15px;
       box-sizing: border-box;
       position: relative;
-      overflow: hidden;
     }
 
-    /* Gráfico superior */
-    .upper-chart {
-      height: 300px;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    /* Gráfico inferior */
-    .lower-chart {
-      height: 200px;
-    }
-
-    .chart-container canvas {
-      width: 100% !important;
-      height: 100% !important;
+    .chart-container-full canvas {
+      width: 100%;
+      height: 470px !important;
     }
 
     /* Ajustes para mobile vertical */
-    .mobile-device .upper-chart {
-      height: 250px;
+    .mobile-device .chart-container-full {
+      height: 450px;
+      padding: 12px;
     }
 
-    .mobile-device .lower-chart {
-      height: 150px;
+    .mobile-device .chart-container-full canvas {
+      height: 420px !important;
     }
 
     /* Ajustes para mobile landscape */
-    .mobile-landscape .upper-chart {
-      height: 220px;
+    .mobile-landscape .chart-container-full {
+      height: 400px;
     }
 
-    .mobile-landscape .lower-chart {
-      height: 130px;
+    .mobile-landscape .chart-container-full canvas {
+      height: 370px !important;
     }
 
     /* NAVBAR E FONTES AUMENTADAS NO MOBILE VERTICAL */
@@ -227,6 +217,22 @@
       border-color: transparent transparent #164CAD transparent;
     }
 
+    .custom-tooltip.left::before {
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 8px 0 8px 8px;
+      border-color: transparent transparent transparent #164CAD;
+    }
+
+    .custom-tooltip.right::before {
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 8px 8px 8px 0;
+      border-color: transparent #164CAD transparent transparent;
+    }
+
     .tooltip-header {
       font-weight: 550;
       color: #000;
@@ -267,15 +273,6 @@
       color: #000;
       margin-left: 12px;
     }
-
-    /* Estilo para sincronizar o eixo X */
-    .chart-container .x-axis-upper {
-      display: none;
-    }
-
-    .chart-container.lower-chart .x-axis-lower {
-      display: block;
-    }
   </style>
 </head>
 <body>
@@ -295,15 +292,9 @@
       <div class="subtitle" id="subtitle">Carregando dados...</div>
     </div>
     
-    <div class="charts-container">
-      <!-- Gráfico Superior (Morpheus e Teoria) -->
-      <div class="chart-container upper-chart">
-        <canvas id="upperChart"></canvas>
-      </div>
-      
-      <!-- Gráfico Inferior (Dados AO) -->
-      <div class="chart-container lower-chart">
-        <canvas id="lowerChart"></canvas>
+    <div class="main-chart-full-container">
+      <div class="chart-container-full">
+        <canvas id="performanceChart"></canvas>
       </div>
     </div>
 
@@ -348,24 +339,26 @@
 
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
-    // Variáveis globais para as instâncias dos gráficos
-    window.upperChartInstance = null;
-    window.lowerChartInstance = null;
+    // Variável global para armazenar a instância do gráfico
+    window.chartInstance = null;
 
-    // Tooltips personalizados
-    let customTooltipUpper = null;
-    let customTooltipLower = null;
+    // Tooltip personalizado
+    let customTooltip = null;
 
-    function createCustomTooltip(container) {
-      const tooltip = document.createElement('div');
-      tooltip.className = 'custom-tooltip';
-      document.querySelector(container).appendChild(tooltip);
-      return tooltip;
+    function createCustomTooltip() {
+      if (customTooltip) return customTooltip;
+      
+      customTooltip = document.createElement('div');
+      customTooltip.className = 'custom-tooltip';
+      document.querySelector('.main-chart-full-container').appendChild(customTooltip);
+      return customTooltip;
     }
 
-    function showCustomTooltip(chart, tooltip, tooltipElement, chartType) {
+    function showCustomTooltip(chart, tooltip) {
+      const tooltipEl = createCustomTooltip();
+      
       if (tooltip.opacity === 0) {
-        tooltipElement.classList.remove('visible');
+        tooltipEl.classList.remove('visible');
         return;
       }
 
@@ -373,11 +366,17 @@
         const title = tooltip.title[0] || '';
         let tooltipHTML = `<div class="tooltip-header">${title}</div>`;
         
-        tooltip.dataPoints.forEach((dataPoint) => {
+        tooltip.dataPoints.forEach((dataPoint, index) => {
           const dataset = chart.data.datasets[dataPoint.datasetIndex];
           const label = dataset.label || '';
-          const color = dataset.borderColor || (chartType === 'ao' ? '#4D7FDB' : '#164CAD');
-          const value = dataPoint.raw.y.toFixed(2).replace('.', ',') + '%';
+          const color = dataset.borderColor || '#164CAD';
+          let value = '';
+          
+          if (label === "Dados AO") {
+            value = dataPoint.raw.y.toFixed(2).replace('.', ',') + '%';
+          } else {
+            value = dataPoint.raw.y.toFixed(2).replace('.', ',') + '%';
+          }
           
           tooltipHTML += `
             <div class="tooltip-item">
@@ -390,21 +389,21 @@
           `;
         });
         
-        tooltipElement.innerHTML = tooltipHTML;
+        tooltipEl.innerHTML = tooltipHTML;
       }
 
       const position = chart.canvas.getBoundingClientRect();
-      const chartContainer = chart.canvas.parentElement.parentElement;
+      const chartContainer = document.querySelector('.main-chart-full-container');
       const containerRect = chartContainer.getBoundingClientRect();
       
       let left = position.left + tooltip.caretX - containerRect.left;
       let top = position.top + tooltip.caretY - containerRect.top;
       
-      const tooltipWidth = tooltipElement.offsetWidth || 200;
-      const tooltipHeight = tooltipElement.offsetHeight || 100;
+      const tooltipWidth = tooltipEl.offsetWidth;
+      const tooltipHeight = tooltipEl.offsetHeight;
       
-      // Posicionar tooltip acima ou abaixo do ponto
       let placement = 'top';
+      
       if (top - tooltipHeight - 10 < 0) {
         placement = 'bottom';
         top += 20;
@@ -412,7 +411,6 @@
         top -= tooltipHeight + 10;
       }
       
-      // Ajustar posição horizontal para não sair da tela
       if (left + tooltipWidth > containerRect.width) {
         left = containerRect.width - tooltipWidth - 10;
       } else if (left < 0) {
@@ -421,9 +419,10 @@
         left -= tooltipWidth / 2;
       }
       
-      tooltipElement.style.left = left + 'px';
-      tooltipElement.style.top = top + 'px';
-      tooltipElement.className = `custom-tooltip ${placement} visible`;
+      tooltipEl.style.left = left + 'px';
+      tooltipEl.style.top = top + 'px';
+      
+      tooltipEl.className = `custom-tooltip ${placement} visible`;
     }
 
     async function loadData() {
@@ -476,7 +475,7 @@
         const lastDate = allDates[allDates.length - 1];
         document.getElementById("subtitle").textContent = `Última atualização: ${lastDate}`;
 
-        createCharts(allDates, morpheus, teoria, dadosAO);
+        createChart(allDates, morpheus, teoria, dadosAO);
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -484,8 +483,7 @@
       }
     }
 
-    function createCharts(allDates, morpheus, teoria, dadosAO) {
-      // Preparar dados
+    function createChart(allDates, morpheus, teoria, dadosAO) {
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
@@ -501,14 +499,21 @@
         y: dadosAO[i]
       }));
 
-      // Configurações comuns
+      const canvas = document.getElementById("performanceChart");
+      const ctx = canvas.getContext("2d");
+
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
       const isMobileVertical = document.body.classList.contains('mobile-device') && 
                           !document.body.classList.contains('mobile-landscape');
       
-      const axisFontSize = isMobileVertical ? 16 : 12;
-      const legendFontSize = isMobileVertical ? 14 : 10;
+      const axisFontSize = isMobileVertical ? 22 : 15;
+      const legendFontSize = isMobileVertical ? 20 : 12;
 
-      // Função para criar gradiente
       const createGradient = (ctx, chartArea, color1, color2, color3) => {
         const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
         gradient.addColorStop(0, color1);
@@ -517,23 +522,48 @@
         return gradient;
       };
 
-      // Criar gráfico superior (Morpheus e Teoria)
-      const upperCanvas = document.getElementById('upperChart');
-      const upperCtx = upperCanvas.getContext('2d');
+      // Encontrar valores mínimos e máximos para ajustar escalas
+      const maxAO = Math.max(...dadosAO);
+      const minAO = Math.min(...dadosAO);
+      const maxMorpheus = Math.max(...morpheus);
+      const minMorpheus = Math.min(...morpheus);
       
-      // Ajustar DPI
-      const dpr = window.devicePixelRatio || 1;
-      const upperRect = upperCanvas.getBoundingClientRect();
-      upperCanvas.width = upperRect.width * dpr;
-      upperCanvas.height = upperRect.height * dpr;
-      upperCtx.scale(dpr, dpr);
+      // Ajustar escala AO para múltiplos de 0.5
+      const aoStep = 0.5;
+      const aoMax = Math.ceil(maxAO / aoStep) * aoStep;
+      const aoMin = Math.floor(minAO / aoStep) * aoStep;
 
-      // Configurar tooltip para gráfico superior
-      if (!customTooltipUpper) {
-        customTooltipUpper = createCustomTooltip('.upper-chart');
-      }
+      // Criar um plugin para adicionar uma linha divisória entre as áreas
+      const dividerPlugin = {
+        id: 'chartDivider',
+        beforeDraw(chart, args, options) {
+          const {ctx, chartArea: {top, bottom, left, right}} = chart;
+          const scale = chart.scales['y-ao'];
+          
+          if (!scale) return;
+          
+          // Calcular a posição onde o gráfico AO termina (topo do seu espaço)
+          const aoTopPixel = scale.getPixelForValue(aoMax);
+          
+          // Desenhar uma linha divisória
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(left, aoTopPixel);
+          ctx.lineTo(right, aoTopPixel);
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+          ctx.stroke();
+          ctx.restore();
+          
+          // Adicionar um fundo diferente para a área dos Dados AO
+          ctx.save();
+          ctx.fillStyle = 'rgba(77, 127, 219, 0.05)';
+          ctx.fillRect(left, aoTopPixel, right - left, bottom - aoTopPixel);
+          ctx.restore();
+        }
+      };
 
-      window.upperChartInstance = new Chart(upperCtx, {
+      window.chartInstance = new Chart(ctx, {
         type: "line",
         data: {
           datasets: [
@@ -551,6 +581,7 @@
                 if (!chartArea) return null;
                 return createGradient(ctx, chartArea, "#F6F8FC", "#8EA8D7", "#164CAD");
               },
+              yAxisID: 'y',
               order: 2,
             },
             {
@@ -561,99 +592,9 @@
               pointRadius: 0,
               tension: 0.15,
               fill: false,
+              yAxisID: 'y',
               order: 1,
             },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: {
-            intersect: false,
-            mode: 'index',
-          },
-          plugins: {
-            legend: {
-              display: false, // Esconder legenda no gráfico superior
-            },
-            tooltip: {
-              enabled: false,
-              external: (context) => {
-                showCustomTooltip(context.chart, context.tooltip, customTooltipUpper, 'upper');
-              }
-            },
-          },
-          scales: {
-            x: {
-              type: "time",
-              time: {
-                unit: "month",
-                displayFormats: { 
-                  month: "MMM - yy" 
-                },
-                tooltipFormat: "dd/MM/yyyy"
-              },
-              display: false, // Esconder eixo X no gráfico superior
-              grid: {
-                display: false
-              }
-            },
-            y: {
-              type: 'linear',
-              display: true,
-              position: 'left',
-              ticks: {
-                color: "#164CAD",
-                font: {
-                  family: "Montserrat",
-                  size: axisFontSize,
-                  weight: "300",
-                },
-                callback: (v) => `${v.toFixed(0)}%`,
-                stepSize: 5
-              },
-              grid: { 
-                color: "rgba(0,0,0,0.05)",
-                drawBorder: false
-              },
-            },
-          },
-          layout: {
-            padding: {
-              top: 10,
-              bottom: 0,
-              left: 10,
-              right: 10
-            }
-          }
-        },
-      });
-
-      // Criar gráfico inferior (Dados AO)
-      const lowerCanvas = document.getElementById('lowerChart');
-      const lowerCtx = lowerCanvas.getContext('2d');
-      
-      const lowerRect = lowerCanvas.getBoundingClientRect();
-      lowerCanvas.width = lowerRect.width * dpr;
-      lowerCanvas.height = lowerRect.height * dpr;
-      lowerCtx.scale(dpr, dpr);
-
-      // Configurar tooltip para gráfico inferior
-      if (!customTooltipLower) {
-        customTooltipLower = createCustomTooltip('.lower-chart');
-      }
-
-      // Calcular escala para AO
-      const maxAO = Math.max(...dadosAO);
-      const minAO = Math.min(...dadosAO);
-      const aoStep = 0.5;
-      const aoMax = Math.ceil(maxAO / aoStep) * aoStep;
-      const aoMin = Math.floor(minAO / aoStep) * aoStep;
-
-      window.lowerChartInstance = new Chart(lowerCtx, {
-        type: "line",
-        data: {
-          datasets: [
             {
               label: "Dados AO",
               data: aoData,
@@ -661,7 +602,13 @@
               borderWidth: 2,
               pointRadius: 0,
               tension: 0.15,
-              fill: false,
+              fill: {
+                target: 'origin',
+                above: 'rgba(77, 127, 219, 0.3)',
+                below: 'rgba(77, 127, 219, 0.1)'
+              },
+              yAxisID: 'y-ao',
+              order: 3,
             },
           ],
         },
@@ -674,12 +621,23 @@
           },
           plugins: {
             legend: {
-              display: false, // Esconder legenda no gráfico inferior
+              position: "top",
+              labels: {
+                usePointStyle: true,
+                pointStyle: "circle",
+                color: "#000000",
+                font: {
+                  family: "Montserrat",
+                  size: legendFontSize,
+                  weight: "300",
+                },
+              },
+              reverse: true
             },
             tooltip: {
               enabled: false,
               external: (context) => {
-                showCustomTooltip(context.chart, context.tooltip, customTooltipLower, 'ao');
+                showCustomTooltip(context.chart, context.tooltip);
               }
             },
           },
@@ -725,6 +683,39 @@
               display: true,
               position: 'left',
               ticks: {
+                color: "#164CAD",
+                font: {
+                  family: "Montserrat",
+                  size: axisFontSize,
+                  weight: "300",
+                },
+                callback: (v) => `${v.toFixed(0)}%`,
+                stepSize: 5
+              },
+              grid: { 
+                color: "rgba(0,0,0,0.05)",
+                drawBorder: false
+              },
+              // Ajustar a posição para ficar acima da área AO
+              afterFit: function(axis) {
+                const aoScale = this.chart.scales['y-ao'];
+                if (aoScale) {
+                  // Limitar o eixo Y principal para não invadir a área AO
+                  const aoTop = aoScale.getPixelForValue(aoMax);
+                  const chartBottom = this.chart.chartArea.bottom;
+                  const availableHeight = aoTop - this.chart.chartArea.top;
+                  
+                  // Ajustar a escala para usar apenas a parte superior
+                  this.top = this.chart.chartArea.top;
+                  this.bottom = aoTop - 10; // Deixar um pequeno gap
+                }
+              }
+            },
+            'y-ao': {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              ticks: {
                 color: "#4D7FDB",
                 font: {
                   family: "Montserrat",
@@ -736,24 +727,31 @@
                 min: aoMin,
                 max: aoMax
               },
-              grid: { 
-                color: "rgba(0,0,0,0.05)",
-                drawBorder: false
+              grid: {
+                drawOnChartArea: true,
+                color: "rgba(0,0,0,0.02)",
               },
-            },
+              // Posicionar o eixo AO na parte inferior
+              afterFit: function(axis) {
+                // Manter o eixo na direita, mas ajustar sua área de desenho
+                this.top = this.chart.chartArea.top + (this.chart.chartArea.bottom - this.chart.chartArea.top) * 0.6;
+                this.bottom = this.chart.chartArea.bottom - 10;
+              }
+            }
           },
           layout: {
             padding: {
-              top: 0,
-              bottom: 10,
               left: 10,
-              right: 10
+              right: 10,
+              top: 10,
+              bottom: 10
             }
           }
         },
+        plugins: [dividerPlugin]
       });
 
-      console.log("Gráficos criados com sucesso");
+      console.log("Gráfico criado com sucesso");
     }
 
     loadData();
@@ -787,10 +785,10 @@
     }
 
     function redesenharGraficoSuave() {
-      if (window.upperChartInstance) {
+      if (window.chartInstance) {
         setTimeout(() => {
-          window.upperChartInstance.resize();
-          window.lowerChartInstance.resize();
+          const event = new Event('resize');
+          window.dispatchEvent(event);
         }, 100);
       }
     }
