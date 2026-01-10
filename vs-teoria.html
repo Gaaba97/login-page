@@ -97,43 +97,60 @@
       max-width: 1200px;
       margin: 0 auto;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       position: relative;
+      gap: 0;
     }
 
-    .chart-container-full {
+    /* Painel superior - Série Principal */
+    .chart-container-top {
       width: 100%;
-      height: 500px;
+      height: 350px;
       background-color: #fff;
-      border-radius: 8px;
-      padding: 15px;
+      border-radius: 8px 8px 0 0;
+      padding: 15px 15px 5px 15px;
+      box-sizing: border-box;
+      position: relative;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    /* Painel inferior - Indicador Auxiliar (Dados AO) */
+    .chart-container-bottom {
+      width: 100%;
+      height: 150px;
+      background-color: #fff;
+      border-radius: 0 0 8px 8px;
+      padding: 5px 15px 15px 15px;
       box-sizing: border-box;
       position: relative;
     }
 
-    .chart-container-full canvas {
-      width: 100%;
-      height: 470px !important;
+    .chart-container-top canvas,
+    .chart-container-bottom canvas {
+      width: 100% !important;
+      height: 100% !important;
     }
 
     /* Ajustes para mobile vertical */
-    .mobile-device .chart-container-full {
-      height: 450px;
-      padding: 12px;
+    .mobile-device .chart-container-top {
+      height: 300px;
+      padding: 12px 12px 5px 12px;
     }
 
-    .mobile-device .chart-container-full canvas {
-      height: 420px !important;
+    .mobile-device .chart-container-bottom {
+      height: 120px;
+      padding: 5px 12px 12px 12px;
     }
 
     /* Ajustes para mobile landscape */
-    .mobile-landscape .chart-container-full {
-      height: 400px;
+    .mobile-landscape .chart-container-top {
+      height: 280px;
     }
 
-    .mobile-landscape .chart-container-full canvas {
-      height: 370px !important;
+    .mobile-landscape .chart-container-bottom {
+      height: 100px;
     }
 
     /* NAVBAR E FONTES AUMENTADAS NO MOBILE VERTICAL */
@@ -273,6 +290,43 @@
       color: #000;
       margin-left: 12px;
     }
+
+    /* Legenda compartilhada */
+    .shared-legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 10px 0 15px 0;
+      padding: 8px 15px;
+      background-color: #f8f9fa;
+      border-radius: 6px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #333;
+      transition: opacity 0.2s;
+    }
+
+    .legend-item:hover {
+      opacity: 0.8;
+    }
+
+    .legend-item.hidden {
+      opacity: 0.3;
+      text-decoration: line-through;
+    }
+
+    .legend-color {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+    }
   </style>
 </head>
 <body>
@@ -293,8 +347,17 @@
     </div>
     
     <div class="main-chart-full-container">
-      <div class="chart-container-full">
-        <canvas id="performanceChart"></canvas>
+      <!-- Legenda compartilhada -->
+      <div class="shared-legend" id="sharedLegend"></div>
+      
+      <!-- Painel superior: Série principal -->
+      <div class="chart-container-top">
+        <canvas id="performanceChartTop"></canvas>
+      </div>
+      
+      <!-- Painel inferior: Indicador auxiliar -->
+      <div class="chart-container-bottom">
+        <canvas id="performanceChartBottom"></canvas>
       </div>
     </div>
 
@@ -339,8 +402,9 @@
 
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
-    // Variável global para armazenar a instância do gráfico
-    window.chartInstance = null;
+    // Variáveis globais para armazenar as instâncias dos gráficos
+    window.chartInstanceTop = null;
+    window.chartInstanceBottom = null;
 
     // Tooltip personalizado
     let customTooltip = null;
@@ -425,6 +489,38 @@
       tooltipEl.className = `custom-tooltip ${placement} visible`;
     }
 
+    // Função para criar legenda compartilhada
+    function createSharedLegend(datasets) {
+      const legendContainer = document.getElementById('sharedLegend');
+      legendContainer.innerHTML = '';
+      
+      datasets.forEach((dataset, index) => {
+        const legendItem = document.createElement('div');
+        legendItem.className = 'legend-item';
+        legendItem.dataset.index = index;
+        
+        legendItem.innerHTML = `
+          <div class="legend-color" style="background-color: ${dataset.borderColor}"></div>
+          <span>${dataset.label}</span>
+        `;
+        
+        // Adiciona evento de clique para mostrar/esconder dataset
+        legendItem.addEventListener('click', () => {
+          const chart = dataset.label === "Dados AO" ? window.chartInstanceBottom : window.chartInstanceTop;
+          const meta = chart.getDatasetMeta(index);
+          
+          // Alterna visibilidade
+          meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+          chart.update();
+          
+          // Atualiza aparência da legenda
+          legendItem.classList.toggle('hidden', meta.hidden);
+        });
+        
+        legendContainer.appendChild(legendItem);
+      });
+    }
+
     async function loadData() {
       try {
         console.log("Iniciando carregamento de dados...");
@@ -475,7 +571,7 @@
         const lastDate = allDates[allDates.length - 1];
         document.getElementById("subtitle").textContent = `Última atualização: ${lastDate}`;
 
-        createChart(allDates, morpheus, teoria, dadosAO);
+        createCharts(allDates, morpheus, teoria, dadosAO);
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -483,7 +579,8 @@
       }
     }
 
-    function createChart(allDates, morpheus, teoria, dadosAO) {
+    function createCharts(allDates, morpheus, teoria, dadosAO) {
+      // Preparar dados
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
@@ -499,21 +596,55 @@
         y: dadosAO[i]
       }));
 
-      const canvas = document.getElementById("performanceChart");
-      const ctx = canvas.getContext("2d");
-
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
+      // Configuração comum para os eixos X
+      const commonXOptions = {
+        type: "time",
+        time: {
+          unit: "month",
+          displayFormats: { 
+            month: "MMM - yy" 
+          },
+          tooltipFormat: "dd/MM/yyyy"
+        },
+        grid: { 
+          color: "rgba(0,0,0,0.05)",
+          drawBorder: false
+        },
+        ticks: {
+          color: "#000000",
+          maxRotation: 45,
+          minRotation: 45,
+          font: {
+            family: "Montserrat",
+            size: 12,
+            weight: "300",
+          },
+          callback: function(value, index, values) {
+            const date = new Date(value);
+            const month = date.getMonth();
+            const year = date.getFullYear().toString().slice(-2);
+            
+            const mesesPortugues = [
+              'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+              'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+            ];
+            
+            return `${mesesPortugues[month]} - ${year}`;
+          }
+        }
+      };
 
       const isMobileVertical = document.body.classList.contains('mobile-device') && 
                           !document.body.classList.contains('mobile-landscape');
       
-      const axisFontSize = isMobileVertical ? 22 : 15;
-      const legendFontSize = isMobileVertical ? 20 : 12;
+      const axisFontSize = isMobileVertical ? 18 : 12;
+      const legendFontSize = isMobileVertical ? 16 : 12;
 
+      // Destruir gráficos anteriores se existirem
+      if (window.chartInstanceTop) window.chartInstanceTop.destroy();
+      if (window.chartInstanceBottom) window.chartInstanceBottom.destroy();
+
+      // Criar gradiente para Morpheus
       const createGradient = (ctx, chartArea, color1, color2, color3) => {
         const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
         gradient.addColorStop(0, color1);
@@ -522,21 +653,10 @@
         return gradient;
       };
 
-      // Encontrar valores mínimos e máximos para ajustar escalas
-      const maxAO = Math.max(...dadosAO);
-      const minAO = Math.min(...dadosAO);
+      // Configuração do gráfico superior (Série Principal)
+      const ctxTop = document.getElementById('performanceChartTop').getContext('2d');
       
-      // Ajustar escala AO para múltiplos de 0.5
-      const aoStep = 0.5;
-      const aoMax = Math.ceil(maxAO / aoStep) * aoStep;
-      const aoMin = Math.floor(minAO / aoStep) * aoStep;
-
-      // Destruir gráfico anterior se existir
-      if (window.chartInstance) {
-        window.chartInstance.destroy();
-      }
-
-      window.chartInstance = new Chart(ctx, {
+      window.chartInstanceTop = new Chart(ctxTop, {
         type: "line",
         data: {
           datasets: [
@@ -554,7 +674,7 @@
                 if (!chartArea) return null;
                 return createGradient(ctx, chartArea, "#F6F8FC", "#8EA8D7", "#164CAD");
               },
-              yAxisID: 'y',
+              yAxisID: 'y-top',
               order: 2,
             },
             {
@@ -565,24 +685,9 @@
               pointRadius: 0,
               tension: 0.15,
               fill: false,
-              yAxisID: 'y',
+              yAxisID: 'y-top',
               order: 1,
-            },
-            {
-              label: "Dados AO",
-              data: aoData,
-              borderColor: "#4D7FDB",
-              borderWidth: 2,
-              pointRadius: 0,
-              tension: 0.15,
-              fill: {
-                target: 'origin',
-                above: 'rgba(77, 127, 219, 0.3)',
-                below: 'rgba(77, 127, 219, 0.1)'
-              },
-              yAxisID: 'y-ao',
-              order: 3,
-            },
+            }
           ],
         },
         options: {
@@ -594,18 +699,7 @@
           },
           plugins: {
             legend: {
-              position: "top",
-              labels: {
-                usePointStyle: true,
-                pointStyle: "circle",
-                color: "#000000",
-                font: {
-                  family: "Montserrat",
-                  size: legendFontSize,
-                  weight: "300",
-                },
-              },
-              reverse: true
+              display: false // Legenda será controlada pela legenda compartilhada
             },
             tooltip: {
               enabled: false,
@@ -616,42 +710,10 @@
           },
           scales: {
             x: {
-              type: "time",
-              time: {
-                unit: "month",
-                displayFormats: { 
-                  month: "MMM - yy" 
-                },
-                tooltipFormat: "dd/MM/yyyy"
-              },
-              ticks: {
-                color: "#000000",
-                maxRotation: 45,
-                minRotation: 45,
-                font: {
-                  family: "Montserrat",
-                  size: axisFontSize,
-                  weight: "300",
-                },
-                callback: function(value, index, values) {
-                  const date = new Date(value);
-                  const month = date.getMonth();
-                  const year = date.getFullYear().toString().slice(-2);
-                  
-                  const mesesPortugues = [
-                    'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
-                    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
-                  ];
-                  
-                  return `${mesesPortugues[month]} - ${year}`;
-                }
-              },
-              grid: { 
-                color: "rgba(0,0,0,0.05)",
-                drawBorder: false
-              },
+              ...commonXOptions,
+              display: false // Ocultar eixo X no gráfico superior
             },
-            y: {
+            'y-top': {
               type: 'linear',
               display: true,
               position: 'left',
@@ -669,8 +731,83 @@
                 color: "rgba(0,0,0,0.05)",
                 drawBorder: false
               },
+              title: {
+                display: true,
+                text: 'Performance (%)',
+                color: '#164CAD',
+                font: {
+                  family: "Montserrat",
+                  size: 12,
+                  weight: "500",
+                }
+              }
+            }
+          },
+          layout: {
+            padding: {
+              left: 10,
+              right: 10,
+              top: 10,
+              bottom: 5
+            }
+          }
+        },
+      });
+
+      // Configuração do gráfico inferior (Indicador Auxiliar)
+      const ctxBottom = document.getElementById('performanceChartBottom').getContext('2d');
+      
+      // Ajustar escala AO para múltiplos de 0.5
+      const maxAO = Math.max(...dadosAO);
+      const minAO = Math.min(...dadosAO);
+      const aoStep = 0.5;
+      const aoMax = Math.ceil(maxAO / aoStep) * aoStep;
+      const aoMin = Math.floor(minAO / aoStep) * aoStep;
+
+      window.chartInstanceBottom = new Chart(ctxBottom, {
+        type: "line",
+        data: {
+          datasets: [
+            {
+              label: "Dados AO",
+              data: aoData,
+              borderColor: "#4D7FDB",
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.15,
+              fill: {
+                target: 'origin',
+                above: 'rgba(77, 127, 219, 0.3)',
+                below: 'rgba(77, 127, 219, 0.1)'
+              },
+              yAxisID: 'y-bottom',
             },
-            'y-ao': {
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            intersect: false,
+            mode: 'index',
+          },
+          plugins: {
+            legend: {
+              display: false // Legenda será controlada pela legenda compartilhada
+            },
+            tooltip: {
+              enabled: false,
+              external: (context) => {
+                showCustomTooltip(context.chart, context.tooltip);
+              }
+            },
+          },
+          scales: {
+            x: {
+              ...commonXOptions,
+              display: true // Mostrar eixo X no gráfico inferior
+            },
+            'y-bottom': {
               type: 'linear',
               display: true,
               position: 'right',
@@ -690,20 +827,66 @@
                 drawOnChartArea: true,
                 color: "rgba(0,0,0,0.03)",
               },
+              title: {
+                display: true,
+                text: 'Dados AO (%)',
+                color: '#4D7FDB',
+                font: {
+                  family: "Montserrat",
+                  size: 12,
+                  weight: "500",
+                }
+              }
             }
           },
           layout: {
             padding: {
               left: 10,
               right: 10,
-              top: 10,
+              top: 5,
               bottom: 10
             }
           }
         },
       });
 
-      console.log("Gráfico criado com sucesso");
+      // Criar legenda compartilhada com todos os datasets
+      const allDatasets = [
+        {
+          label: "Morpheus",
+          borderColor: "#164CAD"
+        },
+        {
+          label: "Teoria",
+          borderColor: "#000000"
+        },
+        {
+          label: "Dados AO",
+          borderColor: "#4D7FDB"
+        }
+      ];
+      
+      createSharedLegend(allDatasets);
+
+      // Sincronizar zoom e pan entre os gráficos
+      function syncCharts() {
+        // Obter a escala X do gráfico inferior (que tem os ticks visíveis)
+        const xScaleBottom = window.chartInstanceBottom.scales.x;
+        
+        // Aplicar os mesmos limites ao gráfico superior
+        window.chartInstanceTop.options.scales.x.min = xScaleBottom.min;
+        window.chartInstanceTop.options.scales.x.max = xScaleBottom.max;
+        
+        window.chartInstanceTop.update('none');
+      }
+
+      // Adicionar listeners para sincronização
+      window.chartInstanceBottom.options.plugins.tooltip.external = (context) => {
+        showCustomTooltip(context.chart, context.tooltip);
+        syncCharts();
+      };
+
+      console.log("Gráficos criados com sucesso: Painel Superior (Série Principal) + Painel Inferior (Indicador Auxiliar)");
     }
 
     loadData();
@@ -737,9 +920,14 @@
     }
 
     function redesenharGraficoSuave() {
-      if (window.chartInstance) {
+      if (window.chartInstanceTop) {
         setTimeout(() => {
-          window.chartInstance.resize();
+          window.chartInstanceTop.resize();
+        }, 100);
+      }
+      if (window.chartInstanceBottom) {
+        setTimeout(() => {
+          window.chartInstanceBottom.resize();
         }, 100);
       }
     }
