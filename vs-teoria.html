@@ -447,7 +447,7 @@
         const allDates = [];
         const morpheus = [];
         const teoria = [];
-        const dadosAO = [];
+        const dadosAO = []; // Dados da coluna AO
 
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
@@ -455,12 +455,13 @@
             const date = cols[39]?.trim();
             const morpheusVal = parseFloat(cols[41]);
             const teoriaVal = parseFloat(cols[42]);
-            const aoVal = parseFloat(cols[40]);
+            const aoVal = parseFloat(cols[40]); // Coluna AO
             
             if (date && !isNaN(morpheusVal) && !isNaN(teoriaVal)) {
               allDates.push(date);
               morpheus.push((morpheusVal - 1) * 100);
               teoria.push((teoriaVal - 1) * 100);
+              // Converter para porcentagem e ajustar escala para ficar na parte inferior
               dadosAO.push(!isNaN(aoVal) ? (aoVal * 100) : 0);
             }
           }
@@ -479,7 +480,7 @@
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
-        document.getElementById("subtitle").textContent = "Erro ao carregar dados: " + error.message;
+        document.getElementById("subtitle").textContent = "Erro ao carregar dados";
       }
     }
 
@@ -525,16 +526,13 @@
       // Encontrar valores mínimos e máximos para ajustar escalas
       const maxAO = Math.max(...dadosAO);
       const minAO = Math.min(...dadosAO);
+      const maxMorpheus = Math.max(...morpheus);
+      const minMorpheus = Math.min(...morpheus);
       
       // Ajustar escala AO para múltiplos de 0.5
       const aoStep = 0.5;
       const aoMax = Math.ceil(maxAO / aoStep) * aoStep;
       const aoMin = Math.floor(minAO / aoStep) * aoStep;
-
-      // Destruir gráfico anterior se existir
-      if (window.chartInstance) {
-        window.chartInstance.destroy();
-      }
 
       window.chartInstance = new Chart(ctx, {
         type: "line",
@@ -571,15 +569,11 @@
             {
               label: "Dados AO",
               data: aoData,
-              borderColor: "#4D7FDB",
+              borderColor: "#4D7FDB", // Azul mais claro
               borderWidth: 2,
               pointRadius: 0,
               tension: 0.15,
-              fill: {
-                target: 'origin',
-                above: 'rgba(77, 127, 219, 0.3)',
-                below: 'rgba(77, 127, 219, 0.1)'
-              },
+              fill: false,
               yAxisID: 'y-ao',
               order: 3,
             },
@@ -646,10 +640,7 @@
                   return `${mesesPortugues[month]} - ${year}`;
                 }
               },
-              grid: { 
-                color: "rgba(0,0,0,0.05)",
-                drawBorder: false
-              },
+              grid: { color: "rgba(0,0,0,0.05)" },
             },
             y: {
               type: 'linear',
@@ -665,10 +656,7 @@
                 callback: (v) => `${v.toFixed(0)}%`,
                 stepSize: 5
               },
-              grid: { 
-                color: "rgba(0,0,0,0.05)",
-                drawBorder: false
-              },
+              grid: { color: "rgba(0,0,0,0.05)" },
             },
             'y-ao': {
               type: 'linear',
@@ -687,19 +675,10 @@
                 max: aoMax
               },
               grid: {
-                drawOnChartArea: true,
-                color: "rgba(0,0,0,0.03)",
+                drawOnChartArea: false, // Não desenhar grid para não sobrepor
               },
             }
           },
-          layout: {
-            padding: {
-              left: 10,
-              right: 10,
-              top: 10,
-              bottom: 10
-            }
-          }
         },
       });
 
@@ -739,7 +718,8 @@
     function redesenharGraficoSuave() {
       if (window.chartInstance) {
         setTimeout(() => {
-          window.chartInstance.resize();
+          const event = new Event('resize');
+          window.dispatchEvent(event);
         }, 100);
       }
     }
