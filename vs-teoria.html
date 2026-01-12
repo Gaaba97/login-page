@@ -314,7 +314,7 @@
       height: 380px !important;
     }
 
-    /* SEGUNDO GRÁFICO (INFERIOR) - REMOVENDO ESPAÇAMENTO SUPERIOR */
+    /* SEGUNDO GRÁFICO (INFERIOR) - REMOVENDO ESPAÇAMENTO SUPERIOR E TÍTULO */
     .second-chart .chart-container {
       height: 250px; /* Metade da altura do primeiro gráfico */
       border-radius: 0 0 8px 8px !important; /* Arredondar apenas base */
@@ -324,6 +324,11 @@
 
     .second-chart canvas {
       height: 230px !important; /* Metade da altura do primeiro gráfico */
+    }
+
+    /* REMOVER ESPAÇO DO TÍTULO/SUBTÍTULO DO SEGUNDO GRÁFICO */
+    .second-chart .main-chart-container {
+      padding-top: 0;
     }
 
     .mobile-device .second-chart .chart-container {
