@@ -422,7 +422,7 @@
           // CORREÇÃO: Formatar para 2 casas decimais (X,XX) em vez de 3 (X,XXX)
           const value = dataPoint.raw.y.toFixed(2).replace('.', ',') + '%';
           const label = dataset.label || '';
-          const color = dataset.borderColor || '#164CAD';
+          const color = dataset.borderColor || '#FF0000';
           
           tooltipHTML += `
             <div class="tooltip-item">
@@ -497,43 +497,57 @@
           throw new Error("Dados insuficientes no CSV");
         }
 
-        const allDates = [];
-        const morpheus = [];
-        const ibov = [];
-        const morpheus2 = [];
-        const ibov2 = [];
+        // Arrays para primeiro gráfico
+        const allDates1 = [];
+        const morpheus1 = [];
+        const ibov1 = [];
+        
+        // Arrays para segundo gráfico
+        const allDates2 = [];
+        const vsTeoria = [];
 
-        // Dados para o primeiro gráfico (colunas 41 e 42)
-        // Dados para o segundo gráfico (colunas 39 e 40)
+        // Dados para o primeiro gráfico (colunas AP e AQ - 41 e 42)
+        // Dados para o segundo gráfico (colunas AN e AO - 39 e 40)
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
+          
+          // Primeiro gráfico
           if (cols.length >= 43) {
-            const date = cols[39]?.trim(); 
-            const f4 = parseFloat(cols[40]); // Segundo gráfico - IBOV 2 (AO)
+            const date1 = cols[39]?.trim(); // Data do primeiro gráfico (coluna AN)
+            const f1 = parseFloat(cols[41]); // Morpheus 1 (AP)
+            const f2 = parseFloat(cols[42]); // IBOV 1 (AQ)
             
-            if (date && !isNaN(f1) && !isNaN(f2) && !isNaN(f3) && !isNaN(f4)) {
-              allDates.push(date);
-              morpheus.push((f1 - 1) * 100); // Converte para porcentagem
-              ibov.push((f2 - 1) * 100);     // Converte para porcentagem
-              morpheus2.push((f3 - 1) * 100); // Converte para porcentagem
-              ibov2.push((f4 - 1) * 100);     // Converte para porcentagem
+            if (date1 && !isNaN(f1) && !isNaN(f2)) {
+              allDates1.push(date1);
+              morpheus1.push((f1 - 1) * 100);
+              ibov1.push((f2 - 1) * 100);
+            }
+          }
+          
+          // Segundo gráfico (Apenas colunas AN e AO)
+          if (cols.length >= 41) {
+            const date2 = cols[39]?.trim(); // Data (coluna AN)
+            const f3 = parseFloat(cols[40]); // Vs Teoria (coluna AO)
+            
+            if (date2 && !isNaN(f3)) {
+              allDates2.push(date2);
+              vsTeoria.push((f3 - 1) * 100);
             }
           }
         }
 
-        console.log("Dados processados - Datas:", allDates.length);
-        console.log("Primeiro gráfico - Morpheus:", morpheus.length, "IBOV:", ibov.length);
-        console.log("Segundo gráfico - Morpheus2:", morpheus2.length, "IBOV2:", ibov2.length);
+        console.log("Primeiro gráfico - Datas:", allDates1.length, "Morpheus:", morpheus1.length, "IBOV:", ibov1.length);
+        console.log("Segundo gráfico - Datas:", allDates2.length, "Vs Teoria:", vsTeoria.length);
 
-        if (allDates.length === 0) {
-          throw new Error("Nenhum dado válido encontrado para o gráfico");
+        if (allDates1.length === 0 || allDates2.length === 0) {
+          throw new Error("Nenhum dado válido encontrado para os gráficos");
         }
 
-        const lastDate = allDates[allDates.length - 1];
+        const lastDate = allDates1[allDates1.length - 1];
         document.getElementById("subtitle").textContent = lastDate;
 
-        createFirstChart(allDates, morpheus, ibov);
-        createSecondChart(allDates, morpheus2, ibov2);
+        createFirstChart(allDates1, morpheus1, ibov1);
+        createSecondChart(allDates2, vsTeoria);
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -693,15 +707,10 @@
       console.log("Primeiro gráfico criado com sucesso");
     }
 
-    function createSecondChart(allDates, morpheus2, ibov2) {
-      const morpheus2Data = allDates.map((date, i) => ({
+    function createSecondChart(allDates, vsTeoria) {
+      const vsTeoriaData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
-        y: morpheus2[i]
-      }));
-
-      const ibov2Data = allDates.map((date, i) => ({
-        x: date.split("/").reverse().join("-"),
-        y: ibov2[i]
+        y: vsTeoria[i]
       }));
 
       const canvas = document.getElementById("performanceChart2");
@@ -733,9 +742,9 @@
         data: {
           datasets: [
             {
-              label: "Morpheus 2",
-              data: morpheus2Data,
-              borderColor: "#164CAD",
+              label: "Vs Teoria",
+              data: vsTeoriaData,
+              borderColor: "#FF0000",
               borderWidth: 1.5,
               pointRadius: 0,
               tension: 0.15,
@@ -748,17 +757,6 @@
                 }
                 return createGradient(ctx, chartArea);
               },
-              order: 2,
-            },
-            {
-              label: "Vs Teoria",
-              data: ibov2Data,
-              borderColor: "#000000",
-              borderWidth: 1.5,
-              pointRadius: 0,
-              tension: 0.15,
-              fill: false,
-              order: 1,
             },
           ],
         },
@@ -782,7 +780,6 @@
                   weight: "300",
                 },
               },
-              reverse: true
             },
             tooltip: {
               enabled: false,
