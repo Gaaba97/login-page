@@ -91,20 +91,27 @@
       text-align: left;
     }
 
-    /* Container principal do gráfico */
-    .main-chart-full-container {
+    /* Container principal dos gráficos */
+    .charts-container {
       width: 95%;
       max-width: 1200px;
       margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .chart-wrapper {
+      width: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
     }
 
-    .chart-container-full {
+    .chart-container {
       width: 100%;
-      height: 500px;
+      height: 300px;
       background-color: #fff;
       border-radius: 8px;
       padding: 15px;
@@ -112,28 +119,28 @@
       position: relative;
     }
 
-    .chart-container-full canvas {
+    .chart-container canvas {
       width: 100%;
-      height: 470px !important;
+      height: 270px !important;
     }
 
     /* Ajustes para mobile vertical */
-    .mobile-device .chart-container-full {
-      height: 450px;
+    .mobile-device .chart-container {
+      height: 280px;
       padding: 12px;
     }
 
-    .mobile-device .chart-container-full canvas {
-      height: 420px !important;
+    .mobile-device .chart-container canvas {
+      height: 250px !important;
     }
 
     /* Ajustes para mobile landscape */
-    .mobile-landscape .chart-container-full {
-      height: 400px;
+    .mobile-landscape .chart-container {
+      height: 250px;
     }
 
-    .mobile-landscape .chart-container-full canvas {
-      height: 370px !important;
+    .mobile-landscape .chart-container canvas {
+      height: 220px !important;
     }
 
     /* NAVBAR E FONTES AUMENTADAS NO MOBILE VERTICAL */
@@ -292,9 +299,19 @@
       <div class="subtitle" id="subtitle">Carregando dados...</div>
     </div>
     
-    <div class="main-chart-full-container">
-      <div class="chart-container-full">
-        <canvas id="performanceChart"></canvas>
+    <div class="charts-container">
+      <!-- Gráfico 1: Morpheus e Teoria -->
+      <div class="chart-wrapper">
+        <div class="chart-container">
+          <canvas id="performanceChart1"></canvas>
+        </div>
+      </div>
+
+      <!-- Gráfico 2: Dados AO -->
+      <div class="chart-wrapper">
+        <div class="chart-container">
+          <canvas id="performanceChart2"></canvas>
+        </div>
       </div>
     </div>
 
@@ -339,26 +356,26 @@
 
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
-    // Variável global para armazenar a instância do gráfico
-    window.chartInstance = null;
+    // Variáveis globais para armazenar as instâncias dos gráficos
+    window.chartInstance1 = null;
+    window.chartInstance2 = null;
 
-    // Tooltip personalizado
-    let customTooltip = null;
+    // Tooltips personalizados
+    let customTooltip1 = null;
+    let customTooltip2 = null;
 
-    function createCustomTooltip() {
-      if (customTooltip) return customTooltip;
-      
-      customTooltip = document.createElement('div');
-      customTooltip.className = 'custom-tooltip';
-      document.querySelector('.main-chart-full-container').appendChild(customTooltip);
-      return customTooltip;
+    function createCustomTooltip(containerClass) {
+      const tooltip = document.createElement('div');
+      tooltip.className = 'custom-tooltip';
+      document.querySelector(containerClass).appendChild(tooltip);
+      return tooltip;
     }
 
-    function showCustomTooltip(chart, tooltip) {
-      const tooltipEl = createCustomTooltip();
+    function showCustomTooltip(chart, tooltip, tooltipElement) {
+      if (!tooltipElement) return;
       
       if (tooltip.opacity === 0) {
-        tooltipEl.classList.remove('visible');
+        tooltipElement.classList.remove('visible');
         return;
       }
 
@@ -389,18 +406,18 @@
           `;
         });
         
-        tooltipEl.innerHTML = tooltipHTML;
+        tooltipElement.innerHTML = tooltipHTML;
       }
 
       const position = chart.canvas.getBoundingClientRect();
-      const chartContainer = document.querySelector('.main-chart-full-container');
+      const chartContainer = chart.canvas.closest('.chart-wrapper');
       const containerRect = chartContainer.getBoundingClientRect();
       
       let left = position.left + tooltip.caretX - containerRect.left;
       let top = position.top + tooltip.caretY - containerRect.top;
       
-      const tooltipWidth = tooltipEl.offsetWidth;
-      const tooltipHeight = tooltipEl.offsetHeight;
+      const tooltipWidth = tooltipElement.offsetWidth;
+      const tooltipHeight = tooltipElement.offsetHeight;
       
       let placement = 'top';
       
@@ -419,10 +436,10 @@
         left -= tooltipWidth / 2;
       }
       
-      tooltipEl.style.left = left + 'px';
-      tooltipEl.style.top = top + 'px';
+      tooltipElement.style.left = left + 'px';
+      tooltipElement.style.top = top + 'px';
       
-      tooltipEl.className = `custom-tooltip ${placement} visible`;
+      tooltipElement.className = `custom-tooltip ${placement} visible`;
     }
 
     async function loadData() {
@@ -447,7 +464,7 @@
         const allDates = [];
         const morpheus = [];
         const teoria = [];
-        const dadosAO = []; // Dados da coluna AO
+        const dadosAO = [];
 
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
@@ -455,13 +472,12 @@
             const date = cols[39]?.trim();
             const morpheusVal = parseFloat(cols[41]);
             const teoriaVal = parseFloat(cols[42]);
-            const aoVal = parseFloat(cols[40]); // Coluna AO
+            const aoVal = parseFloat(cols[40]);
             
             if (date && !isNaN(morpheusVal) && !isNaN(teoriaVal)) {
               allDates.push(date);
               morpheus.push((morpheusVal - 1) * 100);
               teoria.push((teoriaVal - 1) * 100);
-              // Converter para porcentagem e ajustar escala para ficar na parte inferior
               dadosAO.push(!isNaN(aoVal) ? (aoVal * 100) : 0);
             }
           }
@@ -476,7 +492,7 @@
         const lastDate = allDates[allDates.length - 1];
         document.getElementById("subtitle").textContent = `Última atualização: ${lastDate}`;
 
-        createChart(allDates, morpheus, teoria, dadosAO);
+        createCharts(allDates, morpheus, teoria, dadosAO);
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -484,7 +500,7 @@
       }
     }
 
-    function createChart(allDates, morpheus, teoria, dadosAO) {
+    function createCharts(allDates, morpheus, teoria, dadosAO) {
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
@@ -500,41 +516,28 @@
         y: dadosAO[i]
       }));
 
-      const canvas = document.getElementById("performanceChart");
-      const ctx = canvas.getContext("2d");
-
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
-
+      // Configurações comuns
       const isMobileVertical = document.body.classList.contains('mobile-device') && 
                           !document.body.classList.contains('mobile-landscape');
       
       const axisFontSize = isMobileVertical ? 22 : 15;
       const legendFontSize = isMobileVertical ? 20 : 12;
 
-      const createGradient = (ctx, chartArea, color1, color2, color3) => {
-        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-        gradient.addColorStop(0, color1);
-        gradient.addColorStop(0.5, color2);
-        gradient.addColorStop(1, color3);
-        return gradient;
-      };
+      // Criar tooltips
+      customTooltip1 = createCustomTooltip('#performanceChart1').closest('.chart-wrapper');
+      customTooltip2 = createCustomTooltip('#performanceChart2').closest('.chart-wrapper');
 
-      // Encontrar valores mínimos e máximos para ajustar escalas
-      const maxAO = Math.max(...dadosAO);
-      const minAO = Math.min(...dadosAO);
-      const maxMorpheus = Math.max(...morpheus);
-      const minMorpheus = Math.min(...morpheus);
-      
-      // Ajustar escala AO para múltiplos de 0.5
-      const aoStep = 0.5;
-      const aoMax = Math.ceil(maxAO / aoStep) * aoStep;
-      const aoMin = Math.floor(minAO / aoStep) * aoStep;
+      // Gráfico 1: Morpheus e Teoria
+      const canvas1 = document.getElementById("performanceChart1");
+      const ctx1 = canvas1.getContext("2d");
 
-      window.chartInstance = new Chart(ctx, {
+      const dpr1 = window.devicePixelRatio || 1;
+      const rect1 = canvas1.getBoundingClientRect();
+      canvas1.width = rect1.width * dpr1;
+      canvas1.height = rect1.height * dpr1;
+      ctx1.scale(dpr1, dpr1);
+
+      window.chartInstance1 = new Chart(ctx1, {
         type: "line",
         data: {
           datasets: [
@@ -550,10 +553,13 @@
                 const chart = context.chart;
                 const {ctx, chartArea} = chart;
                 if (!chartArea) return null;
-                return createGradient(ctx, chartArea, "#F6F8FC", "#8EA8D7", "#164CAD");
+                const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                gradient.addColorStop(0, "#F6F8FC");
+                gradient.addColorStop(0.5, "#8EA8D7");
+                gradient.addColorStop(1, "#164CAD");
+                return gradient;
               },
               yAxisID: 'y',
-              order: 2,
             },
             {
               label: "Teoria",
@@ -564,19 +570,7 @@
               tension: 0.15,
               fill: false,
               yAxisID: 'y',
-              order: 1,
-            },
-            {
-              label: "Dados AO",
-              data: aoData,
-              borderColor: "#4D7FDB", // Azul mais claro
-              borderWidth: 2,
-              pointRadius: 0,
-              tension: 0.15,
-              fill: false,
-              yAxisID: 'y-ao',
-              order: 3,
-            },
+            }
           ],
         },
         options: {
@@ -599,12 +593,11 @@
                   weight: "300",
                 },
               },
-              reverse: true
             },
             tooltip: {
               enabled: false,
               external: (context) => {
-                showCustomTooltip(context.chart, context.tooltip);
+                showCustomTooltip(context.chart, context.tooltip, customTooltip1);
               }
             },
           },
@@ -647,7 +640,7 @@
               display: true,
               position: 'left',
               ticks: {
-                color: "#164CAD",
+                color: "#000000", // Alterado para preto
                 font: {
                   family: "Montserrat",
                   size: axisFontSize,
@@ -657,32 +650,120 @@
                 stepSize: 5
               },
               grid: { color: "rgba(0,0,0,0.05)" },
+            }
+          },
+        },
+      });
+
+      // Gráfico 2: Dados AO
+      const canvas2 = document.getElementById("performanceChart2");
+      const ctx2 = canvas2.getContext("2d");
+
+      const dpr2 = window.devicePixelRatio || 1;
+      const rect2 = canvas2.getBoundingClientRect();
+      canvas2.width = rect2.width * dpr2;
+      canvas2.height = rect2.height * dpr2;
+      ctx2.scale(dpr2, dpr2);
+
+      window.chartInstance2 = new Chart(ctx2, {
+        type: "line",
+        data: {
+          datasets: [
+            {
+              label: "Dados AO",
+              data: aoData,
+              borderColor: "#4D7FDB",
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.15,
+              fill: false,
+              yAxisID: 'y',
+            }
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            intersect: false,
+            mode: 'index',
+          },
+          plugins: {
+            legend: {
+              position: "top",
+              labels: {
+                usePointStyle: true,
+                pointStyle: "circle",
+                color: "#000000",
+                font: {
+                  family: "Montserrat",
+                  size: legendFontSize,
+                  weight: "300",
+                },
+              },
             },
-            'y-ao': {
+            tooltip: {
+              enabled: false,
+              external: (context) => {
+                showCustomTooltip(context.chart, context.tooltip, customTooltip2);
+              }
+            },
+          },
+          scales: {
+            x: {
+              type: "time",
+              time: {
+                unit: "month",
+                displayFormats: { 
+                  month: "MMM - yy" 
+                },
+                tooltipFormat: "dd/MM/yyyy"
+              },
+              ticks: {
+                color: "#000000",
+                maxRotation: 45,
+                minRotation: 45,
+                font: {
+                  family: "Montserrat",
+                  size: axisFontSize,
+                  weight: "300",
+                },
+                callback: function(value, index, values) {
+                  const date = new Date(value);
+                  const month = date.getMonth();
+                  const year = date.getFullYear().toString().slice(-2);
+                  
+                  const mesesPortugues = [
+                    'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+                  ];
+                  
+                  return `${mesesPortugues[month]} - ${year}`;
+                }
+              },
+              grid: { color: "rgba(0,0,0,0.05)" },
+            },
+            y: {
               type: 'linear',
               display: true,
-              position: 'right',
+              position: 'left',
               ticks: {
-                color: "#4D7FDB",
+                color: "#000000", // Alterado para preto
                 font: {
                   family: "Montserrat",
                   size: axisFontSize,
                   weight: "300",
                 },
                 callback: (v) => `${v.toFixed(1)}%`,
-                stepSize: 0.5,
-                min: aoMin,
-                max: aoMax
+                stepSize: 0.5
               },
-              grid: {
-                drawOnChartArea: false, // Não desenhar grid para não sobrepor
-              },
+              grid: { color: "rgba(0,0,0,0.05)" },
             }
           },
         },
       });
 
-      console.log("Gráfico criado com sucesso");
+      console.log("Gráficos criados com sucesso");
     }
 
     loadData();
@@ -712,11 +793,11 @@
         document.body.classList.add('desktop-device');
       }
 
-      setTimeout(redesenharGraficoSuave, 100);
+      setTimeout(redesenharGraficosSuave, 100);
     }
 
-    function redesenharGraficoSuave() {
-      if (window.chartInstance) {
+    function redesenharGraficosSuave() {
+      if (window.chartInstance1 && window.chartInstance2) {
         setTimeout(() => {
           const event = new Event('resize');
           window.dispatchEvent(event);
