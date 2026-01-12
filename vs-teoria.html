@@ -293,6 +293,31 @@
     .mobile-landscape .main-chart-container canvas {
       height: 380px !important;
     }
+
+    /* ESTILOS ESPECÍFICOS PARA O SEGUNDO GRÁFICO (ALTURA REDUZIDA) */
+    .second-chart .chart-container {
+      height: 250px !important; /* Metade da altura do primeiro gráfico */
+    }
+
+    .second-chart canvas {
+      height: 230px !important; /* Metade da altura do primeiro gráfico */
+    }
+
+    .mobile-device .second-chart .chart-container {
+      height: 225px !important; /* Metade da altura do primeiro gráfico mobile */
+    }
+
+    .mobile-device .second-chart canvas {
+      height: 205px !important; /* Metade da altura do primeiro gráfico mobile */
+    }
+
+    .mobile-landscape .second-chart .chart-container {
+      height: 200px !important; /* Metade da altura do primeiro gráfico landscape */
+    }
+
+    .mobile-landscape .second-chart canvas {
+      height: 180px !important; /* Metade da altura do primeiro gráfico landscape */
+    }
   </style>
 </head>
 <body>
@@ -322,7 +347,7 @@
     </div>
     
     <!-- Segundo Gráfico (Adicionado) -->
-    <div class="chart-main-container">
+    <div class="chart-main-container second-chart">
       <div class="main-chart-container">
         <div class="chart-container">
           <canvas id="performanceChart2"></canvas>
@@ -831,9 +856,10 @@
                   size: axisFontSize,
                   weight: "300",
                 },
-                callback: (v) => `${v.toFixed(0)}%`,
-                stepSize: 5
+                callback: (v) => `${v.toFixed(2).replace('.', ',')}%`,
+                stepSize: 1 // Alterado de 5 para 1 (1% em 1%)
               },
+              suggestedMin: -1, // Mínimo sugerido de -1%
               grid: { color: "rgba(0,0,0,0.05)" },
             },
           },
