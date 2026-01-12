@@ -369,11 +369,10 @@
         tooltip.dataPoints.forEach((dataPoint, index) => {
           const dataset = chart.data.datasets[dataPoint.datasetIndex];
           const label = dataset.label || '';
-          const color = dataset.backgroundColor || dataset.borderColor || '#164CAD';
+          const color = dataset.borderColor || '#164CAD';
           let value = '';
           
-          // Distinguir barras (Dados AO) de linhas
-          if (dataset.label === "Dados AO") {
+          if (label === "Dados AO") {
             value = dataPoint.raw.y.toFixed(2).replace('.', ',') + '%';
           } else {
             value = dataPoint.raw.y.toFixed(2).replace('.', ',') + '%';
@@ -535,12 +534,6 @@
       const aoMax = Math.ceil(maxAO / aoStep) * aoStep;
       const aoMin = Math.floor(minAO / aoStep) * aoStep;
 
-      // Se já existir um gráfico, destrói antes de criar outro
-      if (window.chartInstance) {
-        window.chartInstance.destroy();
-        window.chartInstance = null;
-      }
-
       window.chartInstance = new Chart(ctx, {
         type: "line",
         data: {
@@ -573,26 +566,16 @@
               yAxisID: 'y',
               order: 1,
             },
-            // *** Aqui converti Dados AO em BARRAS, mas continua dentro da MESMA instância/chart ***
             {
-              type: 'bar',
               label: "Dados AO",
               data: aoData,
-              backgroundColor: function(context) {
-                // cor sólida semi-transparente para barras (volume)
-                return 'rgba(77,127,219,0.45)';
-              },
-              borderColor: "#4D7FDB",
-              borderWidth: 1,
+              borderColor: "#4D7FDB", // Azul mais claro
+              borderWidth: 2,
               pointRadius: 0,
               tension: 0.15,
+              fill: false,
               yAxisID: 'y-ao',
               order: 3,
-              // tornar barras finas e adequadas para séries temporais
-              barPercentage: 1.0,
-              categoryPercentage: 1.0,
-              // controlar espessura em pixels se necessário
-              // barThickness: 6,
             },
           ],
         },
@@ -623,10 +606,6 @@
               external: (context) => {
                 showCustomTooltip(context.chart, context.tooltip);
               }
-            },
-            // plugin simples para desenhar uma linha separadora visual entre área principal e área das barras
-            afterDraw: {
-              // vazio só para garantir compatibilidade se quiser estender
             },
           },
           scales: {
@@ -678,11 +657,7 @@
                 stepSize: 5
               },
               grid: { color: "rgba(0,0,0,0.05)" },
-              // dar um pouco mais de espaço superior para que as linhas fiquem separadas das barras
-              suggestedMax: Math.max(maxMorpheus, maxMorpheus * 1.02),
             },
-            // Eixo dedicado para as barras (Dados AO). Ele pertence ao mesmo gráfico (mesma instância),
-            // tem seu próprio eixo vertical e escala, mas é renderizado no mesmo canvas.
             'y-ao': {
               type: 'linear',
               display: true,
@@ -691,18 +666,17 @@
                 color: "#4D7FDB",
                 font: {
                   family: "Montserrat",
-                  size: Math.max(10, axisFontSize - 2),
+                  size: axisFontSize,
                   weight: "300",
                 },
                 callback: (v) => `${v.toFixed(1)}%`,
-                stepSize: aoStep,
+                stepSize: 0.5,
                 min: aoMin,
                 max: aoMax
               },
               grid: {
-                drawOnChartArea: false, // não desenhar grid das barras sobre a área principal
+                drawOnChartArea: false, // Não desenhar grid para não sobrepor
               },
-              // reduz visualmente a área útil das barras nas interações de layout? mantemos padrão.
             }
           },
         },
