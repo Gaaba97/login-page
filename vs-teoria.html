@@ -711,7 +711,11 @@
                   return `${mesesPortugues[month]} - ${year}`;
                 }
               },
-              grid: { color: "rgba(0,0,0,0.05)" },
+              grid: { 
+                color: "rgba(0,0,0,0.05)",
+                drawOnChartArea: false // Não desenha as linhas de grade
+              },
+              display: false, // CORREÇÃO: Oculta completamente o eixo X
             },
             y: {
               ticks: {
