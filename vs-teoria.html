@@ -312,12 +312,21 @@
       <div class="subtitle" id="subtitle">Carregando dados...</div>
     </div>
     
+    <!-- Primeiro Gráfico -->
     <div class="chart-main-container">
       <div class="main-chart-container">
         <div class="chart-container">
           <canvas id="performanceChart"></canvas>
         </div>
-        <!-- Tooltip personalizado será inserido aqui via JavaScript -->
+      </div>
+    </div>
+    
+    <!-- Segundo Gráfico (Adicionado) -->
+    <div class="chart-main-container">
+      <div class="main-chart-container">
+        <div class="chart-container">
+          <canvas id="performanceChart2"></canvas>
+        </div>
       </div>
     </div>
 
@@ -364,24 +373,35 @@
 
     // Variável global para armazenar as instâncias dos gráficos
     window.chartInstances = {
-      performanceChart: null
+      performanceChart: null,
+      performanceChart2: null
     };
 
     // Tooltip personalizado
     let customTooltip = null;
+    let customTooltip2 = null;
 
-    function createCustomTooltip() {
-      if (customTooltip) return customTooltip;
-      
-      customTooltip = document.createElement('div');
-      customTooltip.className = 'custom-tooltip';
-      document.querySelector('.main-chart-container').appendChild(customTooltip);
-      return customTooltip;
+    function createCustomTooltip(chartId) {
+      if (chartId === 'performanceChart2') {
+        if (customTooltip2) return customTooltip2;
+        
+        customTooltip2 = document.createElement('div');
+        customTooltip2.className = 'custom-tooltip';
+        document.querySelectorAll('.main-chart-container')[1].appendChild(customTooltip2);
+        return customTooltip2;
+      } else {
+        if (customTooltip) return customTooltip;
+        
+        customTooltip = document.createElement('div');
+        customTooltip.className = 'custom-tooltip';
+        document.querySelectorAll('.main-chart-container')[0].appendChild(customTooltip);
+        return customTooltip;
+      }
     }
 
-    function showCustomTooltip(chart, tooltip) {
+    function showCustomTooltip(chart, tooltip, chartId) {
       // Criar ou obter o tooltip personalizado
-      const tooltipEl = createCustomTooltip();
+      const tooltipEl = createCustomTooltip(chartId);
       
       // Esconder tooltip se não há dados
       if (tooltip.opacity === 0) {
@@ -420,7 +440,7 @@
 
       // Posicionar o tooltip
       const position = chart.canvas.getBoundingClientRect();
-      const chartContainer = document.querySelector('.main-chart-container');
+      const chartContainer = document.querySelectorAll('.main-chart-container')[chartId === 'performanceChart2' ? 1 : 0];
       const containerRect = chartContainer.getBoundingClientRect();
       
       // Posição relativa ao container do gráfico
@@ -480,30 +500,33 @@
         const allDates = [];
         const morpheus = [];
         const ibov = [];
+        const morpheus2 = [];
+        const ibov2 = [];
 
-        // EXPLICAÇÃO DAS REFERÊNCIAS:
-        // O gráfico 1 está sendo criado com dados das colunas 10 e 11 da planilha pública
-        // Coluna 10 (índice 9): Data (formato DD/MM/AAAA)
-        // Coluna 11 (índice 10): F1 - Dados de performance da Morpheus
-        // Coluna 12 (índice 11): F2 - Dados de performance do IBOV
-        // A leitura começa da linha 2 (índice 1) para pular o cabeçalho
-        
+        // Dados para o primeiro gráfico (colunas 41 e 42)
+        // Dados para o segundo gráfico (colunas 39 e 40)
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
-          if (cols.length >= 12) {
+          if (cols.length >= 43) {
             const date = cols[39]?.trim(); 
-            const f1 = parseFloat(cols[41]); 
-            const f2 = parseFloat(cols[42]); 
+            const f1 = parseFloat(cols[41]); // Primeiro gráfico - Morpheus
+            const f2 = parseFloat(cols[42]); // Primeiro gráfico - IBOV
+            const f3 = parseFloat(cols[39]); // Segundo gráfico - Morpheus 2 (AN)
+            const f4 = parseFloat(cols[40]); // Segundo gráfico - IBOV 2 (AO)
             
-            if (date && !isNaN(f1) && !isNaN(f2)) {
+            if (date && !isNaN(f1) && !isNaN(f2) && !isNaN(f3) && !isNaN(f4)) {
               allDates.push(date);
               morpheus.push((f1 - 1) * 100); // Converte para porcentagem
               ibov.push((f2 - 1) * 100);     // Converte para porcentagem
+              morpheus2.push((f3 - 1) * 100); // Converte para porcentagem
+              ibov2.push((f4 - 1) * 100);     // Converte para porcentagem
             }
           }
         }
 
-        console.log("Dados processados - Datas:", allDates.length, "Morpheus:", morpheus.length, "IBOV:", ibov.length);
+        console.log("Dados processados - Datas:", allDates.length);
+        console.log("Primeiro gráfico - Morpheus:", morpheus.length, "IBOV:", ibov.length);
+        console.log("Segundo gráfico - Morpheus2:", morpheus2.length, "IBOV2:", ibov2.length);
 
         if (allDates.length === 0) {
           throw new Error("Nenhum dado válido encontrado para o gráfico");
@@ -512,7 +535,8 @@
         const lastDate = allDates[allDates.length - 1];
         document.getElementById("subtitle").textContent = lastDate;
 
-        createMainChart(allDates, morpheus, ibov);
+        createFirstChart(allDates, morpheus, ibov);
+        createSecondChart(allDates, morpheus2, ibov2);
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -520,7 +544,7 @@
       }
     }
 
-    function createMainChart(allDates, morpheus, ibov) {
+    function createFirstChart(allDates, morpheus, ibov) {
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
@@ -614,7 +638,7 @@
             tooltip: {
               enabled: false,
               external: (context) => {
-                showCustomTooltip(context.chart, context.tooltip);
+                showCustomTooltip(context.chart, context.tooltip, 'performanceChart');
               }
             },
           },
@@ -669,7 +693,159 @@
         },
       });
 
-      console.log("Gráfico principal criado com sucesso");
+      console.log("Primeiro gráfico criado com sucesso");
+    }
+
+    function createSecondChart(allDates, morpheus2, ibov2) {
+      const morpheus2Data = allDates.map((date, i) => ({
+        x: date.split("/").reverse().join("-"),
+        y: morpheus2[i]
+      }));
+
+      const ibov2Data = allDates.map((date, i) => ({
+        x: date.split("/").reverse().join("-"),
+        y: ibov2[i]
+      }));
+
+      const canvas = document.getElementById("performanceChart2");
+      const ctx = canvas.getContext("2d");
+
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const isMobileVertical = document.body.classList.contains('mobile-device') && 
+                          !document.body.classList.contains('mobile-landscape');
+      
+      // Aumentar significativamente as fontes no mobile vertical
+      const axisFontSize = isMobileVertical ? 22 : 15;
+      const legendFontSize = isMobileVertical ? 20 : 12;
+
+      const createGradient = (ctx, chartArea) => {
+        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+        gradient.addColorStop(0, "#F6F8FC");
+        gradient.addColorStop(0.5, "#8EA8D7");
+        gradient.addColorStop(1, "#164CAD");
+        return gradient;
+      };
+
+      window.chartInstances.performanceChart2 = new Chart(ctx, {
+        type: "line",
+        data: {
+          datasets: [
+            {
+              label: "Morpheus 2",
+              data: morpheus2Data,
+              borderColor: "#164CAD",
+              borderWidth: 1.5,
+              pointRadius: 0,
+              tension: 0.15,
+              fill: true,
+              backgroundColor: function(context) {
+                const chart = context.chart;
+                const {ctx, chartArea} = chart;
+                if (!chartArea) {
+                  return null;
+                }
+                return createGradient(ctx, chartArea);
+              },
+              order: 2,
+            },
+            {
+              label: "IBOV 2",
+              data: ibov2Data,
+              borderColor: "#000000",
+              borderWidth: 1.5,
+              pointRadius: 0,
+              tension: 0.15,
+              fill: false,
+              order: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            intersect: false,
+            mode: 'index',
+          },
+          plugins: {
+            legend: {
+              position: "top",
+              labels: {
+                usePointStyle: true,
+                pointStyle: "circle",
+                color: "#000000",
+                font: {
+                  family: "Montserrat",
+                  size: legendFontSize,
+                  weight: "300",
+                },
+              },
+              reverse: true
+            },
+            tooltip: {
+              enabled: false,
+              external: (context) => {
+                showCustomTooltip(context.chart, context.tooltip, 'performanceChart2');
+              }
+            },
+          },
+          scales: {
+            x: {
+              type: "time",
+              time: {
+                unit: "month",
+                displayFormats: { 
+                  month: "MMM - yy" 
+                },
+                tooltipFormat: "dd/MM/yyyy"
+              },
+              ticks: {
+                color: "#000000",
+                maxRotation: 45,
+                minRotation: 45,
+                font: {
+                  family: "Montserrat",
+                  size: axisFontSize,
+                  weight: "300",
+                },
+                callback: function(value, index, values) {
+                  const date = new Date(value);
+                  const month = date.getMonth();
+                  const year = date.getFullYear().toString().slice(-2);
+                  
+                  const mesesPortugues = [
+                    'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+                  ];
+                  
+                  return `${mesesPortugues[month]} - ${year}`;
+                }
+              },
+              grid: { color: "rgba(0,0,0,0.05)" },
+            },
+            y: {
+              ticks: {
+                color: "#000000",
+                font: {
+                  family: "Montserrat",
+                  size: axisFontSize,
+                  weight: "300",
+                },
+                callback: (v) => `${v.toFixed(0)}%`,
+                stepSize: 5
+              },
+              grid: { color: "rgba(0,0,0,0.05)" },
+            },
+          },
+        },
+      });
+
+      console.log("Segundo gráfico criado com sucesso");
     }
 
     loadData();
