@@ -422,7 +422,7 @@
           // CORREÇÃO: Formatar para 2 casas decimais (X,XX) em vez de 3 (X,XXX)
           const value = dataPoint.raw.y.toFixed(2).replace('.', ',') + '%';
           const label = dataset.label || '';
-          const color = dataset.borderColor || '#FF0000';
+          const color = dataset.borderColor || '#164CAD';
           
           tooltipHTML += `
             <div class="tooltip-item">
@@ -531,7 +531,8 @@
             
             if (date2 && !isNaN(f3)) {
               allDates2.push(date2);
-              vsTeoria.push((f3 - 1) * 100);
+              // CORREÇÃO: Removido o -1 e *100, pois o dado já está em porcentagem
+              vsTeoria.push(f3 * 100); // Multiplica por 100 para converter decimal em porcentagem
             }
           }
         }
@@ -744,7 +745,7 @@
             {
               label: "Vs Teoria",
               data: vsTeoriaData,
-              borderColor: "#FF0000",
+              borderColor: "#164CAD", // CORREÇÃO: Mudado de #FF0000 para #164CAD
               borderWidth: 1.5,
               pointRadius: 0,
               tension: 0.15,
