@@ -509,9 +509,6 @@
           const cols = rows[i].split(",");
           if (cols.length >= 43) {
             const date = cols[39]?.trim(); 
-            const f1 = parseFloat(cols[41]); // Primeiro gráfico - Morpheus
-            const f2 = parseFloat(cols[42]); // Primeiro gráfico - IBOV
-            const f3 = parseFloat(cols[39]); // Segundo gráfico - Morpheus 2 (AN)
             const f4 = parseFloat(cols[40]); // Segundo gráfico - IBOV 2 (AO)
             
             if (date && !isNaN(f1) && !isNaN(f2) && !isNaN(f3) && !isNaN(f4)) {
@@ -754,7 +751,7 @@
               order: 2,
             },
             {
-              label: "IBOV 2",
+              label: "Vs Teoria",
               data: ibov2Data,
               borderColor: "#000000",
               borderWidth: 1.5,
