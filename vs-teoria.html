@@ -99,7 +99,6 @@
       margin-right: auto;
       display: flex;
       justify-content: center;
-      margin-bottom: 30px;
     }
 
     .main-chart-container {
@@ -115,9 +114,7 @@
       justify-content: center;
       align-items: center;
       width: 100%;
-      height: 500px;
       background-color: #fff;
-      border-radius: 8px;
       padding: 10px;
       box-sizing: border-box;
     }
@@ -253,7 +250,6 @@
 
     .mobile-device .chart-container {
       width: 100%;
-      height: 450px;
     }
 
     .mobile-device .main-chart-container canvas {
@@ -286,17 +282,44 @@
       max-width: 1200px;
     }
 
-    .mobile-landscape .chart-container {
-      height: 400px;
-    }
-
     .mobile-landscape .main-chart-container canvas {
       height: 380px !important;
     }
 
-    /* ESTILOS ESPECÍFICOS PARA O SEGUNDO GRÁFICO (ALTURA REDUZIDA) */
+    /* PRIMEIRO GRÁFICO (SUPERIOR) - REMOVENDO ESPAÇAMENTO INFERIOR */
+    .first-chart .chart-container {
+      height: 500px;
+      border-radius: 8px 8px 0 0 !important; /* Arredondar apenas topo */
+      margin-bottom: 0;
+      padding-bottom: 5px; /* Reduzir padding inferior para grudar */
+    }
+
+    .first-chart canvas {
+      height: 480px !important;
+    }
+
+    .mobile-device .first-chart .chart-container {
+      height: 450px;
+    }
+
+    .mobile-device .first-chart canvas {
+      height: 430px !important;
+    }
+
+    .mobile-landscape .first-chart .chart-container {
+      height: 400px;
+    }
+
+    .mobile-landscape .first-chart canvas {
+      height: 380px !important;
+    }
+
+    /* SEGUNDO GRÁFICO (INFERIOR) - REMOVENDO ESPAÇAMENTO SUPERIOR */
     .second-chart .chart-container {
-      height: 250px !important; /* Metade da altura do primeiro gráfico */
+      height: 250px; /* Metade da altura do primeiro gráfico */
+      border-radius: 0 0 8px 8px !important; /* Arredondar apenas base */
+      margin-top: 0;
+      padding-top: 0; /* Remover padding superior para grudar */
     }
 
     .second-chart canvas {
@@ -304,7 +327,7 @@
     }
 
     .mobile-device .second-chart .chart-container {
-      height: 225px !important; /* Metade da altura do primeiro gráfico mobile */
+      height: 225px; /* Metade da altura do primeiro gráfico mobile */
     }
 
     .mobile-device .second-chart canvas {
@@ -312,7 +335,7 @@
     }
 
     .mobile-landscape .second-chart .chart-container {
-      height: 200px !important; /* Metade da altura do primeiro gráfico landscape */
+      height: 200px; /* Metade da altura do primeiro gráfico landscape */
     }
 
     .mobile-landscape .second-chart canvas {
@@ -338,7 +361,7 @@
     </div>
     
     <!-- Primeiro Gráfico -->
-    <div class="chart-main-container">
+    <div class="chart-main-container first-chart">
       <div class="main-chart-container">
         <div class="chart-container">
           <canvas id="performanceChart"></canvas>
