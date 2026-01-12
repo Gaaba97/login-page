@@ -799,17 +799,7 @@
           },
           plugins: {
             legend: {
-              position: "top",
-              labels: {
-                usePointStyle: true,
-                pointStyle: "circle",
-                color: "#000000",
-                font: {
-                  family: "Montserrat",
-                  size: legendFontSize,
-                  weight: "300",
-                },
-              },
+              display: false, // CORREÇÃO: Remove a legenda do segundo gráfico
             },
             tooltip: {
               enabled: false,
@@ -860,7 +850,8 @@
                   size: axisFontSize,
                   weight: "300",
                 },
-                callback: (v) => `${v.toFixed(2).replace('.', ',')}%`,
+                // CORREÇÃO: Alterado para 0 casas decimais (formato -1% 0% 1%)
+                callback: (v) => `${v.toFixed(0)}%`,
                 stepSize: 1 // Alterado de 5 para 1 (1% em 1%)
               },
               suggestedMin: -1, // Mínimo sugerido de -1%
