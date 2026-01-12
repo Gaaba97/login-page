@@ -491,9 +491,9 @@
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
           if (cols.length >= 12) {
-            const date = cols[9]?.trim();  // Coluna 10 - Data
-            const f1 = parseFloat(cols[10]); // Coluna 11 - Dados Morpheus
-            const f2 = parseFloat(cols[11]); // Coluna 12 - Dados IBOV
+            const date = cols[39]?.trim(); 
+            const f1 = parseFloat(cols[41]); 
+            const f2 = parseFloat(cols[42]); 
             
             if (date && !isNaN(f1) && !isNaN(f2)) {
               allDates.push(date);
