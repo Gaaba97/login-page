@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Clube Morpheus · Conteúdo</title>
+  <link rel="icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    /* ========== RESET + BASE ========== */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "DM Sans", sans-serif;
+      background-color: white;
+      color: black;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ========== NAVBAR PRINCIPAL ========== */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.9);
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 3;
+      color: white;
+      box-sizing: border-box;
+      backdrop-filter: blur(2px);
+    }
+
+    .navbar .welcome {
+      font-weight: 700;
+      white-space: nowrap;
+      font-size: 16px;
+      letter-spacing: -0.2px;
+    }
+
+    .navbar .links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      padding-left: 4px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 16px;
+      display: inline-block;
+      transition: transform 0.2s ease-in-out, opacity 0.2s;
+    }
+
+    .navbar a:hover {
+      transform: scale(1.08);
+      opacity: 0.9;
+      color: white;
+    }
+
+    /* ===== RESPONSIVE: MOBILE VERTICAL (smartphone) ===== */
+    .mobile-device .navbar {
+      padding: 18px 20px;
+      min-height: 75px;
+    }
+
+    .mobile-device .navbar .welcome {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .mobile-device .navbar .links {
+      gap: 20px;
+    }
+
+    .mobile-device .navbar a {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    /* ===== MOBILE LANDSCAPE (rotacionado) ===== */
+    .mobile-landscape .navbar {
+      padding: 12px 20px;
+    }
+
+    .mobile-landscape .navbar .welcome {
+      font-size: 18px;
+    }
+
+    .mobile-landscape .navbar .links {
+      gap: 15px;
+    }
+
+    .mobile-landscape .navbar a {
+      font-size: 18px;
+    }
+
+    /* ===== DESKTOP / TABLET GRANDE ===== */
+    .desktop-device .navbar {
+      padding: 10px 24px;
+    }
+
+    .desktop-device .navbar .welcome {
+      font-size: 16px;
+    }
+
+    .desktop-device .navbar .links {
+      gap: 28px;
+    }
+
+    .desktop-device .navbar a {
+      font-size: 16px;
+    }
+
+    /* ajuste fino para telas médias */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 8px 15px;
+      }
+      .navbar .welcome {
+        font-size: 14px;
+      }
+      .navbar .links {
+        gap: 12px;
+      }
+      .navbar a {
+        font-size: 14px;
+      }
+    }
+
+    /* ========== CONTEÚDO PRINCIPAL ========== */
+    h2 {
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 90px;
+      box-sizing: border-box;
+    }
+
+    .content {
+      width: 90%;
+      max-width: 820px;
+      background-color: rgba(0, 0, 0, 0.03);
+      padding: 0px 30px 20px 30px;
+      border-radius: 24px;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      color: #000;
+      box-sizing: border-box;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02);
+      transition: all 0.2s;
+    }
+
+    /* Tabela refinada */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      text-align: center;
+      table-layout: fixed;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      text-align: center;
+      vertical-align: middle;
+      width: 20%;
+      font-weight: 500;
+    }
+
+    thead th {
+      background-color: #000;
+      color: white;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tr.highlight td {
+      font-weight: 700;
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    p {
+      margin-top: 24px;
+      font-weight: 600;
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    #cotaValor {
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: rgba(0,0,0,0.03);
+      display: inline-block;
+      padding: 6px 20px;
+      border-radius: 40px;
+      margin: 12px auto 4px;
+      width: fit-content;
+    }
+
+    #inicioCota {
+      margin-top: 6px;
+      font-size: 13px;
+      font-style: italic;
+      font-weight: normal;
+      text-align: center;
+      opacity: 0.75;
+    }
+
+    /* ocultar info de debug (device info não precisa aparecer) */
+    #deviceInfo {
+      display: none !important;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto 0;
+      padding: 10px 22px;
+      background-color: #e0e0e0;
+      color: #000;
+      border: none;
+      font-weight: 600;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background-color: #c2c2c2;
+    }
+
+    /* pequeno ajuste mobile */
+    @media (max-width: 600px) {
+      .content {
+        padding: 0px 16px 20px 16px;
+      }
+      th, td {
+        padding: 8px 4px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA DE NAVEGAÇÃO COM NOVO LINK "CONTEÚDO" (entre Lâmina e Minha Área) -->
+  <div class="navbar">
+    <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
+    <div class="links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="lamina.html">Lâmina</a>
+      <a href="conteudo.html" class="active-page">Conteúdo</a>   <!-- NOVA PÁGINA ADICIONADA -->
+      <a href="minha-area.html">Minha Área</a>
+    </div>
+  </div>
+
+  <!-- CONTEÚDO PRINCIPAL (RENTABILIDADE, TABELA, COTA) — ESTA É A PÁGINA "CONTEÚDO" -->
+  <div class="main-wrapper">
+    <div class="content">
+      <h2>📊 Indicadores & Performance</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Referência</th>
+            <th id="dataReferencia">Dia</th>
+            <th>Mês</th>
+            <th>Ano</th>
+            <th>Desde o início*</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:700;">Morpheus</td>
+            <td id="morpheusDia">...</td>
+            <td id="morpheusMes">...</td>
+            <td id="morpheusAno">...</td>
+            <td id="morpheusInicio">...</td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">IBOV</td>
+            <td id="ibovDia">...</td>
+            <td id="ibovMes">...</td>
+            <td id="ibovAno">...</td>
+            <td id="ibovInicio">...</td>
+          </tr>
+          <tr class="highlight">
+            <td style="font-weight:700;">p.p. IBOV</td>
+            <td id="ppDia">...</td>
+            <td id="ppMes">...</td>
+            <td id="ppAno">...</td>
+            <td id="ppInicio">...</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <p id="cotaValor">Cota: ...</p>
+        <p id="inicioCota"><i>* Início em 01/07/2025</i></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIREBASE + AUTENTICAÇÃO + GOOGLE SHEETS (mantido integralmente) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+      authDomain: "login-site-9cbbd.firebaseapp.com",
+      projectId: "login-site-9cbbd",
+      storageBucket: "login-site-9cbbd.appspot.com",
+      messagingSenderId: "703993528666",
+      appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const docRef = doc(db, "usuarios", user.uid);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            const nome = data.nome || "Usuário";
+            const genero = (data.genero || "masculino").toLowerCase();
+            const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
+            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+          } else {
+            document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
+          }
+        } catch (error) {
+          console.warn("erro ao carregar nome:", error);
+          document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Membro";
+        }
+      } else {
+        // usuário não autenticado -> redireciona para login
+        window.location.href = "index.html";
+      }
+    });
+
+    // ========== DADOS DA PLANILHA GOOGLE SHEETS (RENTABILIDADE E COTA) ==========
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
+
+    fetch(sheetURL)
+      .then((response) => {
+        if (!response.ok) throw new Error("Erro ao carregar planilha.");
+        return response.text();
+      })
+      .then((csvText) => {
+        const rows = csvText.trim().split("\n").map((row) => row.split(","));
+        // Índices baseados na estrutura original: linha 2 coluna 2 = data referência, etc.
+        const dataReferencia = rows[2]?.[2] || "---";
+        const morpheusDia = rows[3]?.[2] || "---";
+        const morpheusMes = rows[3]?.[3] || "---";
+        const morpheusAno = rows[3]?.[4] || "---";
+        const morpheusInicio = rows[3]?.[6] || "---";
+        const ibovDia = rows[4]?.[2] || "---";
+        const ibovMes = rows[4]?.[3] || "---";
+        const ibovAno = rows[4]?.[4] || "---";
+        const ibovInicio = rows[4]?.[6] || "---";
+        const ppDia = rows[5]?.[2] || "---";
+        const ppMes = rows[5]?.[3] || "---";
+        const ppAno = rows[5]?.[4] || "---";
+        const ppInicio = rows[5]?.[6] || "---";
+        const cota = rows[8]?.[2] || "...";
+
+        document.getElementById("dataReferencia").textContent = dataReferencia;
+        document.getElementById("morpheusDia").textContent = morpheusDia;
+        document.getElementById("morpheusMes").textContent = morpheusMes;
+        document.getElementById("morpheusAno").textContent = morpheusAno;
+        document.getElementById("morpheusInicio").textContent = morpheusInicio;
+        document.getElementById("ibovDia").textContent = ibovDia;
+        document.getElementById("ibovMes").textContent = ibovMes;
+        document.getElementById("ibovAno").textContent = ibovAno;
+        document.getElementById("ibovInicio").textContent = ibovInicio;
+        document.getElementById("ppDia").textContent = ppDia;
+        document.getElementById("ppMes").textContent = ppMes;
+        document.getElementById("ppAno").textContent = ppAno;
+        document.getElementById("ppInicio").textContent = ppInicio;
+        document.getElementById("cotaValor").textContent = `Cota: ${cota}`;
+      })
+      .catch((err) => {
+        console.error("Erro ao carregar dados da planilha:", err);
+        // fallback estético: manter "..." já existente
+      });
+  </script>
+
+  <!-- SCRIPT DE DETECÇÃO DE DISPOSITIVO (responsividade navbar + layout) -->
+  <script>
+    let orientationChangeTimeout;
+
+    function detectarDispositivo() {
+      const largura = window.innerWidth;
+      const altura = window.innerHeight;
+      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      
+      const isMobileSize = largura <= 1024 || 
+                          (largura < altura && largura <= 768) ||
+                          (isTouchDevice && (largura <= 1024 || altura <= 1024));
+
+      const isNowMobileLandscape = isMobileSize && isTouchDevice && largura > altura;
+
+      document.body.classList.remove('desktop-device', 'mobile-device', 'mobile-landscape');
+
+      if (isMobileSize && isTouchDevice) {
+        if (largura > altura) {
+          document.body.classList.add('mobile-device', 'mobile-landscape');
+        } else {
+          document.body.classList.add('mobile-device');
+        }
+      } else {
+        document.body.classList.add('desktop-device');
+      }
+    }
+
+    window.addEventListener('resize', function() {
+      clearTimeout(orientationChangeTimeout);
+      orientationChangeTimeout = setTimeout(detectarDispositivo, 250);
+    });
+
+    window.addEventListener('orientationchange', function() {
+      clearTimeout(orientationChangeTimeout);
+      orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
+    });
+    
+    // detectar ao carregar e também garantir estilo consistente
+    setTimeout(detectarDispositivo, 100);
+    detectarDispositivo();
+  </script>
+</body>
+</html>
