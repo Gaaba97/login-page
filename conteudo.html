@@ -132,17 +132,114 @@
       }
     }
 
+    /* OCULTAR INFORMAÇÃO DO DISPOSITIVO */
+    #deviceInfo {
+      display: none !important;
+    }
 
-/* OCULTAR INFORMAÇÃO DO DISPOSITIVO */
-#deviceInfo {
-  display: none !important;
-}
-    
+    /* ===== CONTEÚDO ===== */
+
+    .conteudo-container {
+      width: 100%;
+      max-width: 900px;
+      margin: 110px auto 40px auto;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    .video-card {
+      padding: 30px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.12);
+    }
+
+    .video-thumb {
+      position: relative;
+      width: 100%;
+      cursor: pointer;
+      overflow: hidden;
+      border-radius: 14px;
+      transition: transform 0.25s ease;
+    }
+
+    .video-thumb:hover {
+      transform: scale(1.01);
+    }
+
+    .video-thumb img {
+      width: 100%;
+      display: block;
+      border-radius: 14px;
+    }
+
+    .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      background: rgba(0,0,0,0.7);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 34px;
+      color: white;
+    }
+
+    .video-info {
+      margin-top: 15px;
+    }
+
+    .video-titulo {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .video-descricao {
+      font-size: 16px;
+      opacity: 0.8;
+      line-height: 1.5;
+    }
+
+    .video-data {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.6;
+    }
+
+    iframe {
+      width: 100%;
+      height: 500px;
+      border: none;
+      border-radius: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .video-titulo {
+        font-size: 22px;
+      }
+
+      iframe {
+        height: 250px;
+      }
+
+      .play-button {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+      }
+    }
+
   </style>
 </head>
+
 <body>
+
   <div class="navbar">
     <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
+
     <div class="links">
       <a href="dashboard.html">Dashboard</a>
       <a href="lamina.html">Lâmina</a>
@@ -151,13 +248,18 @@
     </div>
   </div>
 
+  <!-- CONTAINER DOS VÍDEOS -->
+  <div class="conteudo-container" id="videosContainer"></div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+
     import {
       getAuth,
       onAuthStateChanged,
       signOut,
     } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
     import {
       getFirestore,
       doc,
@@ -178,72 +280,234 @@
     const db = getFirestore(app);
 
     onAuthStateChanged(auth, async (user) => {
+
       if (user) {
+
         try {
+
           const docRef = doc(db, "usuarios", user.uid);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
+
             const data = docSnap.data();
+
             const nome = data.nome || "Usuário";
             const genero = (data.genero || "masculino").toLowerCase();
-            const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
-            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+
+            const saudacao =
+              genero === "feminino"
+                ? "Bem-vinda"
+                : "Bem-vindo";
+
+            document.getElementById("welcomeUser").textContent =
+              `${saudacao}, ${nome}`;
+
           } else {
-            document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
+
+            document.getElementById("welcomeUser").textContent =
+              "Bem-vindo(a), Usuário";
+
           }
+
         } catch (error) {
-          document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
+
+          document.getElementById("welcomeUser").textContent =
+            "Bem-vindo(a), Usuário";
+
         }
+
       } else {
+
         window.location.href = "index.html";
+
       }
+
     });
+
+  </script>
+
+  <!-- SCRIPT DOS VÍDEOS -->
+  <script>
+
+    const videosContainer = document.getElementById("videosContainer");
+
+    async function carregarVideos() {
+
+      const videos = [];
+
+      // TENTA CARREGAR DO 100 PARA O 1
+      for (let i = 100; i >= 1; i--) {
+
+        try {
+
+          const response = await fetch(`conteudo/${i}.json`);
+
+          if (!response.ok) continue;
+
+          const data = await response.json();
+
+          if (Array.isArray(data) && data.length > 0) {
+
+            videos.push({
+              numero: i,
+              ...data[0]
+            });
+
+          }
+
+        } catch (e) {
+          // ignora arquivos inexistentes
+        }
+
+      }
+
+      // ORDEM DECRESCENTE
+      videos.sort((a, b) => b.numero - a.numero);
+
+      renderizarVideos(videos);
+
+    }
+
+    function renderizarVideos(videos) {
+
+      videosContainer.innerHTML = "";
+
+      videos.forEach(video => {
+
+        const thumb =
+          video.thumb && video.thumb.trim() !== ""
+            ? video.thumb
+            : `https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`;
+
+        const card = document.createElement("div");
+
+        card.className = "video-card";
+
+        card.innerHTML = `
+          <div class="video-thumb" onclick="abrirVideo(this, '${video.id}')">
+
+            <img src="${thumb}" alt="${video.titulo}">
+
+            <div class="play-button">▶</div>
+
+          </div>
+
+          <div class="video-info">
+
+            <div class="video-titulo">
+              ${video.titulo || ""}
+            </div>
+
+            <div class="video-descricao">
+              ${video.descricao || ""}
+            </div>
+
+            <div class="video-data">
+              ${video.data || ""}
+            </div>
+
+          </div>
+        `;
+
+        videosContainer.appendChild(card);
+
+      });
+
+    }
+
+    function abrirVideo(elemento, videoId) {
+
+      elemento.innerHTML = `
+        <iframe
+          src="https://www.youtube.com/embed/${videoId}?autoplay=1"
+          allow="autoplay; encrypted-media"
+          allowfullscreen>
+        </iframe>
+      `;
+
+    }
+
+    carregarVideos();
+
+    window.abrirVideo = abrirVideo;
 
   </script>
 
   <script>
+
     // SCRIPT DE DETECÇÃO DE DISPOSITIVO
+
     let orientationChangeTimeout;
 
     function detectarDispositivo() {
+
       const largura = window.innerWidth;
       const altura = window.innerHeight;
-      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-      
-      const isMobileSize = largura <= 1024 || 
-                          (largura < altura && largura <= 768) ||
-                          (isTouchDevice && (largura <= 1024 || altura <= 1024));
 
-      const wasMobileLandscape = document.body.classList.contains('mobile-landscape');
-      const isNowMobileLandscape = isMobileSize && isTouchDevice && largura > altura;
+      const isTouchDevice =
+        ('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0);
 
-      document.body.classList.remove('desktop-device', 'mobile-device', 'mobile-landscape');
+      const isMobileSize =
+        largura <= 1024 ||
+        (largura < altura && largura <= 768) ||
+        (isTouchDevice && (largura <= 1024 || altura <= 1024));
+
+      document.body.classList.remove(
+        'desktop-device',
+        'mobile-device',
+        'mobile-landscape'
+      );
 
       if (isMobileSize && isTouchDevice) {
+
         if (largura > altura) {
-          document.body.classList.add('mobile-device', 'mobile-landscape');
+
+          document.body.classList.add(
+            'mobile-device',
+            'mobile-landscape'
+          );
+
         } else {
+
           document.body.classList.add('mobile-device');
+
         }
+
       } else {
+
         document.body.classList.add('desktop-device');
+
       }
+
     }
 
     window.addEventListener('resize', function() {
+
       clearTimeout(orientationChangeTimeout);
-      orientationChangeTimeout = setTimeout(detectarDispositivo, 250);
+
+      orientationChangeTimeout =
+        setTimeout(detectarDispositivo, 250);
+
     });
 
     window.addEventListener('orientationchange', function() {
+
       clearTimeout(orientationChangeTimeout);
-      orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
+
+      orientationChangeTimeout =
+        setTimeout(detectarDispositivo, 500);
+
     });
-    
+
     // Detectar dispositivo ao carregar a página
+
     setTimeout(detectarDispositivo, 100);
+
     detectarDispositivo();
+
   </script>
+
 </body>
 </html>
