@@ -141,7 +141,7 @@
        ESTILOS DA ÁREA DE CONTEÚDO
        ============================= */
     #conteudo-wrapper {
-      margin-top: 60px; /* altura da navbar */
+      margin-top: 60px;
       padding: 30px 20px;
       max-width: 800px;
       width: 100%;
@@ -155,13 +155,14 @@
       padding: 20px 15px;
     }
 
+    /* CARD DO VÍDEO */
     .video-card {
       display: flex;
       flex-direction: row;
       align-items: flex-start;
       gap: 18px;
       padding: 18px 0;
-      text-decoration: none;
+      cursor: pointer;
       color: black;
       transition: opacity 0.2s ease;
     }
@@ -170,13 +171,51 @@
       opacity: 0.8;
     }
 
-    .video-thumb {
+    /* WRAPPER DA THUMB COM ÍCONE DE PLAY */
+    .thumb-wrapper {
+      position: relative;
       width: 200px;
       min-width: 200px;
       aspect-ratio: 16 / 9;
-      object-fit: cover;
       border-radius: 6px;
-      background-color: #ddd;
+      overflow: hidden;
+      background-color: #111;
+      flex-shrink: 0;
+    }
+
+    .video-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ÍCONE DE PLAY SOBRE A THUMB */
+    .play-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 48px;
+      height: 48px;
+      background-color: rgba(0, 0, 0, 0.65);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      transition: background-color 0.2s ease;
+    }
+
+    .video-card:hover .play-icon {
+      background-color: rgba(200, 0, 0, 0.9);
+    }
+
+    .play-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+      margin-left: 3px;
     }
 
     .video-info {
@@ -233,7 +272,7 @@
       gap: 12px;
     }
 
-    .mobile-device .video-thumb {
+    .mobile-device .thumb-wrapper {
       width: 100%;
       min-width: unset;
     }
@@ -251,13 +290,91 @@
     }
 
     /* MOBILE LANDSCAPE */
-    .mobile-landscape .video-thumb {
+    .mobile-landscape .thumb-wrapper {
       width: 180px;
       min-width: 180px;
     }
 
     .mobile-landscape .video-titulo {
       font-size: 15px;
+    }
+
+    /* =============================
+       MODAL DO PLAYER
+       ============================= */
+    #video-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background-color: rgba(0, 0, 0, 0.82);
+      align-items: center;
+      justify-content: center;
+    }
+
+    #video-modal.aberto {
+      display: flex;
+    }
+
+    #modal-inner {
+      position: relative;
+      width: 90vw;
+      max-width: 900px;
+    }
+
+    #modal-titulo {
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      margin: 0 0 10px 0;
+      padding-right: 36px;
+      line-height: 1.3;
+    }
+
+    #modal-frame-wrapper {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #modal-frame-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    #modal-fechar {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+
+    #modal-fechar svg {
+      width: 26px;
+      height: 26px;
+      display: block;
+    }
+
+    #modal-fechar:hover svg path {
+      stroke: #ccc;
+    }
+
+    @media (max-width: 600px) {
+      #modal-inner {
+        width: 96vw;
+      }
+
+      #modal-titulo {
+        font-size: 13px;
+      }
     }
   </style>
 </head>
@@ -279,12 +396,31 @@
     <div id="conteudo-lista"></div>
   </div>
 
+  <!-- MODAL DO PLAYER -->
+  <div id="video-modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+    <div id="modal-inner">
+      <button id="modal-fechar" aria-label="Fechar vídeo">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 6L6 18M6 6l12 12" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        </svg>
+      </button>
+      <p id="modal-titulo"></p>
+      <div id="modal-frame-wrapper">
+        <iframe
+          id="modal-iframe"
+          src=""
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import {
       getAuth,
       onAuthStateChanged,
-      signOut,
     } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
     import {
       getFirestore,
@@ -327,23 +463,29 @@
         window.location.href = "index.html";
       }
     });
-
   </script>
 
-  <!-- SCRIPT DE BUSCA E RENDERIZAÇÃO DOS VÍDEOS -->
+  <!-- SCRIPT DE BUSCA, RENDERIZAÇÃO E MODAL DOS VÍDEOS -->
   <script>
-    const GITHUB_REPO = "Gaaba97/login-page";
+    const GITHUB_REPO   = "Gaaba97/login-page";
     const GITHUB_BRANCH = "main";
     const CONTEUDO_PATH = "conteudo";
     const RAW_BASE = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/${CONTEUDO_PATH}`;
-    const API_URL = `https://api.github.com/repos/${GITHUB_REPO}/contents/${CONTEUDO_PATH}?ref=${GITHUB_BRANCH}`;
+    const API_URL  = `https://api.github.com/repos/${GITHUB_REPO}/contents/${CONTEUDO_PATH}?ref=${GITHUB_BRANCH}`;
 
-    function thumbUrl(videoId) {
-      return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    /* ---- THUMB ----
+       Usa o campo "thumb" do JSON se estiver preenchido;
+       caso contrário, pega o thumbnail padrão do YouTube. */
+    function resolverThumb(video) {
+      if (video.thumb && video.thumb.trim() !== "") {
+        return video.thumb.trim();
+      }
+      return `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
     }
 
-    function youtubeUrl(videoId) {
-      return `https://www.youtube.com/watch?v=${videoId}`;
+    function thumbFallback(img, videoId) {
+      img.onerror = null;
+      img.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
     }
 
     function formatarData(dataStr) {
@@ -354,6 +496,39 @@
       return `${parseInt(dia)} de ${meses[parseInt(mes) - 1]} de ${ano}`;
     }
 
+    /* ---- MODAL ---- */
+    const modal       = document.getElementById("video-modal");
+    const modalIframe = document.getElementById("modal-iframe");
+    const modalTitulo = document.getElementById("modal-titulo");
+    const btnFechar   = document.getElementById("modal-fechar");
+
+    function abrirModal(videoId, titulo) {
+      modalTitulo.textContent = titulo || "";
+      // autoplay=1 inicia o vídeo automaticamente; rel=0 não mostra sugestões de outros canais
+      modalIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+      modal.classList.add("aberto");
+      document.body.style.overflow = "hidden";
+    }
+
+    function fecharModal() {
+      modal.classList.remove("aberto");
+      modalIframe.src = ""; // zera o src para parar o vídeo
+      document.body.style.overflow = "";
+    }
+
+    btnFechar.addEventListener("click", fecharModal);
+
+    // Clique no fundo escuro fecha o modal
+    modal.addEventListener("click", function(e) {
+      if (e.target === modal) fecharModal();
+    });
+
+    // Tecla ESC fecha o modal
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") fecharModal();
+    });
+
+    /* ---- RENDERIZAÇÃO ---- */
     function renderVideos(videos) {
       const lista = document.getElementById("conteudo-lista");
       document.getElementById("conteudo-loading").style.display = "none";
@@ -365,23 +540,27 @@
       }
 
       videos.forEach((video, index) => {
-        const thumb = (video.thumb && video.thumb.trim() !== "")
-          ? video.thumb
-          : thumbUrl(video.id);
+        const thumb = resolverThumb(video);
 
-        const card = document.createElement("a");
-        card.href = youtubeUrl(video.id);
-        card.target = "_blank";
-        card.rel = "noopener noreferrer";
+        const card = document.createElement("div");
         card.className = "video-card";
+        card.setAttribute("role", "button");
+        card.setAttribute("tabindex", "0");
 
         card.innerHTML = `
-          <img
-            class="video-thumb"
-            src="${thumb}"
-            alt="${video.titulo || ''}"
-            onerror="this.src='https://img.youtube.com/vi/${video.id}/mqdefault.jpg'"
-          />
+          <div class="thumb-wrapper">
+            <img
+              class="video-thumb"
+              src="${thumb}"
+              alt="${video.titulo || ''}"
+              onerror="thumbFallback(this, '${video.id}')"
+            />
+            <div class="play-icon">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="5,3 19,12 5,21"/>
+              </svg>
+            </div>
+          </div>
           <div class="video-info">
             <p class="video-titulo">${video.titulo || ""}</p>
             ${video.descricao ? `<p class="video-descricao">${video.descricao}</p>` : ""}
@@ -389,9 +568,14 @@
           </div>
         `;
 
+        card.addEventListener("click", () => abrirModal(video.id, video.titulo));
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") abrirModal(video.id, video.titulo);
+        });
+
         lista.appendChild(card);
 
-        // linha divisória após cada vídeo exceto o último
+        // linha divisória fina entre os vídeos (não após o último)
         if (index < videos.length - 1) {
           const hr = document.createElement("hr");
           hr.className = "video-divider";
@@ -400,15 +584,15 @@
       });
     }
 
+    /* ---- BUSCA NO GITHUB ---- */
     async function carregarVideos() {
       try {
-        // 1. Listar arquivos da pasta via GitHub API
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error("Falha ao listar arquivos");
 
         const arquivos = await res.json();
 
-        // 2. Filtrar apenas .json e ordenar numericamente (maior → menor)
+        // Pega apenas .json com nome numérico e ordena do maior para o menor
         const jsonFiles = arquivos
           .filter(f => f.name.endsWith(".json") && !isNaN(parseInt(f.name)))
           .sort((a, b) => parseInt(b.name) - parseInt(a.name));
@@ -418,7 +602,7 @@
           return;
         }
 
-        // 3. Buscar cada JSON em paralelo
+        // Busca cada arquivo em paralelo
         const promises = jsonFiles.map(f =>
           fetch(`${RAW_BASE}/${f.name}`)
             .then(r => r.ok ? r.json() : null)
@@ -427,7 +611,7 @@
 
         const resultados = await Promise.all(promises);
 
-        // 4. Achatar e limpar (cada JSON pode ser array ou objeto)
+        // Cada JSON pode ser array ou objeto — normaliza para lista plana
         const videos = resultados
           .filter(Boolean)
           .flatMap(r => Array.isArray(r) ? r : [r])
@@ -458,9 +642,6 @@
                           (largura < altura && largura <= 768) ||
                           (isTouchDevice && (largura <= 1024 || altura <= 1024));
 
-      const wasMobileLandscape = document.body.classList.contains('mobile-landscape');
-      const isNowMobileLandscape = isMobileSize && isTouchDevice && largura > altura;
-
       document.body.classList.remove('desktop-device', 'mobile-device', 'mobile-landscape');
 
       if (isMobileSize && isTouchDevice) {
@@ -484,7 +665,6 @@
       orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
     });
     
-    // Detectar dispositivo ao carregar a página
     setTimeout(detectarDispositivo, 100);
     detectarDispositivo();
   </script>
