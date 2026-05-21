@@ -78,6 +78,25 @@
       height: 46px !important;
     }
 
+    /* div interno usado para escalar o widget no desktop */
+    .ticker-scale {
+      transform-origin: top left;
+    }
+
+    /*
+     * No desktop: scale 0.80 → fonte visualmente menor
+     * Altura visual: 46 × 0.80 = ~37px
+     * Largura compensada: 100% ÷ 0.80 = 125% (evita corte horizontal)
+     */
+    .desktop-device .ticker-wrapper {
+      height: 37px;   /* altura visual após scale */
+    }
+
+    .desktop-device .ticker-scale {
+      transform: scale(0.80);
+      width: 125%;
+    }
+
     /* ── ESTILOS PARA SMARTPHONE VERTICAL ── */
     .mobile-device .navbar {
       padding: 18px 20px;
@@ -116,13 +135,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      /* navbar (~45px) + ticker (~46px) = 91px */
+      /* mobile base: navbar (~45px) + ticker (~46px) = 91px */
       padding-top: 91px;
       box-sizing: border-box;
     }
 
-    .mobile-device .main-wrapper  { padding-top: 121px; }  /* 75px + 46px */
-    .mobile-landscape .main-wrapper { padding-top: 100px; } /* 54px + 46px */
+    /* desktop: navbar (45px) + ticker escalado (37px) = 82px */
+    .desktop-device .main-wrapper   { padding-top: 82px; }
+    .mobile-device .main-wrapper    { padding-top: 121px; }  /* 75px + 46px */
+    .mobile-landscape .main-wrapper { padding-top: 100px; }  /* 54px + 46px */
 
     /* ── PÁGINA EM MANUTENÇÃO ── */
     .manutencao-container {
@@ -164,7 +185,7 @@
     .manutencao-linha {
       width: 60px;
       height: 3px;
-      background-color: #fff;
+      background-color: #000;
       border-radius: 2px;
     }
 
@@ -187,7 +208,8 @@
 
   <!-- ══ TICKER TAPE TRADINGVIEW ══ -->
   <div class="ticker-wrapper">
-    <div class="tradingview-widget-container">
+    <div class="ticker-scale">
+      <div class="tradingview-widget-container">
       <div class="tradingview-widget-container__widget"></div>
       <script type="text/javascript"
         src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js"
@@ -282,6 +304,7 @@
       }
       </script>
     </div>
+    </div><!-- /.ticker-scale -->
   </div>
 
   <!-- ══ CONTEÚDO PRINCIPAL ══ -->
