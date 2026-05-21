@@ -132,95 +132,63 @@
       }
     }
 
-    h2 {
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
     .main-wrapper {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding-top: 80px;
+      padding-top: 60px;
       box-sizing: border-box;
     }
 
-    .content {
-      width: 90%;
-      max-width: 720px;
-      background-color: rgba(0, 0, 0, 0.05);
-      padding: 0px 30px 0px 30px;
-      border-radius: 12px;
-      border: 1px solid #000;
+    /* PÁGINA EM MANUTENÇÃO */
+    .manutencao-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+      gap: 20px;
+    }
+
+    .manutencao-icon {
+      font-size: 64px;
+      animation: girar 3s linear infinite;
+    }
+
+    @keyframes girar {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .manutencao-titulo {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0;
       color: #000;
-      box-sizing: border-box;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      text-align: center;
-      table-layout: fixed;
+    .manutencao-subtitulo {
+      font-size: 16px;
+      font-weight: 400;
+      color: #555;
+      margin: 0;
+      max-width: 380px;
+      line-height: 1.6;
     }
 
-    th, td {
-      padding: 10px 14px;
-      text-align: center;
-      vertical-align: middle;
-      width: 20%;
+    .manutencao-linha {
+      width: 60px;
+      height: 3px;
+      background-color: #000;
+      border-radius: 2px;
     }
 
-    thead th {
-      background-color: black;
-      color: white;
+    /* OCULTAR INFORMAÇÃO DO DISPOSITIVO */
+    #deviceInfo {
+      display: none !important;
     }
-
-    tr.highlight {
-      background-color: transparent;
-    }
-
-    tr.highlight td {
-      opacity: 1;
-    }
-
-    p {
-      margin-top: 20px;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    button {
-      display: block;
-      margin: 30px auto 0;
-      padding: 12px 24px;
-      background-color: #ccc;
-      color: #000;
-      border: none;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #999;
-    }
-
-#inicioCota {
-  margin-top: 4px;
-  font-size: 13px;   /* menor que o texto da cota */
-  font-style: italic;
-  font-weight: normal;
-  text-align: left;
-}
-
-/* OCULTAR INFORMAÇÃO DO DISPOSITIVO */
-#deviceInfo {
-  display: none !important;
-}
-    
   </style>
 </head>
 <body>
@@ -235,45 +203,11 @@
   </div>
 
   <div class="main-wrapper">
-    <div class="content">
-      <h2>Rentabilidade</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Referência</th>
-            <th id="dataReferencia">Dia</th>
-            <th>Mês</th>
-            <th>Ano</th>
-            <th>Desde o início*</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Morpheus</td>
-            <td id="morpheusDia">...</td>
-            <td id="morpheusMes">...</td>
-            <td id="morpheusAno">...</td>
-            <td id="morpheusInicio">...</td>
-          </tr>
-          <tr>
-            <td>IBOV</td>
-            <td id="ibovDia">...</td>
-            <td id="ibovMes">...</td>
-            <td id="ibovAno">...</td>
-            <td id="ibovInicio">...</td>
-          </tr>
-          <tr class="highlight">
-            <td>p.p. IBOV</td>
-            <td id="ppDia">...</td>
-            <td id="ppMes">...</td>
-            <td id="ppAno">...</td>
-            <td id="ppInicio">...</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p id="cotaValor">Cota: ...</p>
-      <p id="inicioCota"><i>* Início em 01/07/2025</i></p>
+    <div class="manutencao-container">
+      <div class="manutencao-icon">⚙️</div>
+      <div class="manutencao-linha"></div>
+      <h2 class="manutencao-titulo">Página em Manutenção</h2>
+      <p class="manutencao-subtitulo">Estamos trabalhando para melhorar esta área. Em breve ela estará disponível novamente.</p>
     </div>
   </div>
 
@@ -282,7 +216,6 @@
     import {
       getAuth,
       onAuthStateChanged,
-      signOut,
     } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
     import {
       getFirestore,
@@ -325,50 +258,6 @@
         window.location.href = "index.html";
       }
     });
-
-    // ====== DADOS GOOGLE SHEETS ======
-    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
-
-    fetch(sheetURL)
-      .then((response) => {
-        if (!response.ok) throw new Error("Erro ao carregar planilha.");
-        return response.text();
-      })
-      .then((csvText) => {
-        const rows = csvText.trim().split("\n").map((row) => row.split(","));
-        const dataReferencia = rows[2]?.[2] || "...";
-        const morpheusDia = rows[3]?.[2] || "...";
-        const morpheusMes = rows[3]?.[3] || "...";
-        const morpheusAno = rows[3]?.[4] || "...";
-        const morpheusInicio = rows[3]?.[6] || "...";
-        const ibovDia = rows[4]?.[2] || "...";
-        const ibovMes = rows[4]?.[3] || "...";
-        const ibovAno = rows[4]?.[4] || "...";
-        const ibovInicio = rows[4]?.[6] || "...";
-        const ppDia = rows[5]?.[2] || "...";
-        const ppMes = rows[5]?.[3] || "...";
-        const ppAno = rows[5]?.[4] || "...";
-        const ppInicio = rows[5]?.[6] || "...";
-        const cota = rows[8]?.[2] || "...";
-
-        document.getElementById("dataReferencia").textContent = dataReferencia;
-        document.getElementById("morpheusDia").textContent = morpheusDia;
-        document.getElementById("morpheusMes").textContent = morpheusMes;
-        document.getElementById("morpheusAno").textContent = morpheusAno;
-        document.getElementById("morpheusInicio").textContent = morpheusInicio;
-        document.getElementById("ibovDia").textContent = ibovDia;
-        document.getElementById("ibovMes").textContent = ibovMes;
-        document.getElementById("ibovAno").textContent = ibovAno;
-        document.getElementById("ibovInicio").textContent = ibovInicio;
-        document.getElementById("ppDia").textContent = ppDia;
-        document.getElementById("ppMes").textContent = ppMes;
-        document.getElementById("ppAno").textContent = ppAno;
-        document.getElementById("ppInicio").textContent = ppInicio;
-        document.getElementById("cotaValor").textContent = `Cota: ${cota}`;
-      })
-      .catch((err) => {
-        console.error("Erro ao carregar planilha:", err);
-      });
   </script>
 
   <script>
@@ -383,9 +272,6 @@
       const isMobileSize = largura <= 1024 || 
                           (largura < altura && largura <= 768) ||
                           (isTouchDevice && (largura <= 1024 || altura <= 1024));
-
-      const wasMobileLandscape = document.body.classList.contains('mobile-landscape');
-      const isNowMobileLandscape = isMobileSize && isTouchDevice && largura > altura;
 
       document.body.classList.remove('desktop-device', 'mobile-device', 'mobile-landscape');
 
@@ -410,7 +296,6 @@
       orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
     });
     
-    // Detectar dispositivo ao carregar a página
     setTimeout(detectarDispositivo, 100);
     detectarDispositivo();
   </script>
