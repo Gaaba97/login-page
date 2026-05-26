@@ -91,7 +91,7 @@
       text-align: left;
     }
 
-    /* WRAPPER UNIFICADO: envolve os dois gráficos como se fossem um só */
+    /* WRAPPER UNIFICADO */
     .unified-chart-wrapper {
       width: 95%;
       max-width: 1200px;
@@ -123,11 +123,12 @@
       background-color: #fff;
       padding: 10px;
       box-sizing: border-box;
+      height: 730px;
     }
 
     canvas {
       width: 100%;
-      height: 480px !important;
+      height: 700px !important;
     }
 
     .loading {
@@ -147,7 +148,7 @@
       display: none !important;
     }
 
-    /* ESTILOS DO TOOLTIP PERSONALIZADO */
+    /* TOOLTIP PERSONALIZADO */
     .custom-tooltip {
       position: absolute;
       background: rgba(255, 255, 255, 0.95);
@@ -209,7 +210,7 @@
 
     .tooltip-header {
       font-weight: 550;
-      color: #00000 ;
+      color: #00000;
       margin-bottom: 8px;
       font-size: 14px;
       border-bottom: 1px solid #e0e0e0;
@@ -256,10 +257,11 @@
 
     .mobile-device .chart-container {
       width: 100%;
+      height: 640px;
     }
 
-    .mobile-device .first-chart .main-chart-container canvas {
-      height: 430px !important;
+    .mobile-device canvas {
+      height: 610px !important;
     }
 
     /* NAVBAR E FONTES AUMENTADAS NO MOBILE VERTICAL */
@@ -288,64 +290,12 @@
       max-width: 1200px;
     }
 
-    .mobile-landscape .first-chart .main-chart-container canvas {
-      height: 380px !important;
+    .mobile-landscape .chart-container {
+      height: 560px;
     }
 
-    /* PRIMEIRO GRÁFICO (SUPERIOR) */
-    .first-chart .chart-container {
-      height: 500px;
-      padding-bottom: 5px;
-    }
-
-    .first-chart canvas {
-      height: 480px !important;
-    }
-
-    .mobile-device .first-chart .chart-container {
-      height: 450px;
-    }
-
-    .mobile-device .first-chart canvas {
-      height: 430px !important;
-    }
-
-    .mobile-landscape .first-chart .chart-container {
-      height: 400px;
-    }
-
-    .mobile-landscape .first-chart canvas {
-      height: 380px !important;
-    }
-
-    /* SEGUNDO GRÁFICO (INFERIOR) */
-    .second-chart .chart-container {
-      height: 250px;
-      padding-top: 0;
-    }
-
-    .second-chart canvas {
-      height: 230px !important;
-    }
-
-    .second-chart .main-chart-container {
-      padding-top: 0;
-    }
-
-    .mobile-device .second-chart .chart-container {
-      height: 225px;
-    }
-
-    .mobile-device .second-chart canvas {
-      height: 205px !important;
-    }
-
-    .mobile-landscape .second-chart .chart-container {
-      height: 200px;
-    }
-
-    .mobile-landscape .second-chart canvas {
-      height: 180px !important;
+    .mobile-landscape canvas {
+      height: 530px !important;
     }
   </style>
 </head>
@@ -366,27 +316,14 @@
       <div class="subtitle" id="subtitle">Carregando dados...</div>
     </div>
     
-    <!-- Wrapper unificado: os dois gráficos compartilham o mesmo eixo X visualmente -->
     <div class="unified-chart-wrapper">
-
-      <!-- Primeiro Gráfico (superior) -->
-      <div class="chart-main-container first-chart">
+      <div class="chart-main-container">
         <div class="main-chart-container">
           <div class="chart-container">
             <canvas id="performanceChart"></canvas>
           </div>
         </div>
       </div>
-      
-      <!-- Segundo Gráfico (inferior) -->
-      <div class="chart-main-container second-chart">
-        <div class="main-chart-container">
-          <div class="chart-container">
-            <canvas id="performanceChart2"></canvas>
-          </div>
-        </div>
-      </div>
-
     </div>
 
     <div id="deviceInfo"></div>
@@ -430,59 +367,50 @@
 
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0orwAIfSmQxmbGdGCvjj3CZNbRnqo3Fr0ujodTX3JIcptCrR_ElNMZZn8tJ7MVg1W7Zeu5-KvLQLM/pub?gid=0&single=true&output=csv";
 
-    // Variável global para armazenar as instâncias dos gráficos
     window.chartInstances = {
-      performanceChart: null,
-      performanceChart2: null
+      performanceChart: null
     };
 
-    // Tooltip personalizado
-    let customTooltip = null;
-    let customTooltip2 = null;
+    window.chartData = null;
 
-    function createCustomTooltip(chartId) {
-      if (chartId === 'performanceChart2') {
-        if (customTooltip2) return customTooltip2;
-        
-        customTooltip2 = document.createElement('div');
-        customTooltip2.className = 'custom-tooltip';
-        document.querySelectorAll('.main-chart-container')[1].appendChild(customTooltip2);
-        return customTooltip2;
-      } else {
-        if (customTooltip) return customTooltip;
-        
-        customTooltip = document.createElement('div');
-        customTooltip.className = 'custom-tooltip';
-        document.querySelectorAll('.main-chart-container')[0].appendChild(customTooltip);
-        return customTooltip;
-      }
+    let customTooltip = null;
+
+    function createCustomTooltip() {
+      if (customTooltip) return customTooltip;
+
+      customTooltip = document.createElement('div');
+      customTooltip.className = 'custom-tooltip';
+      document.querySelector('.main-chart-container').appendChild(customTooltip);
+      return customTooltip;
     }
 
-    function showCustomTooltip(chart, tooltip, chartId) {
-      // Criar ou obter o tooltip personalizado
-      const tooltipEl = createCustomTooltip(chartId);
-      
-      // Esconder tooltip se não há dados
+    function showCustomTooltip(chart, tooltip) {
+      const tooltipEl = createCustomTooltip();
+
       if (tooltip.opacity === 0) {
         tooltipEl.classList.remove('visible');
         return;
       }
 
-      // Configurar conteúdo do tooltip
       if (tooltip.body) {
-        const title = tooltip.title[0] || '';
-        const bodyLines = tooltip.body.map(b => b.lines);
-        
+        const firstPoint = tooltip.dataPoints?.[0];
+        const rawX = firstPoint?.parsed?.x;
+        const date = rawX ? new Date(rawX) : null;
+        const title = date && !isNaN(date.getTime())
+          ? date.toLocaleDateString('pt-BR')
+          : (tooltip.title?.[0] || '');
+
         let tooltipHTML = `<div class="tooltip-header">${title}</div>`;
-        
-        // Adicionar dados de cada dataset
-        tooltip.dataPoints.forEach((dataPoint, index) => {
+
+        tooltip.dataPoints.forEach((dataPoint) => {
           const dataset = chart.data.datasets[dataPoint.datasetIndex];
-          // CORREÇÃO: Formatar para 2 casas decimais (X,XX) em vez de 3 (X,XXX)
-          const value = dataPoint.raw.y.toFixed(2).replace('.', ',') + '%';
+          const rawY = dataPoint.raw?.y;
+          const value = (rawY === null || rawY === undefined || isNaN(rawY))
+            ? '--'
+            : `${Number(rawY).toFixed(2).replace('.', ',')}%`;
           const label = dataset.label || '';
           const color = dataset.borderColor || '#164CAD';
-          
+
           tooltipHTML += `
             <div class="tooltip-item">
               <span class="tooltip-label">
@@ -493,35 +421,29 @@
             </div>
           `;
         });
-        
+
         tooltipEl.innerHTML = tooltipHTML;
       }
 
-      // Posicionar o tooltip
       const position = chart.canvas.getBoundingClientRect();
-      const chartContainer = document.querySelectorAll('.main-chart-container')[chartId === 'performanceChart2' ? 1 : 0];
+      const chartContainer = document.querySelector('.main-chart-container');
       const containerRect = chartContainer.getBoundingClientRect();
-      
-      // Posição relativa ao container do gráfico
+
       let left = position.left + tooltip.caretX - containerRect.left;
       let top = position.top + tooltip.caretY - containerRect.top;
-      
-      // Ajustar posição para não sair da tela
+
       const tooltipWidth = tooltipEl.offsetWidth;
       const tooltipHeight = tooltipEl.offsetHeight;
-      
-      // Definir posição padrão (acima do ponto)
+
       let placement = 'top';
-      
-      // Verificar se precisa ajustar a posição
+
       if (top - tooltipHeight - 10 < 0) {
         placement = 'bottom';
         top += 20;
       } else {
         top -= tooltipHeight + 10;
       }
-      
-      // Ajustar horizontalmente para não sair da tela
+
       if (left + tooltipWidth > containerRect.width) {
         left = containerRect.width - tooltipWidth - 10;
       } else if (left < 0) {
@@ -529,13 +451,109 @@
       } else {
         left -= tooltipWidth / 2;
       }
-      
+
       tooltipEl.style.left = left + 'px';
       tooltipEl.style.top = top + 'px';
-      
-      // Atualizar classe de posicionamento
       tooltipEl.className = `custom-tooltip ${placement} visible`;
     }
+
+    function parseDateToTimestamp(dateStr) {
+      if (!dateStr) return null;
+      const parts = dateStr.split('/');
+      if (parts.length !== 3) return null;
+      const day = Number(parts[0]);
+      const month = Number(parts[1]) - 1;
+      const year = Number(parts[2]);
+      const dt = new Date(year, month, day);
+      return isNaN(dt.getTime()) ? null : dt.getTime();
+    }
+
+    function destroyUnifiedChart() {
+      if (window.chartInstances.performanceChart) {
+        window.chartInstances.performanceChart.destroy();
+        window.chartInstances.performanceChart = null;
+      }
+    }
+
+    function getMinMax(values) {
+      const filtered = values.filter(v => typeof v === 'number' && !isNaN(v));
+      if (!filtered.length) return { min: 0, max: 1 };
+
+      const min = Math.min(...filtered);
+      const max = Math.max(...filtered);
+      const padding = (max - min) === 0 ? 1 : (max - min) * 0.1;
+
+      return {
+        min: Math.floor(min - padding),
+        max: Math.ceil(max + padding)
+      };
+    }
+
+    const splitPanelsPlugin = {
+      id: 'splitPanelsPlugin',
+      afterLayout(chart) {
+        const area = chart.chartArea;
+        if (!area) return;
+
+        const yTop = chart.scales.yTop;
+        const yBottom = chart.scales.yBottom;
+        const xScale = chart.scales.x;
+
+        if (!yTop || !yBottom || !xScale) return;
+
+        const separator = area.top + Math.round(area.height * 0.74);
+        const gap = 18;
+
+        yTop.top = area.top + 4;
+        yTop.bottom = separator - gap;
+        yTop.height = yTop.bottom - yTop.top;
+        yTop._length = yTop.height;
+
+        yBottom.top = separator + gap;
+        yBottom.bottom = area.bottom - 4;
+        yBottom.height = yBottom.bottom - yBottom.top;
+        yBottom._length = yBottom.height;
+      },
+      afterDraw(chart) {
+        const { ctx, chartArea } = chart;
+        if (!chartArea) return;
+
+        const separator = chartArea.top + Math.round(chartArea.height * 0.74);
+
+        ctx.save();
+        ctx.strokeStyle = 'rgba(0,0,0,0.10)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(chartArea.left, separator);
+        ctx.lineTo(chartArea.right, separator);
+        ctx.stroke();
+        ctx.restore();
+
+        const active = chart.tooltip?.getActiveElements?.() || [];
+        if (!active.length) return;
+
+        const x = active[0].element.x;
+        const y = active[0].element.y;
+
+        ctx.save();
+        ctx.strokeStyle = 'rgba(22,76,173,0.45)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+
+        ctx.beginPath();
+        ctx.moveTo(x, chartArea.top);
+        ctx.lineTo(x, chartArea.bottom);
+        ctx.stroke();
+
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(chartArea.left, y);
+        ctx.lineTo(chartArea.right, y);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+    };
 
     async function loadData() {
       try {
@@ -556,57 +574,62 @@
           throw new Error("Dados insuficientes no CSV");
         }
 
-        // Arrays para primeiro gráfico
-        const allDates1 = [];
-        const morpheus1 = [];
-        const teoria1 = []; // ALTERADO: era ibov1, agora teoria1
-        
-        // Arrays para segundo gráfico
-        const allDates2 = [];
-        const vsTeoria = [];
+        const mergedMap = new Map();
 
-        // Dados para o primeiro gráfico (colunas AP e AQ - 41 e 42)
-        // Dados para o segundo gráfico (colunas AN e AO - 39 e 40)
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].split(",");
-          
-          // Primeiro gráfico
-          if (cols.length >= 43) {
-            const date1 = cols[39]?.trim(); // Data do primeiro gráfico (coluna AN)
-            const f1 = parseFloat(cols[41]); // Morpheus 1 (AP)
-            const f2 = parseFloat(cols[42]); // Teoria 1 (AQ) — ALTERADO: era IBOV
-            
-            if (date1 && !isNaN(f1) && !isNaN(f2)) {
-              allDates1.push(date1);
-              morpheus1.push((f1 - 1) * 100);
-              teoria1.push((f2 - 1) * 100); // ALTERADO: era ibov1
-            }
-          }
-          
-          // Segundo gráfico (Apenas colunas AN e AO)
-          if (cols.length >= 41) {
-            const date2 = cols[39]?.trim(); // Data (coluna AN)
-            const f3 = parseFloat(cols[40]); // Vs Teoria (coluna AO)
-            
-            if (date2 && !isNaN(f3)) {
-              allDates2.push(date2);
-              vsTeoria.push(f3);
-            }
-          }
+          if (cols.length < 43) continue;
+
+          const dateStr = cols[39]?.trim(); // AN
+          const timestamp = parseDateToTimestamp(dateStr);
+          if (!dateStr || timestamp === null) continue;
+
+          const f1 = parseFloat(cols[41]); // AP
+          const f2 = parseFloat(cols[42]); // AQ
+          const f3 = parseFloat(cols[40]); // AO
+
+          const current = mergedMap.get(dateStr) || {
+            dateStr,
+            timestamp,
+            morpheus: null,
+            teoria: null,
+            vsTeoria: null
+          };
+
+          if (!isNaN(f1)) current.morpheus = (f1 - 1) * 100;
+          if (!isNaN(f2)) current.teoria = (f2 - 1) * 100;
+          if (!isNaN(f3)) current.vsTeoria = f3;
+
+          mergedMap.set(dateStr, current);
         }
 
-        console.log("Primeiro gráfico - Datas:", allDates1.length, "Morpheus:", morpheus1.length, "Teoria:", teoria1.length);
-        console.log("Segundo gráfico - Datas:", allDates2.length, "Vs Teoria:", vsTeoria.length);
+        const mergedRows = Array.from(mergedMap.values())
+          .sort((a, b) => a.timestamp - b.timestamp);
 
-        if (allDates1.length === 0 || allDates2.length === 0) {
-          throw new Error("Nenhum dado válido encontrado para os gráficos");
+        const allDates = mergedRows.map(item => item.dateStr);
+        const timestamps = mergedRows.map(item => item.timestamp);
+        const morpheus = mergedRows.map(item => item.morpheus);
+        const teoria = mergedRows.map(item => item.teoria);
+        const vsTeoria = mergedRows.map(item => item.vsTeoria);
+
+        console.log("Dados combinados:", mergedRows.length);
+
+        if (allDates.length === 0) {
+          throw new Error("Nenhum dado válido encontrado para o gráfico");
         }
 
-        const lastDate = allDates1[allDates1.length - 1];
+        const lastDate = allDates[allDates.length - 1];
         document.getElementById("subtitle").textContent = lastDate;
 
-        createFirstChart(allDates1, morpheus1, teoria1); // ALTERADO: passou teoria1
-        createSecondChart(allDates2, vsTeoria);
+        window.chartData = {
+          timestamps,
+          allDates,
+          morpheus,
+          teoria,
+          vsTeoria
+        };
+
+        createUnifiedChart(window.chartData);
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -614,15 +637,27 @@
       }
     }
 
-    function createFirstChart(allDates, morpheus, teoria) { // ALTERADO: parâmetro era ibov, agora teoria
-      const morpheusData = allDates.map((date, i) => ({
-        x: date.split("/").reverse().join("-"),
+    function createUnifiedChart(chartData) {
+      destroyUnifiedChart();
+
+      const timestamps = chartData.timestamps;
+      const morpheus = chartData.morpheus;
+      const teoria = chartData.teoria;
+      const vsTeoria = chartData.vsTeoria;
+
+      const morpheusData = timestamps.map((ts, i) => ({
+        x: ts,
         y: morpheus[i]
       }));
 
-      const teoriaData = allDates.map((date, i) => ({ // ALTERADO: era ibovData
-        x: date.split("/").reverse().join("-"),
+      const teoriaData = timestamps.map((ts, i) => ({
+        x: ts,
         y: teoria[i]
+      }));
+
+      const vsTeoriaData = timestamps.map((ts, i) => ({
+        x: ts,
+        y: vsTeoria[i]
       }));
 
       const canvas = document.getElementById("performanceChart");
@@ -634,36 +669,70 @@
       canvas.height = rect.height * dpr;
       ctx.scale(dpr, dpr);
 
-      const isMobileVertical = document.body.classList.contains('mobile-device') && 
-                          !document.body.classList.contains('mobile-landscape');
-      
-      // Aumentar significativamente as fontes no mobile vertical
+      const isMobileVertical = document.body.classList.contains('mobile-device') &&
+                               !document.body.classList.contains('mobile-landscape');
+
       const axisFontSize = isMobileVertical ? 22 : 15;
       const legendFontSize = isMobileVertical ? 20 : 12;
 
+      const topMinMax = getMinMax([
+        ...morpheus.filter(v => typeof v === 'number'),
+        ...teoria.filter(v => typeof v === 'number')
+      ]);
+
+      const bottomMinMax = getMinMax(vsTeoria.filter(v => typeof v === 'number'));
+
+      function createGradient(ctx, chartArea) {
+        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+        gradient.addColorStop(0, "#F6F8FC");
+        gradient.addColorStop(0.5, "#8EA8D7");
+        gradient.addColorStop(1, "#164CAD");
+        return gradient;
+      }
+
       window.chartInstances.performanceChart = new Chart(ctx, {
         type: "line",
+        plugins: [splitPanelsPlugin],
         data: {
           datasets: [
             {
               label: "Morpheus",
               data: morpheusData,
+              yAxisID: "yTop",
               borderColor: "#164CAD",
               borderWidth: 1.5,
               pointRadius: 0,
               tension: 0.15,
-              fill: false, // ALTERADO: era true — sombreado removido
+              fill: false,
               order: 2,
             },
             {
-              label: "Teoria", // ALTERADO: era "IBOV"
-              data: teoriaData, // ALTERADO: era ibovData
+              label: "Teoria",
+              data: teoriaData,
+              yAxisID: "yTop",
               borderColor: "#000000",
               borderWidth: 1.5,
               pointRadius: 0,
               tension: 0.15,
               fill: false,
               order: 1,
+            },
+            {
+              label: "Vs Teoria",
+              data: vsTeoriaData,
+              yAxisID: "yBottom",
+              borderColor: "#164CAD",
+              borderWidth: 1.5,
+              pointRadius: 0,
+              tension: 0.15,
+              fill: true,
+              backgroundColor: function(context) {
+                const chart = context.chart;
+                const { ctx, chartArea } = chart;
+                if (!chartArea) return null;
+                return createGradient(ctx, chartArea);
+              },
+              order: 3,
             },
           ],
         },
@@ -673,6 +742,9 @@
           interaction: {
             intersect: false,
             mode: 'index',
+          },
+          onHover: (event, activeElements, chart) => {
+            chart.canvas.style.cursor = activeElements.length ? 'crosshair' : 'default';
           },
           plugins: {
             legend: {
@@ -692,7 +764,7 @@
             tooltip: {
               enabled: false,
               external: (context) => {
-                showCustomTooltip(context.chart, context.tooltip, 'performanceChart');
+                showCustomTooltip(context.chart, context.tooltip);
               }
             },
           },
@@ -701,8 +773,8 @@
               type: "time",
               time: {
                 unit: "month",
-                displayFormats: { 
-                  month: "MMM - yy" 
+                displayFormats: {
+                  month: "MMM - yy"
                 },
                 tooltipFormat: "dd/MM/yyyy"
               },
@@ -715,26 +787,29 @@
                   size: axisFontSize,
                   weight: "300",
                 },
-                callback: function(value, index, values) {
+                callback: function(value) {
                   const date = new Date(value);
                   const month = date.getMonth();
                   const year = date.getFullYear().toString().slice(-2);
-                  
+
                   const mesesPortugues = [
                     'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
                     'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
                   ];
-                  
+
                   return `${mesesPortugues[month]} - ${year}`;
                 }
               },
-              grid: { 
-                color: "rgba(0,0,0,0.05)",
-                drawOnChartArea: false
+              grid: {
+                color: "rgba(0,0,0,0.05)"
               },
-              display: false, // Oculta o eixo X do primeiro gráfico (aparece apenas no segundo)
+              position: "bottom"
             },
-            y: {
+            yTop: {
+              type: "linear",
+              position: "right",
+              min: topMinMax.min,
+              max: topMinMax.max,
               ticks: {
                 color: "#000000",
                 font: {
@@ -742,124 +817,18 @@
                   size: axisFontSize,
                   weight: "300",
                 },
-                callback: (v) => `${v.toFixed(0)}%`,
+                callback: (v) => `${Number(v).toFixed(0)}%`,
                 stepSize: 5
               },
-              grid: { color: "rgba(0,0,0,0.05)" },
-            },
-          },
-        },
-      });
-
-      console.log("Primeiro gráfico criado com sucesso");
-    }
-
-    function createSecondChart(allDates, vsTeoria) {
-      const vsTeoriaData = allDates.map((date, i) => ({
-        x: date.split("/").reverse().join("-"),
-        y: vsTeoria[i]
-      }));
-
-      const canvas = document.getElementById("performanceChart2");
-      const ctx = canvas.getContext("2d");
-
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
-
-      const isMobileVertical = document.body.classList.contains('mobile-device') && 
-                          !document.body.classList.contains('mobile-landscape');
-      
-      // Aumentar significativamente as fontes no mobile vertical
-      const axisFontSize = isMobileVertical ? 22 : 15;
-      const legendFontSize = isMobileVertical ? 20 : 12;
-
-      const createGradient = (ctx, chartArea) => {
-        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-        gradient.addColorStop(0, "#F6F8FC");
-        gradient.addColorStop(0.5, "#8EA8D7");
-        gradient.addColorStop(1, "#164CAD");
-        return gradient;
-      };
-
-      window.chartInstances.performanceChart2 = new Chart(ctx, {
-        type: "line",
-        data: {
-          datasets: [
-            {
-              label: "Vs Teoria",
-              data: vsTeoriaData,
-              borderColor: "#164CAD",
-              borderWidth: 1.5,
-              pointRadius: 0,
-              tension: 0.15,
-              fill: true,
-              backgroundColor: function(context) {
-                const chart = context.chart;
-                const {ctx, chartArea} = chart;
-                if (!chartArea) {
-                  return null;
-                }
-                return createGradient(ctx, chartArea);
-              },
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: {
-            intersect: false,
-            mode: 'index',
-          },
-          plugins: {
-            legend: {
-              display: false,
-            },
-            tooltip: {
-              enabled: false,
-              external: (context) => {
-                showCustomTooltip(context.chart, context.tooltip, 'performanceChart2');
+              grid: {
+                color: "rgba(0,0,0,0.05)"
               }
             },
-          },
-          scales: {
-            x: {
-              type: "time",
-              time: {
-                unit: "month",
-                displayFormats: { 
-                  month: "MMM - yy" 
-                },
-                tooltipFormat: "dd/MM/yyyy"
-              },
-              ticks: {
-                color: "#000000",
-                maxRotation: 45,
-                minRotation: 45,
-                font: {
-                  family: "Montserrat",
-                  size: axisFontSize,
-                  weight: "300",
-                },
-                callback: function(value, index, values) {
-                  const date = new Date(value);
-                  const month = date.getMonth();
-                  const year = date.getFullYear().toString().slice(-2);
-                  
-                  const mesesPortugues = [
-                    'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
-                    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
-                  ];
-                  
-                  return `${mesesPortugues[month]} - ${year}`;
-                }
-              },
-              grid: { color: "rgba(0,0,0,0.05)" },
-            },
-            y: {
+            yBottom: {
+              type: "linear",
+              position: "right",
+              min: bottomMinMax.min,
+              max: bottomMinMax.max,
               ticks: {
                 color: "#000000",
                 font: {
@@ -867,17 +836,18 @@
                   size: axisFontSize,
                   weight: "300",
                 },
-                callback: (v) => `${v.toFixed(0)}%`,
+                callback: (v) => `${Number(v).toFixed(0)}%`,
                 stepSize: 1
               },
-              suggestedMin: -1,
-              grid: { color: "rgba(0,0,0,0.05)" },
-            },
+              grid: {
+                color: "rgba(0,0,0,0.05)"
+              }
+            }
           },
         },
       });
 
-      console.log("Segundo gráfico criado com sucesso");
+      console.log("Gráfico unificado criado com sucesso");
     }
 
     loadData();
@@ -889,15 +859,11 @@
     function detectarDispositivo() {
       const largura = window.innerWidth;
       const altura = window.innerHeight;
-      const deviceInfo = document.getElementById('deviceInfo');
       const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
       
       const isMobileSize = largura <= 1024 || 
                           (largura < altura && largura <= 768) ||
                           (isTouchDevice && (largura <= 1024 || altura <= 1024));
-
-      const wasMobileLandscape = document.body.classList.contains('mobile-landscape');
-      const isNowMobileLandscape = isMobileSize && isTouchDevice && largura > altura;
 
       document.body.classList.remove('desktop-device', 'mobile-device', 'mobile-landscape');
 
@@ -911,17 +877,13 @@
         document.body.classList.add('desktop-device');
       }
 
-      // Redesenhar gráficos sempre que mudar o dispositivo para aplicar as novas fontes
       setTimeout(redesenharGraficosSuave, 100);
     }
 
     function redesenharGraficosSuave() {
-      // Recriar os gráficos para aplicar as novas configurações de fonte
-      if (window.chartInstances.performanceChart) {
-        
+      if (window.chartData) {
         setTimeout(() => {
-          const event = new Event('resize');
-          window.dispatchEvent(event);
+          createUnifiedChart(window.chartData);
         }, 100);
       }
     }
