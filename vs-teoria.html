@@ -91,12 +91,18 @@
       text-align: left;
     }
 
-    /* CORREÇÃO: Ajustado para gráfico único ocupar mais espaço */
-    .chart-main-container {
+    /* WRAPPER UNIFICADO: envolve os dois gráficos como se fossem um só */
+    .unified-chart-wrapper {
       width: 95%;
       max-width: 1200px;
       margin-left: auto;
       margin-right: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chart-main-container {
+      width: 100%;
       display: flex;
       justify-content: center;
     }
@@ -243,7 +249,7 @@
     }
 
     /* ESTILOS PARA SMARTPHONE VERTICAL */
-    .mobile-device .chart-main-container {
+    .mobile-device .unified-chart-wrapper {
       width: 98%;
       max-width: none;
     }
@@ -252,7 +258,7 @@
       width: 100%;
     }
 
-    .mobile-device .main-chart-container canvas {
+    .mobile-device .first-chart .main-chart-container canvas {
       height: 430px !important;
     }
 
@@ -277,21 +283,19 @@
     }
 
     /* ESTILOS PARA MOBILE LANDSCAPE */
-    .mobile-landscape .chart-main-container {
+    .mobile-landscape .unified-chart-wrapper {
       width: 98%;
       max-width: 1200px;
     }
 
-    .mobile-landscape .main-chart-container canvas {
+    .mobile-landscape .first-chart .main-chart-container canvas {
       height: 380px !important;
     }
 
-    /* PRIMEIRO GRÁFICO (SUPERIOR) - REMOVENDO ESPAÇAMENTO INFERIOR */
+    /* PRIMEIRO GRÁFICO (SUPERIOR) */
     .first-chart .chart-container {
       height: 500px;
-      border-radius: 8px 8px 0 0 !important; /* Arredondar apenas topo */
-      margin-bottom: 0;
-      padding-bottom: 5px; /* Reduzir padding inferior para grudar */
+      padding-bottom: 5px;
     }
 
     .first-chart canvas {
@@ -314,37 +318,34 @@
       height: 380px !important;
     }
 
-    /* SEGUNDO GRÁFICO (INFERIOR) - REMOVENDO ESPAÇAMENTO SUPERIOR E TÍTULO */
+    /* SEGUNDO GRÁFICO (INFERIOR) */
     .second-chart .chart-container {
-      height: 250px; /* Metade da altura do primeiro gráfico */
-      border-radius: 0 0 8px 8px !important; /* Arredondar apenas base */
-      margin-top: 0;
-      padding-top: 0; /* Remover padding superior para grudar */
+      height: 250px;
+      padding-top: 0;
     }
 
     .second-chart canvas {
-      height: 230px !important; /* Metade da altura do primeiro gráfico */
+      height: 230px !important;
     }
 
-    /* REMOVER ESPAÇO DO TÍTULO/SUBTÍTULO DO SEGUNDO GRÁFICO */
     .second-chart .main-chart-container {
       padding-top: 0;
     }
 
     .mobile-device .second-chart .chart-container {
-      height: 225px; /* Metade da altura do primeiro gráfico mobile */
+      height: 225px;
     }
 
     .mobile-device .second-chart canvas {
-      height: 205px !important; /* Metade da altura do primeiro gráfico mobile */
+      height: 205px !important;
     }
 
     .mobile-landscape .second-chart .chart-container {
-      height: 200px; /* Metade da altura do primeiro gráfico landscape */
+      height: 200px;
     }
 
     .mobile-landscape .second-chart canvas {
-      height: 180px !important; /* Metade da altura do primeiro gráfico landscape */
+      height: 180px !important;
     }
   </style>
 </head>
@@ -365,22 +366,27 @@
       <div class="subtitle" id="subtitle">Carregando dados...</div>
     </div>
     
-    <!-- Primeiro Gráfico -->
-    <div class="chart-main-container first-chart">
-      <div class="main-chart-container">
-        <div class="chart-container">
-          <canvas id="performanceChart"></canvas>
+    <!-- Wrapper unificado: os dois gráficos compartilham o mesmo eixo X visualmente -->
+    <div class="unified-chart-wrapper">
+
+      <!-- Primeiro Gráfico (superior) -->
+      <div class="chart-main-container first-chart">
+        <div class="main-chart-container">
+          <div class="chart-container">
+            <canvas id="performanceChart"></canvas>
+          </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Segundo Gráfico (Adicionado) -->
-    <div class="chart-main-container second-chart">
-      <div class="main-chart-container">
-        <div class="chart-container">
-          <canvas id="performanceChart2"></canvas>
+      
+      <!-- Segundo Gráfico (inferior) -->
+      <div class="chart-main-container second-chart">
+        <div class="main-chart-container">
+          <div class="chart-container">
+            <canvas id="performanceChart2"></canvas>
+          </div>
         </div>
       </div>
+
     </div>
 
     <div id="deviceInfo"></div>
@@ -553,7 +559,7 @@
         // Arrays para primeiro gráfico
         const allDates1 = [];
         const morpheus1 = [];
-        const ibov1 = [];
+        const teoria1 = []; // ALTERADO: era ibov1, agora teoria1
         
         // Arrays para segundo gráfico
         const allDates2 = [];
@@ -568,12 +574,12 @@
           if (cols.length >= 43) {
             const date1 = cols[39]?.trim(); // Data do primeiro gráfico (coluna AN)
             const f1 = parseFloat(cols[41]); // Morpheus 1 (AP)
-            const f2 = parseFloat(cols[42]); // IBOV 1 (AQ)
+            const f2 = parseFloat(cols[42]); // Teoria 1 (AQ) — ALTERADO: era IBOV
             
             if (date1 && !isNaN(f1) && !isNaN(f2)) {
               allDates1.push(date1);
               morpheus1.push((f1 - 1) * 100);
-              ibov1.push((f2 - 1) * 100);
+              teoria1.push((f2 - 1) * 100); // ALTERADO: era ibov1
             }
           }
           
@@ -584,13 +590,12 @@
             
             if (date2 && !isNaN(f3)) {
               allDates2.push(date2);
-              // CORREÇÃO: Removido o -1 e *100, pois o dado já está em porcentagem
-              vsTeoria.push(f3); // Apenas usa o valor original, sem multiplicar por 100
+              vsTeoria.push(f3);
             }
           }
         }
 
-        console.log("Primeiro gráfico - Datas:", allDates1.length, "Morpheus:", morpheus1.length, "IBOV:", ibov1.length);
+        console.log("Primeiro gráfico - Datas:", allDates1.length, "Morpheus:", morpheus1.length, "Teoria:", teoria1.length);
         console.log("Segundo gráfico - Datas:", allDates2.length, "Vs Teoria:", vsTeoria.length);
 
         if (allDates1.length === 0 || allDates2.length === 0) {
@@ -600,7 +605,7 @@
         const lastDate = allDates1[allDates1.length - 1];
         document.getElementById("subtitle").textContent = lastDate;
 
-        createFirstChart(allDates1, morpheus1, ibov1);
+        createFirstChart(allDates1, morpheus1, teoria1); // ALTERADO: passou teoria1
         createSecondChart(allDates2, vsTeoria);
 
       } catch (error) {
@@ -609,15 +614,15 @@
       }
     }
 
-    function createFirstChart(allDates, morpheus, ibov) {
+    function createFirstChart(allDates, morpheus, teoria) { // ALTERADO: parâmetro era ibov, agora teoria
       const morpheusData = allDates.map((date, i) => ({
         x: date.split("/").reverse().join("-"),
         y: morpheus[i]
       }));
 
-      const ibovData = allDates.map((date, i) => ({
+      const teoriaData = allDates.map((date, i) => ({ // ALTERADO: era ibovData
         x: date.split("/").reverse().join("-"),
-        y: ibov[i]
+        y: teoria[i]
       }));
 
       const canvas = document.getElementById("performanceChart");
@@ -636,14 +641,6 @@
       const axisFontSize = isMobileVertical ? 22 : 15;
       const legendFontSize = isMobileVertical ? 20 : 12;
 
-      const createGradient = (ctx, chartArea) => {
-        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-        gradient.addColorStop(0, "#F6F8FC");
-        gradient.addColorStop(0.5, "#8EA8D7");
-        gradient.addColorStop(1, "#164CAD");
-        return gradient;
-      };
-
       window.chartInstances.performanceChart = new Chart(ctx, {
         type: "line",
         data: {
@@ -655,20 +652,12 @@
               borderWidth: 1.5,
               pointRadius: 0,
               tension: 0.15,
-              fill: true,
-              backgroundColor: function(context) {
-                const chart = context.chart;
-                const {ctx, chartArea} = chart;
-                if (!chartArea) {
-                  return null;
-                }
-                return createGradient(ctx, chartArea);
-              },
+              fill: false, // ALTERADO: era true — sombreado removido
               order: 2,
             },
             {
-              label: "IBOV",
-              data: ibovData,
+              label: "Teoria", // ALTERADO: era "IBOV"
+              data: teoriaData, // ALTERADO: era ibovData
               borderColor: "#000000",
               borderWidth: 1.5,
               pointRadius: 0,
@@ -741,9 +730,9 @@
               },
               grid: { 
                 color: "rgba(0,0,0,0.05)",
-                drawOnChartArea: false // Não desenha as linhas de grade
+                drawOnChartArea: false
               },
-              display: false, // CORREÇÃO: Oculta completamente o eixo X
+              display: false, // Oculta o eixo X do primeiro gráfico (aparece apenas no segundo)
             },
             y: {
               ticks: {
@@ -802,7 +791,7 @@
             {
               label: "Vs Teoria",
               data: vsTeoriaData,
-              borderColor: "#164CAD", // CORREÇÃO: Mudado de #FF0000 para #164CAD
+              borderColor: "#164CAD",
               borderWidth: 1.5,
               pointRadius: 0,
               tension: 0.15,
@@ -827,7 +816,7 @@
           },
           plugins: {
             legend: {
-              display: false, // CORREÇÃO: Remove a legenda do segundo gráfico
+              display: false,
             },
             tooltip: {
               enabled: false,
@@ -878,11 +867,10 @@
                   size: axisFontSize,
                   weight: "300",
                 },
-                // CORREÇÃO: Alterado para 0 casas decimais (formato -1% 0% 1%)
                 callback: (v) => `${v.toFixed(0)}%`,
-                stepSize: 1 // Alterado de 5 para 1 (1% em 1%)
+                stepSize: 1
               },
-              suggestedMin: -1, // Mínimo sugerido de -1%
+              suggestedMin: -1,
               grid: { color: "rgba(0,0,0,0.05)" },
             },
           },
