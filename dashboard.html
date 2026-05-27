@@ -62,37 +62,46 @@
       color: white;
     }
 
-    /* ── TICKER TAPE (CORRIGIDO: ROLAGEM AUTOMÁTICA) ── */
+    /* ── TICKER TAPE COM SCALE E ROLAGEM FUNCIONAL ── */
     .ticker-wrapper {
       position: fixed;
-      top: 45px;       /* abaixo do navbar */
+      top: 45px;
       left: 0;
       width: 100%;
       z-index: 9;
       background-color: #fff;
-      overflow-x: hidden;  /* esconde barras de rolagem externas, mas permite o movimento interno */
-      white-space: nowrap;
+      overflow-x: visible;     /* muda de hidden para visible – permite rolagem */
+      overflow-y: hidden;
+      height: 46px;            /* altura padrão do widget */
     }
 
-    /* O container do widget ocupa toda a largura e permite que o conteúdo role */
-    .tradingview-widget-container {
-      width: 100%;
+    /* Container que aplica o scale (reduz tamanho visual) */
+    .ticker-scale {
+      transform-origin: top left;
+      transform: scale(0.8);
+      width: 125%;
+      height: 46px;           /* mesma altura, o scale encolhe o conteúdo */
     }
 
+    /* O widget em si ocupa 100% da largura do .ticker-scale e rola normalmente */
+    .tradingview-widget-container,
     .tradingview-widget-container__widget {
       width: 100%;
+      height: 100%;
     }
 
-    /* Força o ticker a ter rolagem contínua */
-    .ticker-wrapper iframe,
-    .ticker-wrapper div[class*="ticker"] {
+    /* Força que o iframe gerado pela TradingView também respeite a rolagem */
+    .tradingview-widget-container iframe {
       width: 100% !important;
     }
 
-    /* ── AJUSTES DE POSIÇÃO POR DISPOSITIVO ── */
+    /* Ajusta a posição do ticker conforme o dispositivo */
     .desktop-device .ticker-wrapper {
       top: 45px;
-      height: 46px;     /* altura padrão do widget */
+      height: 46px;
+    }
+    .desktop-device .ticker-scale {
+      height: 46px;
     }
 
     .mobile-device .navbar {
@@ -119,10 +128,10 @@
       box-sizing: border-box;
     }
 
-    /* Padding-top base: navbar + ticker */
-    .desktop-device .main-wrapper   { padding-top: calc(45px + 46px); }
-    .mobile-device .main-wrapper    { padding-top: calc(75px + 46px); }
-    .mobile-landscape .main-wrapper { padding-top: calc(54px + 46px); }
+    /* Espaçamento correto: navbar + ticker (considerando altura visual do ticker com scale = ~37px) */
+    .desktop-device .main-wrapper   { padding-top: calc(45px + 37px); }
+    .mobile-device .main-wrapper    { padding-top: calc(75px + 37px); }
+    .mobile-landscape .main-wrapper { padding-top: calc(54px + 37px); }
 
     /* ── PÁGINA EM MANUTENÇÃO ── */
     .manutencao-container {
@@ -168,7 +177,6 @@
       border-radius: 2px;
     }
 
-    /* ocultar info de dispositivo (legado) */
     #deviceInfo { display: none !important; }
   </style>
 </head>
@@ -185,34 +193,36 @@
     </div>
   </div>
 
-  <!-- ══ TICKER TAPE TRADINGVIEW (COM ROLAGEM AUTOMÁTICA) ══ -->
+  <!-- ══ TICKER TAPE COM SCALE E ROLAGEM HORIZONTAL AUTOMÁTICA ══ -->
   <div class="ticker-wrapper">
-    <div class="tradingview-widget-container">
-      <div class="tradingview-widget-container__widget"></div>
-      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-      {
-        "symbols": [
-          {"proName": "BMFBOVESPA:IBOV",  "title": "IBOV"},
-          {"proName": "BMFBOVESPA:SMLL",  "title": "SMLL"},
-          {"proName": "BMFBOVESPA:ALLD3",  "title": "ALLD3"},
-          {"proName": "BMFBOVESPA:ASAI3",  "title": "ASAI3"},
-          {"proName": "BMFBOVESPA:HBOR3",  "title": "HBOR3"},
-          {"proName": "BMFBOVESPA:JSLG3",  "title": "JSLG3"},
-          {"proName": "BMFBOVESPA:LIGT3",  "title": "LIGT3"},
-          {"proName": "BMFBOVESPA:MGLU3",  "title": "MGLU3"},
-          {"proName": "BMFBOVESPA:MOVI3",  "title": "MOVI3"},
-          {"proName": "BMFBOVESPA:POSI3",  "title": "POSI3"},
-          {"proName": "BMFBOVESPA:QUAL3",  "title": "QUAL3"},
-          {"proName": "BMFBOVESPA:SAPR11",  "title": "SAPR11"},
-          {"proName": "BMFBOVESPA:NASD11",  "title": "NASD11"}
-        ],
-        "showSymbolLogo": false,
-        "colorTheme": "light",
-        "isTransparent": false,
-        "displayMode": "adaptive",
-        "locale": "pt"
-      }
-      </script>
+    <div class="ticker-scale">
+      <div class="tradingview-widget-container">
+        <div class="tradingview-widget-container__widget"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+        {
+          "symbols": [
+            {"proName": "BMFBOVESPA:IBOV",  "title": "IBOV"},
+            {"proName": "BMFBOVESPA:SMLL",  "title": "SMLL"},
+            {"proName": "BMFBOVESPA:ALLD3",  "title": "ALLD3"},
+            {"proName": "BMFBOVESPA:ASAI3",  "title": "ASAI3"},
+            {"proName": "BMFBOVESPA:HBOR3",  "title": "HBOR3"},
+            {"proName": "BMFBOVESPA:JSLG3",  "title": "JSLG3"},
+            {"proName": "BMFBOVESPA:LIGT3",  "title": "LIGT3"},
+            {"proName": "BMFBOVESPA:MGLU3",  "title": "MGLU3"},
+            {"proName": "BMFBOVESPA:MOVI3",  "title": "MOVI3"},
+            {"proName": "BMFBOVESPA:POSI3",  "title": "POSI3"},
+            {"proName": "BMFBOVESPA:QUAL3",  "title": "QUAL3"},
+            {"proName": "BMFBOVESPA:SAPR11",  "title": "SAPR11"},
+            {"proName": "BMFBOVESPA:NASD11",  "title": "NASD11"}
+          ],
+          "showSymbolLogo": false,
+          "colorTheme": "light",
+          "isTransparent": false,
+          "displayMode": "adaptive",
+          "locale": "pt"
+        }
+        </script>
+      </div>
     </div>
   </div>
 
@@ -275,7 +285,7 @@
     });
   </script>
 
-  <!-- ══ DETECÇÃO DE DISPOSITIVO (AJUSTE DE LAYOUT) ══ -->
+  <!-- ══ DETECÇÃO DE DISPOSITIVO ══ -->
   <script>
     let orientationChangeTimeout;
 
@@ -312,6 +322,29 @@
     });
 
     detectarDispositivo();
+  </script>
+
+  <!-- Script extra para garantir que o ticker reinicie a rolagem em caso de falha -->
+  <script>
+    (function garantirRolagemTicker() {
+      // Aguarda o widget carregar (máximo 3 segundos)
+      setTimeout(function() {
+        const widgetContainer = document.querySelector('.tradingview-widget-container');
+        if (widgetContainer) {
+          // Dispara um evento de redimensionamento para forçar o widget a recalcular a animação
+          window.dispatchEvent(new Event('resize'));
+          // Também tenta "tocar" no iframe para reanimar (não invasivo)
+          const iframe = widgetContainer.querySelector('iframe');
+          if (iframe && iframe.contentWindow) {
+            try {
+              // Pequeno "nudge" – não causa erro, apenas tenta acordar a animação
+              iframe.style.transform = 'translateZ(0)';
+              setTimeout(() => { iframe.style.transform = ''; }, 100);
+            } catch(e) { /* silencioso */ }
+          }
+        }
+      }, 1500);
+    })();
   </script>
 
 </body>
