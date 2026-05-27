@@ -64,7 +64,7 @@
     /* ── TICKER TAPE ── */
     .ticker-wrapper {
       position: fixed;
-      top: 45px;
+      top: 45px;       /* logo abaixo do navbar */
       left: 0;
       width: 100%;
       z-index: 9;
@@ -75,8 +75,26 @@
 
     .ticker-wrapper .tradingview-widget-container,
     .ticker-wrapper .tradingview-widget-container__widget {
-      width: 100%;
       height: 46px !important;
+    }
+
+    /* div interno usado para escalar o widget no desktop */
+    .ticker-scale {
+      transform-origin: top left;
+    }
+
+    /*
+     * No desktop: scale 0.80 → fonte visualmente menor
+     * Altura visual: 46 × 0.80 = ~37px
+     * Largura compensada: 100% ÷ 0.80 = 125% (evita corte horizontal)
+     */
+    .desktop-device .ticker-wrapper {
+      height: 37px;   /* altura visual após scale */
+    }
+
+    .desktop-device .ticker-scale {
+      transform: scale(0.80);
+      width: 125%;
     }
 
     /* ── ESTILOS PARA SMARTPHONE VERTICAL ── */
@@ -117,11 +135,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      /* mobile base: navbar (~45px) + ticker (~46px) = 91px */
       padding-top: 91px;
       box-sizing: border-box;
     }
 
-    .desktop-device .main-wrapper   { padding-top: 91px; }
+    /* desktop: navbar (45px) + ticker escalado (37px) = 82px */
+    .desktop-device .main-wrapper   { padding-top: 82px; }
     .mobile-device .main-wrapper    { padding-top: 121px; }  /* 75px + 46px */
     .mobile-landscape .main-wrapper { padding-top: 100px; }  /* 54px + 46px */
 
@@ -188,7 +208,8 @@
 
   <!-- ══ TICKER TAPE TRADINGVIEW ══ -->
   <div class="ticker-wrapper">
-    <div class="tradingview-widget-container">
+    <div class="ticker-scale">
+      <div class="tradingview-widget-container">
       <div class="tradingview-widget-container__widget"></div>
       <script type="text/javascript"
         src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js"
@@ -283,6 +304,7 @@
       }
       </script>
     </div>
+    </div><!-- /.ticker-scale -->
   </div>
 
   <!-- ══ CONTEÚDO PRINCIPAL ══ -->
