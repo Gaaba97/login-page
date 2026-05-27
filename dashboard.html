@@ -4,77 +4,80 @@
   <meta charset="UTF-8" />
   <title>Clube Morpheus</title>
   <link rel="icon" href="favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       font-family: "DM Sans", sans-serif;
-      background-color: white;
-      color: black;
-      display: flex;
-      flex-direction: column;
+      background: #f5f7fa;
+      color: #111;
       overflow-x: hidden;
     }
 
-    /* ── NAVBAR ── */
+    * {
+      box-sizing: border-box;
+    }
+
+    /* ───────────────── NAVBAR ───────────────── */
+
     .navbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: rgba(0, 0, 0, 0.9);
-      padding: 10px 20px;
+      background: rgba(8, 8, 10, 0.96);
+      backdrop-filter: blur(10px);
+      padding: 10px 24px;
       position: fixed;
       width: 100%;
       top: 0;
       left: 0;
-      z-index: 10;
+      z-index: 1000;
       color: white;
-      box-sizing: border-box;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
-    .navbar .welcome {
-      font-weight: bold;
+    .welcome {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
       white-space: nowrap;
-      font-size: 16px;
     }
 
-    .navbar .links {
+    .links {
       display: flex;
-      gap: 20px;
-      flex-wrap: nowrap;
-      white-space: nowrap;
-      padding-left: 4px;
+      align-items: center;
+      gap: 24px;
     }
 
-    .navbar a {
-      color: white;
+    .links a {
+      color: rgba(255,255,255,0.88);
       text-decoration: none;
-      font-weight: bold;
-      font-size: 16px;
-      display: inline-block;
-      transition: transform 0.2s ease-in-out;
+      font-size: 14px;
+      font-weight: 500;
+      transition: 0.2s ease;
     }
 
-    .navbar a:hover {
-      transform: scale(1.1);
+    .links a:hover {
       color: white;
     }
 
-    /* ── TICKER TAPE ── */
+    /* ───────────────── TICKER ───────────────── */
+
     .ticker-wrapper {
       position: fixed;
       top: 45px;
       left: 0;
       width: 100%;
-      z-index: 9;
-      height: 46px;
+      height: 42px;
       overflow: hidden;
-      background-color: #fff;
+      background: #ffffff;
+      border-bottom: 1px solid #e7eaee;
+      z-index: 999;
     }
 
-    /* TRACK RESPONSÁVEL PELA ROLAGEM */
     .ticker-track {
       display: flex;
       width: max-content;
@@ -85,20 +88,21 @@
     .ticker-item {
       flex-shrink: 0;
       width: 2600px;
-      height: 46px;
+      height: 42px;
       overflow: hidden;
     }
 
-    .ticker-wrapper .tradingview-widget-container,
-    .ticker-wrapper .tradingview-widget-container__widget {
-      height: 46px !important;
-      width: 100% !important;
+    .ticker-scale {
+      transform: scale(0.80);
+      transform-origin: top left;
+      width: 125%;
+      height: 42px;
     }
 
-    .ticker-scale {
-      transform-origin: top left;
-      width: 100%;
-      height: 46px;
+    .tradingview-widget-container,
+    .tradingview-widget-container__widget {
+      width: 100% !important;
+      height: 42px !important;
     }
 
     @keyframes tickerMove {
@@ -110,105 +114,192 @@
       }
     }
 
-    /*
-     * No desktop: scale 0.80 → fonte visualmente menor
-     * Altura visual: 46 × 0.80 = ~37px
-     * Largura compensada: 100% ÷ 0.80 = 125% (evita corte horizontal)
-     */
-    .desktop-device .ticker-wrapper {
-      height: 37px;
+    /* ───────────────── MAIN ───────────────── */
+
+    .main-wrapper {
+      padding-top: 130px;
+      padding-bottom: 50px;
+      width: 100%;
+      min-height: 100vh;
     }
 
-    .desktop-device .ticker-scale {
-      transform: scale(0.80);
-      width: 125%;
+    .hero {
+      width: 100%;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 0 40px;
     }
 
-    /* ── ESTILOS PARA SMARTPHONE VERTICAL ── */
-    .mobile-device .navbar {
-      padding: 18px 20px;
-      min-height: 75px;
+    .hero-top {
+      margin-bottom: 40px;
     }
 
-    .mobile-device .navbar .welcome {
-      font-size: 24px;
-      font-weight: bold;
+    .hero-kicker {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #7d8590;
+      margin-bottom: 16px;
     }
 
-    .mobile-device .navbar .links {
-      gap: 20px;
+    .hero-title {
+      font-size: 56px;
+      line-height: 1.05;
+      font-weight: 700;
+      letter-spacing: -2px;
+      margin: 0 0 22px;
+      color: #0c1117;
+      max-width: 900px;
     }
 
-    .mobile-device .navbar a {
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    .mobile-device .ticker-wrapper {
-      top: 75px;
-    }
-
-    /* ── ESTILOS PARA SMARTPHONE HORIZONTAL ── */
-    .mobile-landscape .navbar {
-      padding: 12px 20px;
-    }
-
-    .mobile-landscape .navbar .welcome {
+    .hero-description {
+      max-width: 720px;
       font-size: 18px;
+      line-height: 1.8;
+      color: #59636e;
     }
 
-    .mobile-landscape .navbar .links {
-      gap: 15px;
+    /* ───────────────── GRID ───────────────── */
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 26px;
     }
 
-    .mobile-landscape .navbar a {
-      font-size: 18px;
+    .dashboard-card {
+      position: relative;
+      background: white;
+      border-radius: 24px;
+      padding: 34px;
+      text-decoration: none;
+      color: inherit;
+      overflow: hidden;
+      transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+      border: 1px solid #e8edf2;
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow:
+        0 1px 2px rgba(16,24,40,0.04),
+        0 8px 24px rgba(16,24,40,0.04);
     }
 
-    .mobile-landscape .ticker-wrapper {
-      top: 54px;
+    .dashboard-card:hover {
+      transform: translateY(-6px);
+      box-shadow:
+        0 10px 30px rgba(16,24,40,0.08),
+        0 18px 50px rgba(16,24,40,0.08);
+      border-color: #d9e0e7;
     }
 
-    /* ── ESTILOS PARA COMPUTADOR (DEFAULT) ── */
-    .desktop-device .navbar {
-      padding: 10px 20px;
+    .card-number {
+      font-size: 13px;
+      font-weight: 700;
+      color: #98a2ad;
+      letter-spacing: 1px;
+      margin-bottom: 26px;
     }
 
-    .desktop-device .navbar .welcome {
+    .card-title {
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 18px;
+      color: #0f1720;
+      letter-spacing: -1px;
+    }
+
+    .card-description {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #5f6b76;
+      max-width: 280px;
+    }
+
+    .card-footer {
+      margin-top: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-status {
+      font-size: 13px;
+      color: #7d8792;
+      font-weight: 600;
+    }
+
+    .card-arrow {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #0f1720;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 16px;
+      transition: transform 0.2s ease;
     }
 
-    .desktop-device .navbar .links {
-      gap: 20px;
+    .dashboard-card:hover .card-arrow {
+      transform: translateX(4px);
     }
 
-    .desktop-device .navbar a {
-      font-size: 16px;
-    }
+    /* ───────────────── MOBILE ───────────────── */
 
-    .desktop-device .ticker-wrapper {
-      top: 45px;
-    }
+    @media (max-width: 900px) {
 
-    @media (max-width: 768px) {
       .navbar {
-        padding: 8px 15px;
+        padding: 14px 18px;
       }
 
-      .navbar .welcome {
-        font-size: 14px;
+      .links {
+        gap: 14px;
       }
 
-      .navbar .links {
-        gap: 10px;
-      }
-
-      .navbar a {
-        font-size: 14px;
+      .links a {
+        font-size: 13px;
       }
 
       .ticker-wrapper {
-        top: 40px;
+        top: 58px;
+      }
+
+      .main-wrapper {
+        padding-top: 130px;
+      }
+
+      .hero {
+        padding: 0 22px;
+      }
+
+      .hero-title {
+        font-size: 40px;
+        line-height: 1.1;
+      }
+
+      .hero-description {
+        font-size: 16px;
+        line-height: 1.7;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-card {
+        min-height: 220px;
+        padding: 28px;
+      }
+
+      .card-title {
+        font-size: 26px;
       }
 
       .ticker-item {
@@ -219,131 +310,16 @@
         animation-duration: 120s;
       }
     }
-
-    /* ── CONTEÚDO PRINCIPAL ── */
-    .main-wrapper {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding-top: 91px;
-      box-sizing: border-box;
-    }
-
-    .desktop-device .main-wrapper {
-      padding-top: 82px;
-    }
-
-    .mobile-device .main-wrapper {
-      padding-top: 121px;
-    }
-
-    .mobile-landscape .main-wrapper {
-      padding-top: 100px;
-    }
-
-    /* ── CARDS PROFISSIONAIS ── */
-    .dashboard-grid {
-      width: 100%;
-      max-width: 1250px;
-      padding: 40px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 28px;
-      box-sizing: border-box;
-    }
-
-    .dashboard-card {
-      position: relative;
-      background: white;
-      border: 1px solid rgba(0,0,0,0.08);
-      border-radius: 22px;
-      padding: 32px;
-      min-height: 240px;
-      text-decoration: none;
-      color: black;
-      overflow: hidden;
-      transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease,
-        border-color 0.25s ease;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      box-shadow:
-        0 4px 12px rgba(0,0,0,0.04),
-        0 1px 2px rgba(0,0,0,0.04);
-    }
-
-    .dashboard-card::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: linear-gradient(90deg, #000, #444);
-    }
-
-    .dashboard-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(0,0,0,0.15);
-      box-shadow:
-        0 18px 35px rgba(0,0,0,0.10),
-        0 6px 12px rgba(0,0,0,0.06);
-    }
-
-    .card-icon {
-      font-size: 42px;
-      margin-bottom: 24px;
-      line-height: 1;
-    }
-
-    .card-title {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 14px;
-      letter-spacing: -0.5px;
-    }
-
-    .card-subtitle {
-      font-size: 15px;
-      line-height: 1.7;
-      color: #555;
-    }
-
-    .mobile-device .dashboard-grid {
-      padding: 25px;
-      gap: 22px;
-    }
-
-    .mobile-device .dashboard-card {
-      min-height: 210px;
-      padding: 26px;
-    }
-
-    .mobile-device .card-title {
-      font-size: 26px;
-    }
-
-    .mobile-device .card-subtitle {
-      font-size: 17px;
-    }
-
-    .mobile-device .card-icon {
-      font-size: 46px;
-    }
-
-    #deviceInfo {
-      display: none !important;
-    }
   </style>
 </head>
+
 <body>
 
-  <!-- ══ NAVBAR ══ -->
+  <!-- ───────────── NAVBAR ───────────── -->
+
   <div class="navbar">
     <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
+
     <div class="links">
       <a href="dashboard.html">Dashboard</a>
       <a href="lamina.html">Lâmina</a>
@@ -352,14 +328,17 @@
     </div>
   </div>
 
-  <!-- ══ TICKER TAPE TRADINGVIEW ══ -->
+  <!-- ───────────── TICKER ───────────── -->
+
   <div class="ticker-wrapper">
 
     <div class="ticker-track">
 
       <!-- BLOCO 1 -->
       <div class="ticker-item">
+
         <div class="ticker-scale">
+
           <div class="tradingview-widget-container">
             <div class="tradingview-widget-container__widget"></div>
 
@@ -368,19 +347,19 @@
               async>
             {
               "symbols": [
-                {"proName": "BMFBOVESPA:IBOV",   "title": "IBOV"},
-                {"proName": "BMFBOVESPA:SMLL",   "title": "SMLL"},
-                {"proName": "BMFBOVESPA:ALLD3",  "title": "ALLD3"},
-                {"proName": "BMFBOVESPA:ASAI3",  "title": "ASAI3"},
-                {"proName": "BMFBOVESPA:HBOR3",  "title": "HBOR3"},
-                {"proName": "BMFBOVESPA:JSLG3",  "title": "JSLG3"},
-                {"proName": "BMFBOVESPA:LIGT3",  "title": "LIGT3"},
-                {"proName": "BMFBOVESPA:MGLU3",  "title": "MGLU3"},
-                {"proName": "BMFBOVESPA:MOVI3",  "title": "MOVI3"},
-                {"proName": "BMFBOVESPA:POSI3",  "title": "POSI3"},
-                {"proName": "BMFBOVESPA:QUAL3",  "title": "QUAL3"},
-                {"proName": "BMFBOVESPA:SAPR11", "title": "SAPR11"},
-                {"proName": "BMFBOVESPA:NASD11", "title": "NASD11"}
+                {"proName":"BMFBOVESPA:IBOV","title":"IBOV"},
+                {"proName":"BMFBOVESPA:SMLL","title":"SMLL"},
+                {"proName":"BMFBOVESPA:ALLD3","title":"ALLD3"},
+                {"proName":"BMFBOVESPA:ASAI3","title":"ASAI3"},
+                {"proName":"BMFBOVESPA:HBOR3","title":"HBOR3"},
+                {"proName":"BMFBOVESPA:JSLG3","title":"JSLG3"},
+                {"proName":"BMFBOVESPA:LIGT3","title":"LIGT3"},
+                {"proName":"BMFBOVESPA:MGLU3","title":"MGLU3"},
+                {"proName":"BMFBOVESPA:MOVI3","title":"MOVI3"},
+                {"proName":"BMFBOVESPA:POSI3","title":"POSI3"},
+                {"proName":"BMFBOVESPA:QUAL3","title":"QUAL3"},
+                {"proName":"BMFBOVESPA:SAPR11","title":"SAPR11"},
+                {"proName":"BMFBOVESPA:NASD11","title":"NASD11"}
               ],
               "showSymbolLogo": false,
               "colorTheme": "light",
@@ -389,12 +368,13 @@
               "locale": "pt"
             }
             </script>
-
           </div>
+
         </div>
+
       </div>
 
-      <!-- BLOCO 2 DUPLICADO PARA LOOP INFINITO -->
+      <!-- BLOCO 2 -->
       <div class="ticker-item">
         <div class="ticker-scale">
           <div class="tradingview-widget-container">
@@ -404,48 +384,134 @@
       </div>
 
     </div>
+
   </div>
 
-  <!-- ══ CONTEÚDO PRINCIPAL ══ -->
+  <!-- ───────────── MAIN ───────────── -->
+
   <div class="main-wrapper">
-    <div class="dashboard-grid">
-      <a href="dashboard.html" class="dashboard-card">
-        <div class="card-icon">📊</div>
-        <div class="card-title">Dashboard</div>
-        <div class="card-subtitle">Acompanhe performance, gráficos e indicadores da estratégia.</div>
-      </a>
 
-      <a href="lamina.html" class="dashboard-card">
-        <div class="card-icon">📑</div>
-        <div class="card-title">Lâmina</div>
-        <div class="card-subtitle">Consulte detalhes técnicos, visão geral e composição.</div>
-      </a>
+    <div class="hero">
 
-      <a href="conteudo.html" class="dashboard-card">
-        <div class="card-icon">🎓</div>
-        <div class="card-title">Conteúdo</div>
-        <div class="card-subtitle">Acesse materiais exclusivos, estudos e atualizações.</div>
-      </a>
+      <div class="hero-top">
+        <div class="hero-kicker">CLUBE MORPHEUS</div>
 
-      <a href="minha-area.html" class="dashboard-card">
-        <div class="card-icon">👤</div>
-        <div class="card-title">Minha Área</div>
-        <div class="card-subtitle">Gerencie seu acesso, perfil e informações pessoais.</div>
-      </a>
+        <h1 class="hero-title">
+          Plataforma privada de análise, estratégia e acompanhamento.
+        </h1>
+
+        <div class="hero-description">
+          Ambiente reservado para acompanhamento de performance,
+          conteúdo institucional, materiais estratégicos e visão consolidada da operação.
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+
+        <a href="dashboard.html" class="dashboard-card">
+
+          <div>
+            <div class="card-number">01</div>
+
+            <div class="card-title">
+              Dashboard
+            </div>
+
+            <div class="card-description">
+              Acompanhamento consolidado de performance, métricas e evolução da estratégia.
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="card-status">Acessar módulo</div>
+            <div class="card-arrow">→</div>
+          </div>
+
+        </a>
+
+        <a href="lamina.html" class="dashboard-card">
+
+          <div>
+            <div class="card-number">02</div>
+
+            <div class="card-title">
+              Lâmina
+            </div>
+
+            <div class="card-description">
+              Estrutura do veículo, visão executiva, composição e informações institucionais.
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="card-status">Acessar módulo</div>
+            <div class="card-arrow">→</div>
+          </div>
+
+        </a>
+
+        <a href="conteudo.html" class="dashboard-card">
+
+          <div>
+            <div class="card-number">03</div>
+
+            <div class="card-title">
+              Conteúdo
+            </div>
+
+            <div class="card-description">
+              Relatórios, materiais exclusivos, estudos e comunicação estratégica.
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="card-status">Acessar módulo</div>
+            <div class="card-arrow">→</div>
+          </div>
+
+        </a>
+
+        <a href="minha-area.html" class="dashboard-card">
+
+          <div>
+            <div class="card-number">04</div>
+
+            <div class="card-title">
+              Minha Área
+            </div>
+
+            <div class="card-description">
+              Gestão de acesso, informações cadastrais e preferências da conta.
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="card-status">Acessar módulo</div>
+            <div class="card-arrow">→</div>
+          </div>
+
+        </a>
+
+      </div>
+
     </div>
+
   </div>
 
-  <!-- ══ FIREBASE AUTH ══ -->
+  <!-- ───────────── FIREBASE ───────────── -->
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+
     import {
       getAuth,
-      onAuthStateChanged,
+      onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
     import {
       getFirestore,
       doc,
-      getDoc,
+      getDoc
     } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -462,95 +528,60 @@
     const db = getFirestore(app);
 
     onAuthStateChanged(auth, async (user) => {
+
       if (user) {
+
         try {
+
           const docRef = doc(db, "usuarios", user.uid);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
+
             const data = docSnap.data();
+
             const nome = data.nome || "Usuário";
+
             const genero = (data.genero || "masculino").toLowerCase();
-            const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
+
+            const saudacao =
+              genero === "feminino"
+              ? "Bem-vinda"
+              : "Bem-vindo";
 
             document.getElementById("welcomeUser").textContent =
               `${saudacao}, ${nome}`;
-          } else {
-            document.getElementById("welcomeUser").textContent =
-              "Bem-vindo(a), Usuário";
+
           }
 
-        } catch (error) {
-          document.getElementById("welcomeUser").textContent =
-            "Bem-vindo(a), Usuário";
-        }
+        } catch (error) {}
 
       } else {
+
         window.location.href = "index.html";
+
       }
-    });
-  </script>
 
-  <!-- ══ DETECÇÃO DE DISPOSITIVO ══ -->
-  <script>
-    let orientationChangeTimeout;
-
-    function detectarDispositivo() {
-      const largura = window.innerWidth;
-      const altura = window.innerHeight;
-      const isTouchDevice =
-        ('ontouchstart' in window) ||
-        (navigator.maxTouchPoints > 0);
-
-      const isMobileSize =
-        largura <= 1024 ||
-        (largura < altura && largura <= 768) ||
-        (isTouchDevice && (largura <= 1024 || altura <= 1024));
-
-      document.body.classList.remove(
-        'desktop-device',
-        'mobile-device',
-        'mobile-landscape'
-      );
-
-      if (isMobileSize && isTouchDevice) {
-        if (largura > altura) {
-          document.body.classList.add(
-            'mobile-device',
-            'mobile-landscape'
-          );
-        } else {
-          document.body.classList.add('mobile-device');
-        }
-      } else {
-        document.body.classList.add('desktop-device');
-      }
-    }
-
-    window.addEventListener('resize', function () {
-      clearTimeout(orientationChangeTimeout);
-      orientationChangeTimeout = setTimeout(detectarDispositivo, 250);
     });
 
-    window.addEventListener('orientationchange', function () {
-      clearTimeout(orientationChangeTimeout);
-      orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
-    });
+    /* DUPLICA O CONTEÚDO DO TICKER */
 
-    setTimeout(detectarDispositivo, 100);
-    detectarDispositivo();
+    window.addEventListener("load", () => {
 
-    /* DUPLICA O CONTEÚDO DO PRIMEIRO BLOCO */
-    window.addEventListener('load', () => {
       const firstWidget =
-        document.querySelector('.ticker-item:first-child .ticker-scale');
+        document.querySelector(
+          ".ticker-item:first-child .ticker-scale"
+        );
 
       const secondWidget =
-        document.querySelector('.ticker-item:last-child .ticker-scale');
+        document.querySelector(
+          ".ticker-item:last-child .ticker-scale"
+        );
 
       if (firstWidget && secondWidget) {
         secondWidget.innerHTML = firstWidget.innerHTML;
       }
+
     });
   </script>
 
