@@ -2,18 +2,13 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Clube Morpheus</title>
   <link rel="icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
   <style>
-    * {
+    html, body {
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-    }
-
-    html, body {
       height: 100%;
       font-family: "DM Sans", sans-serif;
       background-color: white;
@@ -21,7 +16,6 @@
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
-      overscroll-behavior-x: none;
     }
 
     /* ── NAVBAR ── */
@@ -35,8 +29,9 @@
       width: 100%;
       top: 0;
       left: 0;
-      z-index: 20;
+      z-index: 10;
       color: white;
+      box-sizing: border-box;
     }
 
     .navbar .welcome {
@@ -50,6 +45,7 @@
       gap: 20px;
       flex-wrap: nowrap;
       white-space: nowrap;
+      padding-left: 4px;
     }
 
     .navbar a {
@@ -57,45 +53,52 @@
       text-decoration: none;
       font-weight: bold;
       font-size: 16px;
-      transition: transform 0.2s ease;
+      display: inline-block;
+      transition: transform 0.2s ease-in-out;
     }
 
     .navbar a:hover {
       transform: scale(1.1);
+      color: white;
     }
 
-    /* ── TICKER ── */
+    /* ── TICKER TAPE ── */
     .ticker-wrapper {
       position: fixed;
       top: 45px;
       left: 0;
       width: 100%;
+      z-index: 9;
       height: 46px;
-      z-index: 15;
-      background: white;
       overflow: hidden;
-      border-bottom: 1px solid rgba(0,0,0,0.06);
+      background-color: #fff;
     }
 
+    /* TRACK RESPONSÁVEL PELA ROLAGEM */
     .ticker-track {
       display: flex;
       width: max-content;
-      height: 100%;
-      animation: tickerMove 45s linear infinite;
+      animation: tickerMove 90s linear infinite;
       will-change: transform;
     }
 
     .ticker-item {
-      flex: 0 0 auto;
-      width: max(1800px, 220vw);
+      flex-shrink: 0;
+      width: 2600px;
       height: 46px;
       overflow: hidden;
     }
 
-    .tradingview-widget-container,
-    .tradingview-widget-container__widget {
+    .ticker-wrapper .tradingview-widget-container,
+    .ticker-wrapper .tradingview-widget-container__widget {
+      height: 46px !important;
+      width: 100% !important;
+    }
+
+    .ticker-scale {
+      transform-origin: top left;
       width: 100%;
-      height: 100%;
+      height: 46px;
     }
 
     @keyframes tickerMove {
@@ -107,26 +110,147 @@
       }
     }
 
-    /* ── MAIN ── */
+    /*
+     * No desktop: scale 0.80 → fonte visualmente menor
+     * Altura visual: 46 × 0.80 = ~37px
+     * Largura compensada: 100% ÷ 0.80 = 125% (evita corte horizontal)
+     */
+    .desktop-device .ticker-wrapper {
+      height: 37px;
+    }
+
+    .desktop-device .ticker-scale {
+      transform: scale(0.80);
+      width: 125%;
+    }
+
+    /* ── ESTILOS PARA SMARTPHONE VERTICAL ── */
+    .mobile-device .navbar {
+      padding: 18px 20px;
+      min-height: 75px;
+    }
+
+    .mobile-device .navbar .welcome {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .mobile-device .navbar .links {
+      gap: 20px;
+    }
+
+    .mobile-device .navbar a {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .mobile-device .ticker-wrapper {
+      top: 75px;
+    }
+
+    /* ── ESTILOS PARA SMARTPHONE HORIZONTAL ── */
+    .mobile-landscape .navbar {
+      padding: 12px 20px;
+    }
+
+    .mobile-landscape .navbar .welcome {
+      font-size: 18px;
+    }
+
+    .mobile-landscape .navbar .links {
+      gap: 15px;
+    }
+
+    .mobile-landscape .navbar a {
+      font-size: 18px;
+    }
+
+    .mobile-landscape .ticker-wrapper {
+      top: 54px;
+    }
+
+    /* ── ESTILOS PARA COMPUTADOR (DEFAULT) ── */
+    .desktop-device .navbar {
+      padding: 10px 20px;
+    }
+
+    .desktop-device .navbar .welcome {
+      font-size: 16px;
+    }
+
+    .desktop-device .navbar .links {
+      gap: 20px;
+    }
+
+    .desktop-device .navbar a {
+      font-size: 16px;
+    }
+
+    .desktop-device .ticker-wrapper {
+      top: 45px;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 8px 15px;
+      }
+
+      .navbar .welcome {
+        font-size: 14px;
+      }
+
+      .navbar .links {
+        gap: 10px;
+      }
+
+      .navbar a {
+        font-size: 14px;
+      }
+
+      .ticker-wrapper {
+        top: 40px;
+      }
+
+      .ticker-item {
+        width: 3400px;
+      }
+
+      .ticker-track {
+        animation-duration: 120s;
+      }
+    }
+
+    /* ── CONTEÚDO PRINCIPAL ── */
     .main-wrapper {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding-top: 91px;
+      box-sizing: border-box;
     }
 
-    .desktop-device .main-wrapper   { padding-top: calc(45px + 46px + 37px); }
-    .mobile-device .main-wrapper    { padding-top: calc(75px + 46px + 37px); }
-    .mobile-landscape .main-wrapper { padding-top: calc(54px + 46px + 37px); }
+    .desktop-device .main-wrapper {
+      padding-top: 82px;
+    }
 
-    /* ── MANUTENÇÃO ── */
+    .mobile-device .main-wrapper {
+      padding-top: 121px;
+    }
+
+    .mobile-landscape .main-wrapper {
+      padding-top: 100px;
+    }
+
+    /* ── PÁGINA EM MANUTENÇÃO ── */
     .manutencao-container {
-      text-align: center;
-      padding: 40px 20px;
-      gap: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+      gap: 20px;
     }
 
     .manutencao-icon {
@@ -135,17 +259,22 @@
     }
 
     @keyframes girar {
+      0%   { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
 
     .manutencao-titulo {
       font-size: 28px;
       font-weight: 700;
+      margin: 0;
+      color: #000;
     }
 
     .manutencao-subtitulo {
       font-size: 16px;
+      font-weight: 400;
       color: #555;
+      margin: 0;
       max-width: 380px;
       line-height: 1.6;
     }
@@ -153,38 +282,18 @@
     .manutencao-linha {
       width: 60px;
       height: 3px;
-      background: black;
+      background-color: #000;
       border-radius: 2px;
     }
 
-    #deviceInfo { display: none; }
-
-    /* ── AJUSTES POR DISPOSITIVO ── */
-    .desktop-device .ticker-wrapper { top: 45px; }
-    .mobile-device .navbar          { padding: 18px 20px; min-height: 75px; }
-    .mobile-device .navbar .welcome { font-size: 24px; }
-    .mobile-device .navbar a        { font-size: 24px; }
-    .mobile-device .ticker-wrapper  { top: 75px; height: 46px; }
-
-    .mobile-landscape .navbar         { padding: 12px 20px; }
-    .mobile-landscape .navbar .welcome { font-size: 18px; }
-    .mobile-landscape .navbar a        { font-size: 18px; }
-    .mobile-landscape .ticker-wrapper  { top: 54px; height: 46px; }
-
-    /* Em telas menores, deixa a faixa ainda mais larga para garantir que tudo apareça */
-    @media (max-width: 768px) {
-      .ticker-item {
-        width: max(2000px, 260vw);
-      }
-
-      .ticker-track {
-        animation-duration: 55s;
-      }
+    #deviceInfo {
+      display: none !important;
     }
   </style>
 </head>
 <body>
 
+  <!-- ══ NAVBAR ══ -->
   <div class="navbar">
     <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
     <div class="links">
@@ -195,13 +304,21 @@
     </div>
   </div>
 
+  <!-- ══ TICKER TAPE TRADINGVIEW ══ -->
   <div class="ticker-wrapper">
+
     <div class="ticker-track">
+
+      <!-- BLOCO 1 -->
       <div class="ticker-item">
-        <div class="tradingview-widget-container">
-          <div class="tradingview-widget-container__widget"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-          {
+        <div class="ticker-scale">
+          <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+
+            <script type="text/javascript"
+              src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js"
+              async>
+            {
             "symbols": [
               {"proName": "BMFBOVESPA:IBOV",   "title": "IBOV"},
               {"proName": "BMFBOVESPA:SMLL",   "title": "SMLL"},
@@ -216,49 +333,32 @@
               {"proName": "BMFBOVESPA:QUAL3",  "title": "QUAL3"},
               {"proName": "BMFBOVESPA:SAPR11", "title": "SAPR11"},
               {"proName": "BMFBOVESPA:NASD11", "title": "NASD11"}
-            ],
-            "showSymbolLogo": false,
-            "colorTheme": "light",
-            "isTransparent": false,
-            "displayMode": "adaptive",
-            "locale": "pt"
-          }
-          </script>
+              ],
+              "showSymbolLogo": false,
+              "colorTheme": "light",
+              "isTransparent": false,
+              "displayMode": "adaptive",
+              "locale": "pt"
+            }
+            </script>
+
+          </div>
         </div>
       </div>
 
-      <div class="ticker-item" aria-hidden="true">
-        <div class="tradingview-widget-container">
-          <div class="tradingview-widget-container__widget"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-          {
-            "symbols": [
-              {"proName": "BMFBOVESPA:IBOV",   "title": "IBOV"},
-              {"proName": "BMFBOVESPA:SMLL",   "title": "SMLL"},
-              {"proName": "BMFBOVESPA:ALLD3",  "title": "ALLD3"},
-              {"proName": "BMFBOVESPA:ASAI3",  "title": "ASAI3"},
-              {"proName": "BMFBOVESPA:HBOR3",  "title": "HBOR3"},
-              {"proName": "BMFBOVESPA:JSLG3",  "title": "JSLG3"},
-              {"proName": "BMFBOVESPA:LIGT3",  "title": "LIGT3"},
-              {"proName": "BMFBOVESPA:MGLU3",  "title": "MGLU3"},
-              {"proName": "BMFBOVESPA:MOVI3",  "title": "MOVI3"},
-              {"proName": "BMFBOVESPA:POSI3",  "title": "POSI3"},
-              {"proName": "BMFBOVESPA:QUAL3",  "title": "QUAL3"},
-              {"proName": "BMFBOVESPA:SAPR11", "title": "SAPR11"},
-              {"proName": "BMFBOVESPA:NASD11", "title": "NASD11"}
-            ],
-            "showSymbolLogo": false,
-            "colorTheme": "light",
-            "isTransparent": false,
-            "displayMode": "adaptive",
-            "locale": "pt"
-          }
-          </script>
+      <!-- BLOCO 2 DUPLICADO PARA LOOP INFINITO -->
+      <div class="ticker-item">
+        <div class="ticker-scale">
+          <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 
+  <!-- ══ CONTEÚDO PRINCIPAL ══ -->
   <div class="main-wrapper">
     <div class="manutencao-container">
       <div class="manutencao-icon">⚙️</div>
@@ -268,11 +368,18 @@
     </div>
   </div>
 
-  <!-- FIREBASE -->
+  <!-- ══ FIREBASE AUTH ══ -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
@@ -290,66 +397,103 @@
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
-          const docSnap = await getDoc(doc(db, "usuarios", user.uid));
+          const docRef = doc(db, "usuarios", user.uid);
+          const docSnap = await getDoc(docRef);
+
           if (docSnap.exists()) {
             const data = docSnap.data();
             const nome = data.nome || "Usuário";
             const genero = (data.genero || "masculino").toLowerCase();
             const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
-            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+
+            document.getElementById("welcomeUser").textContent =
+              `${saudacao}, ${nome}`;
           } else {
-            document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
+            document.getElementById("welcomeUser").textContent =
+              "Bem-vindo(a), Usuário";
           }
-        } catch {
-          document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
+
+        } catch (error) {
+          document.getElementById("welcomeUser").textContent =
+            "Bem-vindo(a), Usuário";
         }
+
       } else {
         window.location.href = "index.html";
       }
     });
   </script>
 
-  <!-- DETECÇÃO DE DISPOSITIVO -->
+  <!-- ══ DETECÇÃO DE DISPOSITIVO ══ -->
   <script>
-    let timeout;
+    let orientationChangeTimeout;
+
     function detectarDispositivo() {
       const largura = window.innerWidth;
       const altura = window.innerHeight;
-      const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      const isMobile = largura <= 1024 || (largura < altura && largura <= 768) || (isTouch && (largura <= 1024 || altura <= 1024));
+      const isTouchDevice =
+        ('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0);
 
-      document.body.classList.remove('desktop-device', 'mobile-device', 'mobile-landscape');
-      if (isMobile && isTouch) {
-        if (largura > altura) document.body.classList.add('mobile-device', 'mobile-landscape');
-        else document.body.classList.add('mobile-device');
+      const isMobileSize =
+        largura <= 1024 ||
+        (largura < altura && largura <= 768) ||
+        (isTouchDevice && (largura <= 1024 || altura <= 1024));
+
+      document.body.classList.remove(
+        'desktop-device',
+        'mobile-device',
+        'mobile-landscape'
+      );
+
+      if (isMobileSize && isTouchDevice) {
+        if (largura > altura) {
+          document.body.classList.add(
+            'mobile-device',
+            'mobile-landscape'
+          );
+        } else {
+          document.body.classList.add('mobile-device');
+        }
       } else {
         document.body.classList.add('desktop-device');
       }
     }
 
-    window.addEventListener('resize', () => {
-      clearTimeout(timeout);
-      timeout = setTimeout(detectarDispositivo, 250);
+    window.addEventListener('resize', function () {
+      clearTimeout(orientationChangeTimeout);
+
+      orientationChangeTimeout = setTimeout(
+        detectarDispositivo,
+        250
+      );
     });
 
-    window.addEventListener('orientationchange', () => {
-      clearTimeout(timeout);
-      timeout = setTimeout(detectarDispositivo, 500);
+    window.addEventListener('orientationchange', function () {
+      clearTimeout(orientationChangeTimeout);
+
+      orientationChangeTimeout = setTimeout(
+        detectarDispositivo,
+        500
+      );
     });
 
+    setTimeout(detectarDispositivo, 100);
     detectarDispositivo();
+
+    /* DUPLICA O CONTEÚDO DO PRIMEIRO BLOCO */
+    window.addEventListener('load', () => {
+      const firstWidget =
+        document.querySelector('.ticker-item:first-child .ticker-scale');
+
+      const secondWidget =
+        document.querySelector('.ticker-item:last-child .ticker-scale');
+
+      if (firstWidget && secondWidget) {
+        secondWidget.innerHTML = firstWidget.innerHTML;
+      }
+    });
   </script>
 
-  <!-- GARANTE SEM BARRA E REFORÇA O REAJUSTE -->
-  <script>
-    (function() {
-      document.body.style.overflowX = 'hidden';
-      document.documentElement.style.overflowX = 'hidden';
-
-      window.addEventListener('load', function() {
-        setTimeout(() => window.dispatchEvent(new Event('resize')), 500);
-      });
-    })();
-  </script>
 </body>
 </html>
