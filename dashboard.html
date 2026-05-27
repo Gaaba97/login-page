@@ -3,14 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>Clube Morpheus</title>
-
   <link rel="icon" href="favicon.ico">
-
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
-
   <style>
-    html,
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       height: 100%;
@@ -21,27 +17,19 @@
       flex-direction: column;
     }
 
-    /* ───────────────────────── NAVBAR ───────────────────────── */
-
+    /* ── NAVBAR ── */
     .navbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-
       background-color: rgba(0, 0, 0, 0.9);
-
       padding: 10px 20px;
-
       position: fixed;
+      width: 100%;
       top: 0;
       left: 0;
-
-      width: 100%;
-
       z-index: 10;
-
       color: white;
-
       box-sizing: border-box;
     }
 
@@ -73,172 +61,78 @@
       color: white;
     }
 
-    /* ─────────────────────── TICKER TRADINGVIEW ─────────────────────── */
-
+    /* ── TICKER TAPE ── */
     .ticker-wrapper {
       position: fixed;
-
       top: 45px;
       left: 0;
-
       width: 100%;
-
       z-index: 9;
-
+      height: 46px;
       overflow: hidden;
-
       background-color: #fff;
-
-      border: none;
     }
 
-    .tradingview-widget-container,
-    .tradingview-widget-container__widget {
+    .ticker-wrapper .tradingview-widget-container,
+    .ticker-wrapper .tradingview-widget-container__widget {
       width: 100%;
+      height: 46px !important;
     }
 
-    /* DESKTOP */
-
-    .desktop-device .ticker-wrapper {
-      height: 37px;
-    }
-
-    .desktop-device .tradingview-widget-container {
-      zoom: 0.80;
-    }
-
-    /* MOBILE VERTICAL */
-
+    /* ── ESTILOS PARA SMARTPHONE VERTICAL ── */
     .mobile-device .navbar {
       padding: 18px 20px;
       min-height: 75px;
     }
+    .mobile-device .navbar .welcome { font-size: 24px; font-weight: bold; }
+    .mobile-device .navbar .links   { gap: 20px; }
+    .mobile-device .navbar a        { font-size: 24px; font-weight: bold; }
+    .mobile-device .ticker-wrapper  { top: 75px; }
 
-    .mobile-device .navbar .welcome {
-      font-size: 24px;
-      font-weight: bold;
-    }
+    /* ── ESTILOS PARA SMARTPHONE HORIZONTAL ── */
+    .mobile-landscape .navbar { padding: 12px 20px; }
+    .mobile-landscape .navbar .welcome { font-size: 18px; }
+    .mobile-landscape .navbar .links   { gap: 15px; }
+    .mobile-landscape .navbar a        { font-size: 18px; }
+    .mobile-landscape .ticker-wrapper  { top: 54px; }
 
-    .mobile-device .navbar .links {
-      gap: 20px;
-    }
-
-    .mobile-device .navbar a {
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    .mobile-device .ticker-wrapper {
-      top: 75px;
-      height: 46px;
-    }
-
-    /* MOBILE HORIZONTAL */
-
-    .mobile-landscape .navbar {
-      padding: 12px 20px;
-    }
-
-    .mobile-landscape .navbar .welcome {
-      font-size: 18px;
-    }
-
-    .mobile-landscape .navbar .links {
-      gap: 15px;
-    }
-
-    .mobile-landscape .navbar a {
-      font-size: 18px;
-    }
-
-    .mobile-landscape .ticker-wrapper {
-      top: 54px;
-      height: 46px;
-    }
-
-    /* DESKTOP NAVBAR */
-
-    .desktop-device .navbar {
-      padding: 10px 20px;
-    }
-
-    .desktop-device .navbar .welcome {
-      font-size: 16px;
-    }
-
-    .desktop-device .navbar .links {
-      gap: 20px;
-    }
-
-    .desktop-device .navbar a {
-      font-size: 16px;
-    }
-
-    .desktop-device .ticker-wrapper {
-      top: 45px;
-    }
+    /* ── ESTILOS PARA COMPUTADOR (DEFAULT) ── */
+    .desktop-device .navbar          { padding: 10px 20px; }
+    .desktop-device .navbar .welcome { font-size: 16px; }
+    .desktop-device .navbar .links   { gap: 20px; }
+    .desktop-device .navbar a        { font-size: 16px; }
+    .desktop-device .ticker-wrapper  { top: 45px; }
 
     @media (max-width: 768px) {
-      .navbar {
-        padding: 8px 15px;
-      }
-
-      .navbar .welcome {
-        font-size: 14px;
-      }
-
-      .navbar .links {
-        gap: 10px;
-      }
-
-      .navbar a {
-        font-size: 14px;
-      }
-
-      .ticker-wrapper {
-        top: 40px;
-      }
+      .navbar            { padding: 8px 15px; }
+      .navbar .welcome   { font-size: 14px; }
+      .navbar .links     { gap: 10px; }
+      .navbar a          { font-size: 14px; }
+      .ticker-wrapper    { top: 40px; }
     }
 
-    /* ─────────────────────── MAIN ─────────────────────── */
-
+    /* ── CONTEÚDO PRINCIPAL ── */
     .main-wrapper {
       flex: 1;
-
       display: flex;
       align-items: center;
       justify-content: center;
-
       padding-top: 91px;
-
       box-sizing: border-box;
     }
 
-    .desktop-device .main-wrapper {
-      padding-top: 82px;
-    }
+    .desktop-device .main-wrapper   { padding-top: 91px; }
+    .mobile-device .main-wrapper    { padding-top: 121px; }  /* 75px + 46px */
+    .mobile-landscape .main-wrapper { padding-top: 100px; }  /* 54px + 46px */
 
-    .mobile-device .main-wrapper {
-      padding-top: 121px;
-    }
-
-    .mobile-landscape .main-wrapper {
-      padding-top: 100px;
-    }
-
-    /* ─────────────────────── MANUTENÇÃO ─────────────────────── */
-
+    /* ── PÁGINA EM MANUTENÇÃO ── */
     .manutencao-container {
       display: flex;
       flex-direction: column;
-
       align-items: center;
       justify-content: center;
-
       text-align: center;
-
       padding: 40px 20px;
-
       gap: 20px;
     }
 
@@ -248,13 +142,8 @@
     }
 
     @keyframes girar {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     .manutencao-titulo {
@@ -280,57 +169,112 @@
       border-radius: 2px;
     }
 
-    #deviceInfo {
-      display: none !important;
-    }
+    /* OCULTAR INFORMAÇÃO DO DISPOSITIVO */
+    #deviceInfo { display: none !important; }
   </style>
 </head>
-
 <body>
 
-  <!-- NAVBAR -->
-
+  <!-- ══ NAVBAR ══ -->
   <div class="navbar">
-
-    <div class="welcome" id="welcomeUser">
-      Bem-vindo(a)
-    </div>
-
+    <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
     <div class="links">
       <a href="dashboard.html">Dashboard</a>
       <a href="lamina.html">Lâmina</a>
       <a href="conteudo.html">Conteúdo</a>
       <a href="minha-area.html">Minha Área</a>
     </div>
-
   </div>
 
-  <!-- TICKER -->
-
+  <!-- ══ TICKER TAPE TRADINGVIEW ══ -->
   <div class="ticker-wrapper">
-
     <div class="tradingview-widget-container">
-
       <div class="tradingview-widget-container__widget"></div>
-
-      <script
-        type="text/javascript"
+      <script type="text/javascript"
         src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js"
         async>
       {
         "symbols": [
-          {"proName":"BMFBOVESPA:PETR4","title":"PETR4"},
-          {"proName":"BMFBOVESPA:VALE3","title":"VALE3"},
-          {"proName":"BMFBOVESPA:ITUB4","title":"ITUB4"},
-          {"proName":"BMFBOVESPA:BBDC4","title":"BBDC4"},
-          {"proName":"BMFBOVESPA:BBAS3","title":"BBAS3"},
-          {"proName":"BMFBOVESPA:ABEV3","title":"ABEV3"},
-          {"proName":"BMFBOVESPA:WEGE3","title":"WEGE3"},
-          {"proName":"BMFBOVESPA:RENT3","title":"RENT3"},
-          {"proName":"BMFBOVESPA:B3SA3","title":"B3SA3"},
-          {"proName":"BMFBOVESPA:RDOR3","title":"RDOR3"}
+          {"proName": "BMFBOVESPA:PETR4",  "title": "PETR4"},
+          {"proName": "BMFBOVESPA:VALE3",  "title": "VALE3"},
+          {"proName": "BMFBOVESPA:ITUB4",  "title": "ITUB4"},
+          {"proName": "BMFBOVESPA:BBDC4",  "title": "BBDC4"},
+          {"proName": "BMFBOVESPA:BBAS3",  "title": "BBAS3"},
+          {"proName": "BMFBOVESPA:ABEV3",  "title": "ABEV3"},
+          {"proName": "BMFBOVESPA:WEGE3",  "title": "WEGE3"},
+          {"proName": "BMFBOVESPA:RENT3",  "title": "RENT3"},
+          {"proName": "BMFBOVESPA:B3SA3",  "title": "B3SA3"},
+          {"proName": "BMFBOVESPA:RDOR3",  "title": "RDOR3"},
+          {"proName": "BMFBOVESPA:EQTL3",  "title": "EQTL3"},
+          {"proName": "BMFBOVESPA:SUZB3",  "title": "SUZB3"},
+          {"proName": "BMFBOVESPA:JBSS3",  "title": "JBSS3"},
+          {"proName": "BMFBOVESPA:RADL3",  "title": "RADL3"},
+          {"proName": "BMFBOVESPA:HAPV3",  "title": "HAPV3"},
+          {"proName": "BMFBOVESPA:ELET3",  "title": "ELET3"},
+          {"proName": "BMFBOVESPA:ELET6",  "title": "ELET6"},
+          {"proName": "BMFBOVESPA:CSAN3",  "title": "CSAN3"},
+          {"proName": "BMFBOVESPA:PRIO3",  "title": "PRIO3"},
+          {"proName": "BMFBOVESPA:TOTS3",  "title": "TOTS3"},
+          {"proName": "BMFBOVESPA:UGPA3",  "title": "UGPA3"},
+          {"proName": "BMFBOVESPA:VIVT3",  "title": "VIVT3"},
+          {"proName": "BMFBOVESPA:CCRO3",  "title": "CCRO3"},
+          {"proName": "BMFBOVESPA:EMBR3",  "title": "EMBR3"},
+          {"proName": "BMFBOVESPA:RAIL3",  "title": "RAIL3"},
+          {"proName": "BMFBOVESPA:ENEV3",  "title": "ENEV3"},
+          {"proName": "BMFBOVESPA:ITSA4",  "title": "ITSA4"},
+          {"proName": "BMFBOVESPA:SBSP3",  "title": "SBSP3"},
+          {"proName": "BMFBOVESPA:CMIG4",  "title": "CMIG4"},
+          {"proName": "BMFBOVESPA:LREN3",  "title": "LREN3"},
+          {"proName": "BMFBOVESPA:MULT3",  "title": "MULT3"},
+          {"proName": "BMFBOVESPA:MRFG3",  "title": "MRFG3"},
+          {"proName": "BMFBOVESPA:BRFS3",  "title": "BRFS3"},
+          {"proName": "BMFBOVESPA:TIMS3",  "title": "TIMS3"},
+          {"proName": "BMFBOVESPA:HYPE3",  "title": "HYPE3"},
+          {"proName": "BMFBOVESPA:GGBR4",  "title": "GGBR4"},
+          {"proName": "BMFBOVESPA:CSNA3",  "title": "CSNA3"},
+          {"proName": "BMFBOVESPA:USIM5",  "title": "USIM5"},
+          {"proName": "BMFBOVESPA:KLBN11", "title": "KLBN11"},
+          {"proName": "BMFBOVESPA:ENGI11", "title": "ENGI11"},
+          {"proName": "BMFBOVESPA:TAEE11", "title": "TAEE11"},
+          {"proName": "BMFBOVESPA:BPAC11", "title": "BPAC11"},
+          {"proName": "BMFBOVESPA:IGTI11", "title": "IGTI11"},
+          {"proName": "BMFBOVESPA:FLRY3",  "title": "FLRY3"},
+          {"proName": "BMFBOVESPA:SLCE3",  "title": "SLCE3"},
+          {"proName": "BMFBOVESPA:SMTO3",  "title": "SMTO3"},
+          {"proName": "BMFBOVESPA:NTCO3",  "title": "NTCO3"},
+          {"proName": "BMFBOVESPA:YDUQ3",  "title": "YDUQ3"},
+          {"proName": "BMFBOVESPA:CYRE3",  "title": "CYRE3"},
+          {"proName": "BMFBOVESPA:MRVE3",  "title": "MRVE3"},
+          {"proName": "BMFBOVESPA:EZTC3",  "title": "EZTC3"},
+          {"proName": "BMFBOVESPA:ASAI3",  "title": "ASAI3"},
+          {"proName": "BMFBOVESPA:VBBR3",  "title": "VBBR3"},
+          {"proName": "BMFBOVESPA:RAIZ4",  "title": "RAIZ4"},
+          {"proName": "BMFBOVESPA:SOMA3",  "title": "SOMA3"},
+          {"proName": "BMFBOVESPA:BBSE3",  "title": "BBSE3"},
+          {"proName": "BMFBOVESPA:IRBR3",  "title": "IRBR3"},
+          {"proName": "BMFBOVESPA:CPFE3",  "title": "CPFE3"},
+          {"proName": "BMFBOVESPA:ECOR3",  "title": "ECOR3"},
+          {"proName": "BMFBOVESPA:EGIE3",  "title": "EGIE3"},
+          {"proName": "BMFBOVESPA:GOAU4",  "title": "GOAU4"},
+          {"proName": "BMFBOVESPA:JHSF3",  "title": "JHSF3"},
+          {"proName": "BMFBOVESPA:PETZ3",  "title": "PETZ3"},
+          {"proName": "BMFBOVESPA:COGN3",  "title": "COGN3"},
+          {"proName": "BMFBOVESPA:MGLU3",  "title": "MGLU3"},
+          {"proName": "BMFBOVESPA:AZUL4",  "title": "AZUL4"},
+          {"proName": "BMFBOVESPA:GOLL4",  "title": "GOLL4"},
+          {"proName": "BMFBOVESPA:PETR3",  "title": "PETR3"},
+          {"proName": "BMFBOVESPA:BBDC3",  "title": "BBDC3"},
+          {"proName": "BMFBOVESPA:CPLE6",  "title": "CPLE6"},
+          {"proName": "BMFBOVESPA:DXCO3",  "title": "DXCO3"},
+          {"proName": "BMFBOVESPA:BRKM5",  "title": "BRKM5"},
+          {"proName": "BMFBOVESPA:SANB11", "title": "SANB11"},
+          {"proName": "BMFBOVESPA:BRAP4",  "title": "BRAP4"},
+          {"proName": "BMFBOVESPA:RRRP3",  "title": "RRRP3"},
+          {"proName": "BMFBOVESPA:STBP3",  "title": "STBP3"},
+          {"proName": "BMFBOVESPA:LWSA3",  "title": "LWSA3"},
+          {"proName": "BMFBOVESPA:CASH3",  "title": "CASH3"},
+          {"proName": "BMFBOVESPA:CIEL3",  "title": "CIEL3"}
         ],
-
         "showSymbolLogo": false,
         "colorTheme": "light",
         "isTransparent": false,
@@ -338,195 +282,106 @@
         "locale": "pt"
       }
       </script>
-
     </div>
-
   </div>
 
-  <!-- MAIN -->
-
+  <!-- ══ CONTEÚDO PRINCIPAL ══ -->
   <div class="main-wrapper">
-
     <div class="manutencao-container">
-
-      <div class="manutencao-icon">
-        ⚙️
-      </div>
-
+      <div class="manutencao-icon">⚙️</div>
       <div class="manutencao-linha"></div>
-
-      <h2 class="manutencao-titulo">
-        Página em Manutenção
-      </h2>
-
-      <p class="manutencao-subtitulo">
-        Estamos trabalhando para melhorar esta área.
-        Em breve ela estará disponível novamente.
-      </p>
-
+      <h2 class="manutencao-titulo">Página em Manutenção</h2>
+      <p class="manutencao-subtitulo">Estamos trabalhando para melhorar esta área. Em breve ela estará disponível novamente.</p>
     </div>
-
   </div>
 
-  <!-- FIREBASE -->
-
+  <!-- ══ FIREBASE AUTH ══ -->
   <script type="module">
-
-    import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import {
       getAuth,
       onAuthStateChanged,
-    }
-    from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
     import {
       getFirestore,
       doc,
       getDoc,
-    }
-    from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
-
       apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
-
       authDomain: "login-site-9cbbd.firebaseapp.com",
-
       projectId: "login-site-9cbbd",
-
       storageBucket: "login-site-9cbbd.appspot.com",
-
       messagingSenderId: "703993528666",
-
       appId: "1:703993528666:web:1e7a02cb5b611e24c97363",
-
     };
 
     const app = initializeApp(firebaseConfig);
-
     const auth = getAuth(app);
-
     const db = getFirestore(app);
 
     onAuthStateChanged(auth, async (user) => {
-
       if (user) {
-
         try {
-
           const docRef = doc(db, "usuarios", user.uid);
-
           const docSnap = await getDoc(docRef);
-
           if (docSnap.exists()) {
-
             const data = docSnap.data();
-
             const nome = data.nome || "Usuário";
-
             const genero = (data.genero || "masculino").toLowerCase();
-
-            const saudacao =
-              genero === "feminino"
-              ? "Bem-vinda"
-              : "Bem-vindo";
-
-            document.getElementById("welcomeUser").textContent =
-              `${saudacao}, ${nome}`;
-
+            const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
+            document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+          } else {
+            document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
           }
-
         } catch (error) {
-
-          document.getElementById("welcomeUser").textContent =
-            "Bem-vindo(a), Usuário";
-
+          document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
         }
-
       } else {
-
         window.location.href = "index.html";
-
       }
-
     });
-
   </script>
 
-  <!-- DETECÇÃO -->
-
+  <!-- ══ DETECÇÃO DE DISPOSITIVO ══ -->
   <script>
-
     let orientationChangeTimeout;
 
     function detectarDispositivo() {
-
       const largura = window.innerWidth;
-
       const altura = window.innerHeight;
+      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
-      const isTouchDevice =
-        ('ontouchstart' in window) ||
-        (navigator.maxTouchPoints > 0);
+      const isMobileSize = largura <= 1024 ||
+                           (largura < altura && largura <= 768) ||
+                           (isTouchDevice && (largura <= 1024 || altura <= 1024));
 
-      const isMobileSize =
-        largura <= 1024 ||
-        (largura < altura && largura <= 768) ||
-        (isTouchDevice && (largura <= 1024 || altura <= 1024));
-
-      document.body.classList.remove(
-        'desktop-device',
-        'mobile-device',
-        'mobile-landscape'
-      );
+      document.body.classList.remove('desktop-device', 'mobile-device', 'mobile-landscape');
 
       if (isMobileSize && isTouchDevice) {
-
         if (largura > altura) {
-
-          document.body.classList.add(
-            'mobile-device',
-            'mobile-landscape'
-          );
-
+          document.body.classList.add('mobile-device', 'mobile-landscape');
         } else {
-
           document.body.classList.add('mobile-device');
-
         }
-
       } else {
-
         document.body.classList.add('desktop-device');
-
       }
-
     }
 
     window.addEventListener('resize', function () {
-
       clearTimeout(orientationChangeTimeout);
-
-      orientationChangeTimeout =
-        setTimeout(detectarDispositivo, 250);
-
+      orientationChangeTimeout = setTimeout(detectarDispositivo, 250);
     });
 
     window.addEventListener('orientationchange', function () {
-
       clearTimeout(orientationChangeTimeout);
-
-      orientationChangeTimeout =
-        setTimeout(detectarDispositivo, 500);
-
+      orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
     });
 
     setTimeout(detectarDispositivo, 100);
-
     detectarDispositivo();
-
   </script>
 
 </body>
