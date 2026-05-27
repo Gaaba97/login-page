@@ -7,15 +7,20 @@
   <link rel="icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
   <style>
-    html, body {
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
       height: 100%;
       font-family: "DM Sans", sans-serif;
       background-color: white;
       color: black;
       display: flex;
       flex-direction: column;
+      overflow-x: hidden; /* evita scroll horizontal causado pelo scale */
     }
 
     /* ── NAVBAR ── */
@@ -31,7 +36,6 @@
       left: 0;
       z-index: 10;
       color: white;
-      box-sizing: border-box;
     }
 
     .navbar .welcome {
@@ -45,7 +49,6 @@
       gap: 20px;
       flex-wrap: nowrap;
       white-space: nowrap;
-      padding-left: 4px;
     }
 
     .navbar a {
@@ -53,138 +56,104 @@
       text-decoration: none;
       font-weight: bold;
       font-size: 16px;
-      display: inline-block;
-      transition: transform 0.2s ease-in-out;
+      transition: transform 0.2s ease;
     }
 
     .navbar a:hover {
       transform: scale(1.1);
-      color: white;
     }
 
-    /* ── TICKER TAPE COM SCALE E ROLAGEM FUNCIONAL ── */
+    /* ── TICKER TAPE (SEM BARRA, COM SCALE E ROLAGEM AUTOMÁTICA) ── */
     .ticker-wrapper {
       position: fixed;
       top: 45px;
       left: 0;
       width: 100%;
       z-index: 9;
-      background-color: #fff;
-      overflow-x: visible;     /* muda de hidden para visible – permite rolagem */
+      background: white;
+      overflow-x: hidden;   /* esconde qualquer barra que vier do scale */
       overflow-y: hidden;
-      height: 46px;            /* altura padrão do widget */
+      height: 46px;         /* altura padrão do widget */
     }
 
-    /* Container que aplica o scale (reduz tamanho visual) */
+    /* Aplica scale visual, sem criar barra de rolagem extra */
     .ticker-scale {
-      transform-origin: top left;
       transform: scale(0.8);
-      width: 125%;
-      height: 46px;           /* mesma altura, o scale encolhe o conteúdo */
+      transform-origin: top left;
+      width: 125%;          /* compensa o scale para ocupar toda largura da tela */
+      height: 46px;
     }
 
-    /* O widget em si ocupa 100% da largura do .ticker-scale e rola normalmente */
+    /* O widget em si mantém 100% de largura dentro do scale */
     .tradingview-widget-container,
     .tradingview-widget-container__widget {
       width: 100%;
       height: 100%;
     }
 
-    /* Força que o iframe gerado pela TradingView também respeite a rolagem */
-    .tradingview-widget-container iframe {
-      width: 100% !important;
-    }
+    /* Ajustes por dispositivo */
+    .desktop-device .ticker-wrapper { top: 45px; }
+    .mobile-device .navbar          { padding: 18px 20px; min-height: 75px; }
+    .mobile-device .navbar .welcome { font-size: 24px; }
+    .mobile-device .navbar a        { font-size: 24px; }
+    .mobile-device .ticker-wrapper  { top: 75px; }
 
-    /* Ajusta a posição do ticker conforme o dispositivo */
-    .desktop-device .ticker-wrapper {
-      top: 45px;
-      height: 46px;
-    }
-    .desktop-device .ticker-scale {
-      height: 46px;
-    }
-
-    .mobile-device .navbar {
-      padding: 18px 20px;
-      min-height: 75px;
-    }
-    .mobile-device .navbar .welcome { font-size: 24px; font-weight: bold; }
-    .mobile-device .navbar .links   { gap: 20px; }
-    .mobile-device .navbar a        { font-size: 24px; font-weight: bold; }
-    .mobile-device .ticker-wrapper  { top: 75px; height: 46px; }
-
-    .mobile-landscape .navbar { padding: 12px 20px; }
+    .mobile-landscape .navbar       { padding: 12px 20px; }
     .mobile-landscape .navbar .welcome { font-size: 18px; }
-    .mobile-landscape .navbar .links   { gap: 15px; }
-    .mobile-landscape .navbar a        { font-size: 18px; }
-    .mobile-landscape .ticker-wrapper  { top: 54px; height: 46px; }
+    .mobile-landscape .navbar a     { font-size: 18px; }
+    .mobile-landscape .ticker-wrapper { top: 54px; }
 
-    /* ── CONTEÚDO PRINCIPAL (AJUSTE DINÂMICO) ── */
+    /* ── MAIN ── */
     .main-wrapper {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-sizing: border-box;
     }
 
-    /* Espaçamento correto: navbar + ticker (considerando altura visual do ticker com scale = ~37px) */
     .desktop-device .main-wrapper   { padding-top: calc(45px + 37px); }
     .mobile-device .main-wrapper    { padding-top: calc(75px + 37px); }
     .mobile-landscape .main-wrapper { padding-top: calc(54px + 37px); }
 
-    /* ── PÁGINA EM MANUTENÇÃO ── */
+    /* ── MANUTENÇÃO ── */
     .manutencao-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       text-align: center;
       padding: 40px 20px;
       gap: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-
     .manutencao-icon {
       font-size: 64px;
       animation: girar 3s linear infinite;
     }
-
     @keyframes girar {
-      0%   { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-
     .manutencao-titulo {
       font-size: 28px;
       font-weight: 700;
-      margin: 0;
-      color: #000;
     }
-
     .manutencao-subtitulo {
       font-size: 16px;
-      font-weight: 400;
       color: #555;
-      margin: 0;
       max-width: 380px;
       line-height: 1.6;
     }
-
     .manutencao-linha {
       width: 60px;
       height: 3px;
-      background-color: #000;
+      background: black;
       border-radius: 2px;
     }
-
-    #deviceInfo { display: none !important; }
+    #deviceInfo { display: none; }
   </style>
 </head>
 <body>
 
-  <!-- ══ NAVBAR ══ -->
   <div class="navbar">
-    <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
+    <div class="welcome" id="welcomeUser">Bem‑vindo(a)</div>
     <div class="links">
       <a href="dashboard.html">Dashboard</a>
       <a href="lamina.html">Lâmina</a>
@@ -193,7 +162,6 @@
     </div>
   </div>
 
-  <!-- ══ TICKER TAPE COM SCALE E ROLAGEM HORIZONTAL AUTOMÁTICA ══ -->
   <div class="ticker-wrapper">
     <div class="ticker-scale">
       <div class="tradingview-widget-container">
@@ -226,7 +194,6 @@
     </div>
   </div>
 
-  <!-- ══ CONTEÚDO PRINCIPAL (MANUTENÇÃO) ══ -->
   <div class="main-wrapper">
     <div class="manutencao-container">
       <div class="manutencao-icon">⚙️</div>
@@ -236,18 +203,11 @@
     </div>
   </div>
 
-  <!-- ══ FIREBASE AUTH ══ -->
+  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import {
-      getAuth,
-      onAuthStateChanged,
-    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      getDoc,
-    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
@@ -265,8 +225,7 @@
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
-          const docRef = doc(db, "usuarios", user.uid);
-          const docSnap = await getDoc(docRef);
+          const docSnap = await getDoc(doc(db, "usuarios", user.uid));
           if (docSnap.exists()) {
             const data = docSnap.data();
             const nome = data.nome || "Usuário";
@@ -276,7 +235,7 @@
           } else {
             document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
           }
-        } catch (error) {
+        } catch {
           document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
         }
       } else {
@@ -285,67 +244,39 @@
     });
   </script>
 
-  <!-- ══ DETECÇÃO DE DISPOSITIVO ══ -->
+  <!-- DETECÇÃO DE DISPOSITIVO -->
   <script>
-    let orientationChangeTimeout;
-
+    let timeout;
     function detectarDispositivo() {
       const largura = window.innerWidth;
       const altura = window.innerHeight;
-      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-
-      const isMobileSize = largura <= 1024 ||
-                           (largura < altura && largura <= 768) ||
-                           (isTouchDevice && (largura <= 1024 || altura <= 1024));
+      const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isMobile = largura <= 1024 || (largura < altura && largura <= 768) || (isTouch && (largura <= 1024 || altura <= 1024));
 
       document.body.classList.remove('desktop-device', 'mobile-device', 'mobile-landscape');
-
-      if (isMobileSize && isTouchDevice) {
-        if (largura > altura) {
-          document.body.classList.add('mobile-device', 'mobile-landscape');
-        } else {
-          document.body.classList.add('mobile-device');
-        }
+      if (isMobile && isTouch) {
+        if (largura > altura) document.body.classList.add('mobile-device', 'mobile-landscape');
+        else document.body.classList.add('mobile-device');
       } else {
         document.body.classList.add('desktop-device');
       }
     }
-
-    window.addEventListener('resize', function () {
-      clearTimeout(orientationChangeTimeout);
-      orientationChangeTimeout = setTimeout(detectarDispositivo, 250);
-    });
-
-    window.addEventListener('orientationchange', function () {
-      clearTimeout(orientationChangeTimeout);
-      orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
-    });
-
+    window.addEventListener('resize', () => { clearTimeout(timeout); timeout = setTimeout(detectarDispositivo, 250); });
+    window.addEventListener('orientationchange', () => { clearTimeout(timeout); timeout = setTimeout(detectarDispositivo, 500); });
     detectarDispositivo();
   </script>
 
-  <!-- Script extra para garantir que o ticker reinicie a rolagem em caso de falha -->
+  <!-- SCRIPT PARA GARANTIR QUE NENHUMA BARRA DE ROLAGEM APAREÇA E QUE O TICKER RODE -->
   <script>
-    (function garantirRolagemTicker() {
-      // Aguarda o widget carregar (máximo 3 segundos)
-      setTimeout(function() {
-        const widgetContainer = document.querySelector('.tradingview-widget-container');
-        if (widgetContainer) {
-          // Dispara um evento de redimensionamento para forçar o widget a recalcular a animação
-          window.dispatchEvent(new Event('resize'));
-          // Também tenta "tocar" no iframe para reanimar (não invasivo)
-          const iframe = widgetContainer.querySelector('iframe');
-          if (iframe && iframe.contentWindow) {
-            try {
-              // Pequeno "nudge" – não causa erro, apenas tenta acordar a animação
-              iframe.style.transform = 'translateZ(0)';
-              setTimeout(() => { iframe.style.transform = ''; }, 100);
-            } catch(e) { /* silencioso */ }
-          }
-        }
-      }, 1500);
+    (function() {
+      // Remove qualquer barra de rolagem que eventualmente apareça no body
+      document.body.style.overflowX = 'hidden';
+      // Força o widget a recalcular (caso precise) após carregar, sem gambiarra de scroll
+      window.addEventListener('load', function() {
+        // Dispara um resize suave para o widget reajustar a animação
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 500);
+      });
     })();
   </script>
-
 </body>
 </html>
