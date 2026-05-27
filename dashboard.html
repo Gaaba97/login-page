@@ -62,64 +62,52 @@
     }
 
     /* ── TICKER TAPE ── */
+    /*
+     * O widget do TradingView usa iframe interno com scroll próprio.
+     * Qualquer transform no container-pai desalinha o cálculo de
+     * largura do iframe e quebra a animação de rolagem.
+     * Solução: controlar apenas height + overflow, sem transform.
+     *
+     * Desktop  → altura 37px  (widget nasce com 46px, cortamos 9px no topo – invisível)
+     * Mobile V → altura 46px  (tamanho natural, nada cortado)
+     */
     .ticker-wrapper {
       position: fixed;
-      top: 45px;       /* logo abaixo do navbar */
+      top: 45px;
       left: 0;
       width: 100%;
       z-index: 9;
-      height: 46px;
       overflow: hidden;
       background-color: #fff;
     }
 
+    /* altura base (mobile fallback) */
+    .ticker-wrapper,
     .ticker-wrapper .tradingview-widget-container,
     .ticker-wrapper .tradingview-widget-container__widget {
-      height: 46px !important;
+      height: 46px;
     }
 
-    /* div interno usado para escalar o widget no desktop */
-    .ticker-scale {
-      transform-origin: top left;
-    }
+    /* ── DESKTOP ── */
+    .desktop-device .ticker-wrapper  { top: 45px;  height: 37px; }
+    .desktop-device .navbar           { padding: 10px 20px; }
+    .desktop-device .navbar .welcome  { font-size: 16px; }
+    .desktop-device .navbar .links    { gap: 20px; }
+    .desktop-device .navbar a         { font-size: 16px; }
 
-    /*
-     * No desktop: scale 0.80 → fonte visualmente menor
-     * Altura visual: 46 × 0.80 = ~37px
-     * Largura compensada: 100% ÷ 0.80 = 125% (evita corte horizontal)
-     */
-    .desktop-device .ticker-wrapper {
-      height: 37px;   /* altura visual após scale */
-    }
+    /* ── SMARTPHONE VERTICAL ── */
+    .mobile-device .navbar            { padding: 18px 20px; min-height: 75px; }
+    .mobile-device .navbar .welcome   { font-size: 24px; font-weight: bold; }
+    .mobile-device .navbar .links     { gap: 20px; }
+    .mobile-device .navbar a          { font-size: 24px; font-weight: bold; }
+    .mobile-device .ticker-wrapper    { top: 75px; height: 46px; }
 
-    .desktop-device .ticker-scale {
-      transform: scale(0.80);
-      width: 125%;
-    }
-
-    /* ── ESTILOS PARA SMARTPHONE VERTICAL ── */
-    .mobile-device .navbar {
-      padding: 18px 20px;
-      min-height: 75px;
-    }
-    .mobile-device .navbar .welcome { font-size: 24px; font-weight: bold; }
-    .mobile-device .navbar .links   { gap: 20px; }
-    .mobile-device .navbar a        { font-size: 24px; font-weight: bold; }
-    .mobile-device .ticker-wrapper  { top: 75px; }
-
-    /* ── ESTILOS PARA SMARTPHONE HORIZONTAL ── */
-    .mobile-landscape .navbar { padding: 12px 20px; }
-    .mobile-landscape .navbar .welcome { font-size: 18px; }
-    .mobile-landscape .navbar .links   { gap: 15px; }
-    .mobile-landscape .navbar a        { font-size: 18px; }
-    .mobile-landscape .ticker-wrapper  { top: 54px; }
-
-    /* ── ESTILOS PARA COMPUTADOR (DEFAULT) ── */
-    .desktop-device .navbar          { padding: 10px 20px; }
-    .desktop-device .navbar .welcome { font-size: 16px; }
-    .desktop-device .navbar .links   { gap: 20px; }
-    .desktop-device .navbar a        { font-size: 16px; }
-    .desktop-device .ticker-wrapper  { top: 45px; }
+    /* ── SMARTPHONE HORIZONTAL ── */
+    .mobile-landscape .navbar         { padding: 12px 20px; }
+    .mobile-landscape .navbar .welcome{ font-size: 18px; }
+    .mobile-landscape .navbar .links  { gap: 15px; }
+    .mobile-landscape .navbar a       { font-size: 18px; }
+    .mobile-landscape .ticker-wrapper { top: 54px; height: 46px; }
 
     @media (max-width: 768px) {
       .navbar            { padding: 8px 15px; }
@@ -135,15 +123,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      /* mobile base: navbar (~45px) + ticker (~46px) = 91px */
       padding-top: 91px;
       box-sizing: border-box;
     }
 
-    /* desktop: navbar (45px) + ticker escalado (37px) = 82px */
-    .desktop-device .main-wrapper   { padding-top: 82px; }
-    .mobile-device .main-wrapper    { padding-top: 121px; }  /* 75px + 46px */
-    .mobile-landscape .main-wrapper { padding-top: 100px; }  /* 54px + 46px */
+    .desktop-device .main-wrapper    { padding-top: 82px; }
+    .mobile-device .main-wrapper     { padding-top: 121px; }
+    .mobile-landscape .main-wrapper  { padding-top: 100px; }
 
     /* ── PÁGINA EM MANUTENÇÃO ── */
     .manutencao-container {
@@ -207,9 +193,9 @@
   </div>
 
   <!-- ══ TICKER TAPE TRADINGVIEW ══ -->
+  <!-- Sem .ticker-scale: o widget calcula a largura corretamente e rola normalmente -->
   <div class="ticker-wrapper">
-    <div class="ticker-scale">
-      <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container">
       <div class="tradingview-widget-container__widget"></div>
       <script type="text/javascript"
         src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js"
@@ -304,7 +290,6 @@
       }
       </script>
     </div>
-    </div><!-- /.ticker-scale -->
   </div>
 
   <!-- ══ CONTEÚDO PRINCIPAL ══ -->
