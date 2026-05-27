@@ -242,48 +242,96 @@
       padding-top: 100px;
     }
 
-    /* ── PÁGINA EM MANUTENÇÃO ── */
-    .manutencao-container {
+    /* ── CARDS PROFISSIONAIS ── */
+    .dashboard-grid {
+      width: 100%;
+      max-width: 1250px;
+      padding: 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 28px;
+      box-sizing: border-box;
+    }
+
+    .dashboard-card {
+      position: relative;
+      background: white;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 22px;
+      padding: 32px;
+      min-height: 240px;
+      text-decoration: none;
+      color: black;
+      overflow: hidden;
+      transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 40px 20px;
-      gap: 20px;
+      justify-content: flex-start;
+      box-shadow:
+        0 4px 12px rgba(0,0,0,0.04),
+        0 1px 2px rgba(0,0,0,0.04);
     }
 
-    .manutencao-icon {
-      font-size: 64px;
-      animation: girar 3s linear infinite;
+    .dashboard-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #000, #444);
     }
 
-    @keyframes girar {
-      0%   { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .dashboard-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(0,0,0,0.15);
+      box-shadow:
+        0 18px 35px rgba(0,0,0,0.10),
+        0 6px 12px rgba(0,0,0,0.06);
     }
 
-    .manutencao-titulo {
-      font-size: 28px;
+    .card-icon {
+      font-size: 42px;
+      margin-bottom: 24px;
+      line-height: 1;
+    }
+
+    .card-title {
+      font-size: 24px;
       font-weight: 700;
-      margin: 0;
-      color: #000;
+      margin-bottom: 14px;
+      letter-spacing: -0.5px;
     }
 
-    .manutencao-subtitulo {
-      font-size: 16px;
-      font-weight: 400;
+    .card-subtitle {
+      font-size: 15px;
+      line-height: 1.7;
       color: #555;
-      margin: 0;
-      max-width: 380px;
-      line-height: 1.6;
     }
 
-    .manutencao-linha {
-      width: 60px;
-      height: 3px;
-      background-color: #000;
-      border-radius: 2px;
+    .mobile-device .dashboard-grid {
+      padding: 25px;
+      gap: 22px;
+    }
+
+    .mobile-device .dashboard-card {
+      min-height: 210px;
+      padding: 26px;
+    }
+
+    .mobile-device .card-title {
+      font-size: 26px;
+    }
+
+    .mobile-device .card-subtitle {
+      font-size: 17px;
+    }
+
+    .mobile-device .card-icon {
+      font-size: 46px;
     }
 
     #deviceInfo {
@@ -319,20 +367,20 @@
               src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js"
               async>
             {
-            "symbols": [
-              {"proName": "BMFBOVESPA:IBOV",   "title": "IBOV"},
-              {"proName": "BMFBOVESPA:SMLL",   "title": "SMLL"},
-              {"proName": "BMFBOVESPA:ALLD3",  "title": "ALLD3"},
-              {"proName": "BMFBOVESPA:ASAI3",  "title": "ASAI3"},
-              {"proName": "BMFBOVESPA:HBOR3",  "title": "HBOR3"},
-              {"proName": "BMFBOVESPA:JSLG3",  "title": "JSLG3"},
-              {"proName": "BMFBOVESPA:LIGT3",  "title": "LIGT3"},
-              {"proName": "BMFBOVESPA:MGLU3",  "title": "MGLU3"},
-              {"proName": "BMFBOVESPA:MOVI3",  "title": "MOVI3"},
-              {"proName": "BMFBOVESPA:POSI3",  "title": "POSI3"},
-              {"proName": "BMFBOVESPA:QUAL3",  "title": "QUAL3"},
-              {"proName": "BMFBOVESPA:SAPR11", "title": "SAPR11"},
-              {"proName": "BMFBOVESPA:NASD11", "title": "NASD11"}
+              "symbols": [
+                {"proName": "BMFBOVESPA:IBOV",   "title": "IBOV"},
+                {"proName": "BMFBOVESPA:SMLL",   "title": "SMLL"},
+                {"proName": "BMFBOVESPA:ALLD3",  "title": "ALLD3"},
+                {"proName": "BMFBOVESPA:ASAI3",  "title": "ASAI3"},
+                {"proName": "BMFBOVESPA:HBOR3",  "title": "HBOR3"},
+                {"proName": "BMFBOVESPA:JSLG3",  "title": "JSLG3"},
+                {"proName": "BMFBOVESPA:LIGT3",  "title": "LIGT3"},
+                {"proName": "BMFBOVESPA:MGLU3",  "title": "MGLU3"},
+                {"proName": "BMFBOVESPA:MOVI3",  "title": "MOVI3"},
+                {"proName": "BMFBOVESPA:POSI3",  "title": "POSI3"},
+                {"proName": "BMFBOVESPA:QUAL3",  "title": "QUAL3"},
+                {"proName": "BMFBOVESPA:SAPR11", "title": "SAPR11"},
+                {"proName": "BMFBOVESPA:NASD11", "title": "NASD11"}
               ],
               "showSymbolLogo": false,
               "colorTheme": "light",
@@ -360,11 +408,30 @@
 
   <!-- ══ CONTEÚDO PRINCIPAL ══ -->
   <div class="main-wrapper">
-    <div class="manutencao-container">
-      <div class="manutencao-icon">⚙️</div>
-      <div class="manutencao-linha"></div>
-      <h2 class="manutencao-titulo">Página em Manutenção</h2>
-      <p class="manutencao-subtitulo">Estamos trabalhando para melhorar esta área. Em breve ela estará disponível novamente.</p>
+    <div class="dashboard-grid">
+      <a href="dashboard.html" class="dashboard-card">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Dashboard</div>
+        <div class="card-subtitle">Acompanhe performance, gráficos e indicadores da estratégia.</div>
+      </a>
+
+      <a href="lamina.html" class="dashboard-card">
+        <div class="card-icon">📑</div>
+        <div class="card-title">Lâmina</div>
+        <div class="card-subtitle">Consulte detalhes técnicos, visão geral e composição.</div>
+      </a>
+
+      <a href="conteudo.html" class="dashboard-card">
+        <div class="card-icon">🎓</div>
+        <div class="card-title">Conteúdo</div>
+        <div class="card-subtitle">Acesse materiais exclusivos, estudos e atualizações.</div>
+      </a>
+
+      <a href="minha-area.html" class="dashboard-card">
+        <div class="card-icon">👤</div>
+        <div class="card-title">Minha Área</div>
+        <div class="card-subtitle">Gerencie seu acesso, perfil e informações pessoais.</div>
+      </a>
     </div>
   </div>
 
@@ -462,20 +529,12 @@
 
     window.addEventListener('resize', function () {
       clearTimeout(orientationChangeTimeout);
-
-      orientationChangeTimeout = setTimeout(
-        detectarDispositivo,
-        250
-      );
+      orientationChangeTimeout = setTimeout(detectarDispositivo, 250);
     });
 
     window.addEventListener('orientationchange', function () {
       clearTimeout(orientationChangeTimeout);
-
-      orientationChangeTimeout = setTimeout(
-        detectarDispositivo,
-        500
-      );
+      orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
     });
 
     setTimeout(detectarDispositivo, 100);
