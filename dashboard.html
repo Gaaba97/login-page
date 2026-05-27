@@ -20,7 +20,8 @@
       color: black;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden; /* evita scroll horizontal causado pelo scale */
+      overflow-x: hidden;
+      overscroll-behavior-x: none;
     }
 
     /* ── NAVBAR ── */
@@ -34,7 +35,7 @@
       width: 100%;
       top: 0;
       left: 0;
-      z-index: 10;
+      z-index: 20;
       color: white;
     }
 
@@ -63,45 +64,48 @@
       transform: scale(1.1);
     }
 
-    /* ── TICKER TAPE (SEM BARRA, COM SCALE E ROLAGEM AUTOMÁTICA) ── */
+    /* ── TICKER ── */
     .ticker-wrapper {
       position: fixed;
       top: 45px;
       left: 0;
       width: 100%;
-      z-index: 9;
-      background: white;
-      overflow-x: hidden;   /* esconde qualquer barra que vier do scale */
-      overflow-y: hidden;
-      height: 46px;         /* altura padrão do widget */
-    }
-
-    /* Aplica scale visual, sem criar barra de rolagem extra */
-    .ticker-scale {
-      transform: scale(0.8);
-      transform-origin: top left;
-      width: 125%;          /* compensa o scale para ocupar toda largura da tela */
       height: 46px;
+      z-index: 15;
+      background: white;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
     }
 
-    /* O widget em si mantém 100% de largura dentro do scale */
+    .ticker-track {
+      display: flex;
+      width: max-content;
+      height: 100%;
+      animation: tickerMove 45s linear infinite;
+      will-change: transform;
+    }
+
+    .ticker-item {
+      flex: 0 0 auto;
+      width: max(1800px, 220vw);
+      height: 46px;
+      overflow: hidden;
+    }
+
     .tradingview-widget-container,
     .tradingview-widget-container__widget {
       width: 100%;
       height: 100%;
     }
 
-    /* Ajustes por dispositivo */
-    .desktop-device .ticker-wrapper { top: 45px; }
-    .mobile-device .navbar          { padding: 18px 20px; min-height: 75px; }
-    .mobile-device .navbar .welcome { font-size: 24px; }
-    .mobile-device .navbar a        { font-size: 24px; }
-    .mobile-device .ticker-wrapper  { top: 75px; }
-
-    .mobile-landscape .navbar       { padding: 12px 20px; }
-    .mobile-landscape .navbar .welcome { font-size: 18px; }
-    .mobile-landscape .navbar a     { font-size: 18px; }
-    .mobile-landscape .ticker-wrapper { top: 54px; }
+    @keyframes tickerMove {
+      from {
+        transform: translateX(0);
+      }
+      to {
+        transform: translateX(-50%);
+      }
+    }
 
     /* ── MAIN ── */
     .main-wrapper {
@@ -111,9 +115,9 @@
       justify-content: center;
     }
 
-    .desktop-device .main-wrapper   { padding-top: calc(45px + 37px); }
-    .mobile-device .main-wrapper    { padding-top: calc(75px + 37px); }
-    .mobile-landscape .main-wrapper { padding-top: calc(54px + 37px); }
+    .desktop-device .main-wrapper   { padding-top: calc(45px + 46px + 37px); }
+    .mobile-device .main-wrapper    { padding-top: calc(75px + 46px + 37px); }
+    .mobile-landscape .main-wrapper { padding-top: calc(54px + 46px + 37px); }
 
     /* ── MANUTENÇÃO ── */
     .manutencao-container {
@@ -124,36 +128,65 @@
       flex-direction: column;
       align-items: center;
     }
+
     .manutencao-icon {
       font-size: 64px;
       animation: girar 3s linear infinite;
     }
+
     @keyframes girar {
       100% { transform: rotate(360deg); }
     }
+
     .manutencao-titulo {
       font-size: 28px;
       font-weight: 700;
     }
+
     .manutencao-subtitulo {
       font-size: 16px;
       color: #555;
       max-width: 380px;
       line-height: 1.6;
     }
+
     .manutencao-linha {
       width: 60px;
       height: 3px;
       background: black;
       border-radius: 2px;
     }
+
     #deviceInfo { display: none; }
+
+    /* ── AJUSTES POR DISPOSITIVO ── */
+    .desktop-device .ticker-wrapper { top: 45px; }
+    .mobile-device .navbar          { padding: 18px 20px; min-height: 75px; }
+    .mobile-device .navbar .welcome { font-size: 24px; }
+    .mobile-device .navbar a        { font-size: 24px; }
+    .mobile-device .ticker-wrapper  { top: 75px; height: 46px; }
+
+    .mobile-landscape .navbar         { padding: 12px 20px; }
+    .mobile-landscape .navbar .welcome { font-size: 18px; }
+    .mobile-landscape .navbar a        { font-size: 18px; }
+    .mobile-landscape .ticker-wrapper  { top: 54px; height: 46px; }
+
+    /* Em telas menores, deixa a faixa ainda mais larga para garantir que tudo apareça */
+    @media (max-width: 768px) {
+      .ticker-item {
+        width: max(2000px, 260vw);
+      }
+
+      .ticker-track {
+        animation-duration: 55s;
+      }
+    }
   </style>
 </head>
 <body>
 
   <div class="navbar">
-    <div class="welcome" id="welcomeUser">Bem‑vindo(a)</div>
+    <div class="welcome" id="welcomeUser">Bem-vindo(a)</div>
     <div class="links">
       <a href="dashboard.html">Dashboard</a>
       <a href="lamina.html">Lâmina</a>
@@ -163,33 +196,65 @@
   </div>
 
   <div class="ticker-wrapper">
-    <div class="ticker-scale">
-      <div class="tradingview-widget-container">
-        <div class="tradingview-widget-container__widget"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-        {
-          "symbols": [
-            {"proName": "BMFBOVESPA:IBOV",  "title": "IBOV"},
-            {"proName": "BMFBOVESPA:SMLL",  "title": "SMLL"},
-            {"proName": "BMFBOVESPA:ALLD3",  "title": "ALLD3"},
-            {"proName": "BMFBOVESPA:ASAI3",  "title": "ASAI3"},
-            {"proName": "BMFBOVESPA:HBOR3",  "title": "HBOR3"},
-            {"proName": "BMFBOVESPA:JSLG3",  "title": "JSLG3"},
-            {"proName": "BMFBOVESPA:LIGT3",  "title": "LIGT3"},
-            {"proName": "BMFBOVESPA:MGLU3",  "title": "MGLU3"},
-            {"proName": "BMFBOVESPA:MOVI3",  "title": "MOVI3"},
-            {"proName": "BMFBOVESPA:POSI3",  "title": "POSI3"},
-            {"proName": "BMFBOVESPA:QUAL3",  "title": "QUAL3"},
-            {"proName": "BMFBOVESPA:SAPR11",  "title": "SAPR11"},
-            {"proName": "BMFBOVESPA:NASD11",  "title": "NASD11"}
-          ],
-          "showSymbolLogo": false,
-          "colorTheme": "light",
-          "isTransparent": false,
-          "displayMode": "adaptive",
-          "locale": "pt"
-        }
-        </script>
+    <div class="ticker-track">
+      <div class="ticker-item">
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+          {
+            "symbols": [
+              {"proName": "BMFBOVESPA:IBOV",   "title": "IBOV"},
+              {"proName": "BMFBOVESPA:SMLL",   "title": "SMLL"},
+              {"proName": "BMFBOVESPA:ALLD3",  "title": "ALLD3"},
+              {"proName": "BMFBOVESPA:ASAI3",  "title": "ASAI3"},
+              {"proName": "BMFBOVESPA:HBOR3",  "title": "HBOR3"},
+              {"proName": "BMFBOVESPA:JSLG3",  "title": "JSLG3"},
+              {"proName": "BMFBOVESPA:LIGT3",  "title": "LIGT3"},
+              {"proName": "BMFBOVESPA:MGLU3",  "title": "MGLU3"},
+              {"proName": "BMFBOVESPA:MOVI3",  "title": "MOVI3"},
+              {"proName": "BMFBOVESPA:POSI3",  "title": "POSI3"},
+              {"proName": "BMFBOVESPA:QUAL3",  "title": "QUAL3"},
+              {"proName": "BMFBOVESPA:SAPR11", "title": "SAPR11"},
+              {"proName": "BMFBOVESPA:NASD11", "title": "NASD11"}
+            ],
+            "showSymbolLogo": false,
+            "colorTheme": "light",
+            "isTransparent": false,
+            "displayMode": "adaptive",
+            "locale": "pt"
+          }
+          </script>
+        </div>
+      </div>
+
+      <div class="ticker-item" aria-hidden="true">
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+          {
+            "symbols": [
+              {"proName": "BMFBOVESPA:IBOV",   "title": "IBOV"},
+              {"proName": "BMFBOVESPA:SMLL",   "title": "SMLL"},
+              {"proName": "BMFBOVESPA:ALLD3",  "title": "ALLD3"},
+              {"proName": "BMFBOVESPA:ASAI3",  "title": "ASAI3"},
+              {"proName": "BMFBOVESPA:HBOR3",  "title": "HBOR3"},
+              {"proName": "BMFBOVESPA:JSLG3",  "title": "JSLG3"},
+              {"proName": "BMFBOVESPA:LIGT3",  "title": "LIGT3"},
+              {"proName": "BMFBOVESPA:MGLU3",  "title": "MGLU3"},
+              {"proName": "BMFBOVESPA:MOVI3",  "title": "MOVI3"},
+              {"proName": "BMFBOVESPA:POSI3",  "title": "POSI3"},
+              {"proName": "BMFBOVESPA:QUAL3",  "title": "QUAL3"},
+              {"proName": "BMFBOVESPA:SAPR11", "title": "SAPR11"},
+              {"proName": "BMFBOVESPA:NASD11", "title": "NASD11"}
+            ],
+            "showSymbolLogo": false,
+            "colorTheme": "light",
+            "isTransparent": false,
+            "displayMode": "adaptive",
+            "locale": "pt"
+          }
+          </script>
+        </div>
       </div>
     </div>
   </div>
@@ -261,19 +326,27 @@
         document.body.classList.add('desktop-device');
       }
     }
-    window.addEventListener('resize', () => { clearTimeout(timeout); timeout = setTimeout(detectarDispositivo, 250); });
-    window.addEventListener('orientationchange', () => { clearTimeout(timeout); timeout = setTimeout(detectarDispositivo, 500); });
+
+    window.addEventListener('resize', () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(detectarDispositivo, 250);
+    });
+
+    window.addEventListener('orientationchange', () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(detectarDispositivo, 500);
+    });
+
     detectarDispositivo();
   </script>
 
-  <!-- SCRIPT PARA GARANTIR QUE NENHUMA BARRA DE ROLAGEM APAREÇA E QUE O TICKER RODE -->
+  <!-- GARANTE SEM BARRA E REFORÇA O REAJUSTE -->
   <script>
     (function() {
-      // Remove qualquer barra de rolagem que eventualmente apareça no body
       document.body.style.overflowX = 'hidden';
-      // Força o widget a recalcular (caso precise) após carregar, sem gambiarra de scroll
+      document.documentElement.style.overflowX = 'hidden';
+
       window.addEventListener('load', function() {
-        // Dispara um resize suave para o widget reajustar a animação
         setTimeout(() => window.dispatchEvent(new Event('resize')), 500);
       });
     })();
