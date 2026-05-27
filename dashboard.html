@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Clube Morpheus</title>
   <link rel="icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
@@ -61,43 +62,39 @@
       color: white;
     }
 
-    /* ── TICKER TAPE ── */
+    /* ── TICKER TAPE (CORRIGIDO: ROLAGEM AUTOMÁTICA) ── */
     .ticker-wrapper {
       position: fixed;
-      top: 45px;       /* logo abaixo do navbar */
+      top: 45px;       /* abaixo do navbar */
       left: 0;
       width: 100%;
       z-index: 9;
-      height: 46px;
-      overflow: hidden;
       background-color: #fff;
+      overflow-x: hidden;  /* esconde barras de rolagem externas, mas permite o movimento interno */
+      white-space: nowrap;
     }
 
-    .ticker-wrapper .tradingview-widget-container,
-    .ticker-wrapper .tradingview-widget-container__widget {
-      height: 46px !important;
+    /* O container do widget ocupa toda a largura e permite que o conteúdo role */
+    .tradingview-widget-container {
+      width: 100%;
     }
 
-    /* div interno usado para escalar o widget no desktop */
-    .ticker-scale {
-      transform-origin: top left;
+    .tradingview-widget-container__widget {
+      width: 100%;
     }
 
-    /*
-     * No desktop: scale 0.80 → fonte visualmente menor
-     * Altura visual: 46 × 0.80 = ~37px
-     * Largura compensada: 100% ÷ 0.80 = 125% (evita corte horizontal)
-     */
+    /* Força o ticker a ter rolagem contínua */
+    .ticker-wrapper iframe,
+    .ticker-wrapper div[class*="ticker"] {
+      width: 100% !important;
+    }
+
+    /* ── AJUSTES DE POSIÇÃO POR DISPOSITIVO ── */
     .desktop-device .ticker-wrapper {
-      height: 37px;   /* altura visual após scale */
+      top: 45px;
+      height: 46px;     /* altura padrão do widget */
     }
 
-    .desktop-device .ticker-scale {
-      transform: scale(0.80);
-      width: 125%;
-    }
-
-    /* ── ESTILOS PARA SMARTPHONE VERTICAL ── */
     .mobile-device .navbar {
       padding: 18px 20px;
       min-height: 75px;
@@ -105,45 +102,27 @@
     .mobile-device .navbar .welcome { font-size: 24px; font-weight: bold; }
     .mobile-device .navbar .links   { gap: 20px; }
     .mobile-device .navbar a        { font-size: 24px; font-weight: bold; }
-    .mobile-device .ticker-wrapper  { top: 75px; }
+    .mobile-device .ticker-wrapper  { top: 75px; height: 46px; }
 
-    /* ── ESTILOS PARA SMARTPHONE HORIZONTAL ── */
     .mobile-landscape .navbar { padding: 12px 20px; }
     .mobile-landscape .navbar .welcome { font-size: 18px; }
     .mobile-landscape .navbar .links   { gap: 15px; }
     .mobile-landscape .navbar a        { font-size: 18px; }
-    .mobile-landscape .ticker-wrapper  { top: 54px; }
+    .mobile-landscape .ticker-wrapper  { top: 54px; height: 46px; }
 
-    /* ── ESTILOS PARA COMPUTADOR (DEFAULT) ── */
-    .desktop-device .navbar          { padding: 10px 20px; }
-    .desktop-device .navbar .welcome { font-size: 16px; }
-    .desktop-device .navbar .links   { gap: 20px; }
-    .desktop-device .navbar a        { font-size: 16px; }
-    .desktop-device .ticker-wrapper  { top: 45px; }
-
-    @media (max-width: 768px) {
-      .navbar            { padding: 8px 15px; }
-      .navbar .welcome   { font-size: 14px; }
-      .navbar .links     { gap: 10px; }
-      .navbar a          { font-size: 14px; }
-      .ticker-wrapper    { top: 40px; }
-    }
-
-    /* ── CONTEÚDO PRINCIPAL ── */
+    /* ── CONTEÚDO PRINCIPAL (AJUSTE DINÂMICO) ── */
     .main-wrapper {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      /* mobile base: navbar (~45px) + ticker (~46px) = 91px */
-      padding-top: 91px;
       box-sizing: border-box;
     }
 
-    /* desktop: navbar (45px) + ticker escalado (37px) = 82px */
-    .desktop-device .main-wrapper   { padding-top: 82px; }
-    .mobile-device .main-wrapper    { padding-top: 121px; }  /* 75px + 46px */
-    .mobile-landscape .main-wrapper { padding-top: 100px; }  /* 54px + 46px */
+    /* Padding-top base: navbar + ticker */
+    .desktop-device .main-wrapper   { padding-top: calc(45px + 46px); }
+    .mobile-device .main-wrapper    { padding-top: calc(75px + 46px); }
+    .mobile-landscape .main-wrapper { padding-top: calc(54px + 46px); }
 
     /* ── PÁGINA EM MANUTENÇÃO ── */
     .manutencao-container {
@@ -189,7 +168,7 @@
       border-radius: 2px;
     }
 
-    /* OCULTAR INFORMAÇÃO DO DISPOSITIVO */
+    /* ocultar info de dispositivo (legado) */
     #deviceInfo { display: none !important; }
   </style>
 </head>
@@ -206,14 +185,11 @@
     </div>
   </div>
 
-  <!-- ══ TICKER TAPE TRADINGVIEW ══ -->
+  <!-- ══ TICKER TAPE TRADINGVIEW (COM ROLAGEM AUTOMÁTICA) ══ -->
   <div class="ticker-wrapper">
-    <div class="ticker-scale">
-      <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container">
       <div class="tradingview-widget-container__widget"></div>
-      <script type="text/javascript"
-        src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js"
-        async>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {
         "symbols": [
           {"proName": "BMFBOVESPA:IBOV",  "title": "IBOV"},
@@ -238,10 +214,9 @@
       }
       </script>
     </div>
-    </div><!-- /.ticker-scale -->
   </div>
 
-  <!-- ══ CONTEÚDO PRINCIPAL ══ -->
+  <!-- ══ CONTEÚDO PRINCIPAL (MANUTENÇÃO) ══ -->
   <div class="main-wrapper">
     <div class="manutencao-container">
       <div class="manutencao-icon">⚙️</div>
@@ -300,7 +275,7 @@
     });
   </script>
 
-  <!-- ══ DETECÇÃO DE DISPOSITIVO ══ -->
+  <!-- ══ DETECÇÃO DE DISPOSITIVO (AJUSTE DE LAYOUT) ══ -->
   <script>
     let orientationChangeTimeout;
 
@@ -336,7 +311,6 @@
       orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
     });
 
-    setTimeout(detectarDispositivo, 100);
     detectarDispositivo();
   </script>
 
