@@ -326,7 +326,7 @@
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      window.location.href = "minha-area.html";
+      window.location.href = "dashboard.html";
     } catch (error) {
       let msg = "Erro ao fazer login.";
       if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
