@@ -20,7 +20,7 @@
       color: black;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden; /* evita barra de rolagem no body */
+      overflow-x: hidden; /* evita scroll horizontal causado pelo scale */
     }
 
     /* ── NAVBAR ── */
@@ -63,7 +63,7 @@
       transform: scale(1.1);
     }
 
-    /* ── TICKER TAPE COM ROLAGEM AUTOMÁTICA E SEM BARRA ── */
+    /* ── TICKER TAPE (SEM BARRA, COM SCALE E ROLAGEM AUTOMÁTICA) ── */
     .ticker-wrapper {
       position: fixed;
       top: 45px;
@@ -71,39 +71,27 @@
       width: 100%;
       z-index: 9;
       background: white;
-      overflow: hidden;     /* esconde qualquer vazamento */
-      height: 46px;
-    }
-
-    /* Container que terá a rolagem automática (barra escondida) */
-    .ticker-scroll-container {
-      overflow-x: auto;
+      overflow-x: hidden;   /* esconde qualquer barra que vier do scale */
       overflow-y: hidden;
-      height: 100%;
-      scroll-behavior: smooth;
-      /* esconde a barra de rolagem (cross-browser) */
-      scrollbar-width: none;      /* Firefox */
-      -ms-overflow-style: none;   /* IE/Edge */
-    }
-    .ticker-scroll-container::-webkit-scrollbar {
-      display: none;              /* Chrome/Safari/Opera */
+      height: 46px;         /* altura padrão do widget */
     }
 
-    /* Aplica o scale visual reduzido */
+    /* Aplica scale visual, sem criar barra de rolagem extra */
     .ticker-scale {
       transform: scale(0.8);
       transform-origin: top left;
-      width: 125%;          /* compensa a redução visual */
+      width: 125%;          /* compensa o scale para ocupar toda largura da tela */
       height: 46px;
     }
 
+    /* O widget em si mantém 100% de largura dentro do scale */
     .tradingview-widget-container,
     .tradingview-widget-container__widget {
       width: 100%;
       height: 100%;
     }
 
-    /* Ajustes responsivos */
+    /* Ajustes por dispositivo */
     .desktop-device .ticker-wrapper { top: 45px; }
     .mobile-device .navbar          { padding: 18px 20px; min-height: 75px; }
     .mobile-device .navbar .welcome { font-size: 24px; }
@@ -122,6 +110,7 @@
       align-items: center;
       justify-content: center;
     }
+
     .desktop-device .main-wrapper   { padding-top: calc(45px + 37px); }
     .mobile-device .main-wrapper    { padding-top: calc(75px + 37px); }
     .mobile-landscape .main-wrapper { padding-top: calc(54px + 37px); }
@@ -173,37 +162,34 @@
     </div>
   </div>
 
-  <!-- TICKER COM ROLAGEM AUTOMÁTICA CUSTOMIZADA -->
   <div class="ticker-wrapper">
-    <div class="ticker-scroll-container" id="tickerScrollContainer">
-      <div class="ticker-scale">
-        <div class="tradingview-widget-container">
-          <div class="tradingview-widget-container__widget"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-          {
-            "symbols": [
-              {"proName": "BMFBOVESPA:IBOV",  "title": "IBOV"},
-              {"proName": "BMFBOVESPA:SMLL",  "title": "SMLL"},
-              {"proName": "BMFBOVESPA:ALLD3",  "title": "ALLD3"},
-              {"proName": "BMFBOVESPA:ASAI3",  "title": "ASAI3"},
-              {"proName": "BMFBOVESPA:HBOR3",  "title": "HBOR3"},
-              {"proName": "BMFBOVESPA:JSLG3",  "title": "JSLG3"},
-              {"proName": "BMFBOVESPA:LIGT3",  "title": "LIGT3"},
-              {"proName": "BMFBOVESPA:MGLU3",  "title": "MGLU3"},
-              {"proName": "BMFBOVESPA:MOVI3",  "title": "MOVI3"},
-              {"proName": "BMFBOVESPA:POSI3",  "title": "POSI3"},
-              {"proName": "BMFBOVESPA:QUAL3",  "title": "QUAL3"},
-              {"proName": "BMFBOVESPA:SAPR11",  "title": "SAPR11"},
-              {"proName": "BMFBOVESPA:NASD11",  "title": "NASD11"}
-            ],
-            "showSymbolLogo": false,
-            "colorTheme": "light",
-            "isTransparent": false,
-            "displayMode": "adaptive",
-            "locale": "pt"
-          }
-          </script>
-        </div>
+    <div class="ticker-scale">
+      <div class="tradingview-widget-container">
+        <div class="tradingview-widget-container__widget"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+        {
+          "symbols": [
+            {"proName": "BMFBOVESPA:IBOV",  "title": "IBOV"},
+            {"proName": "BMFBOVESPA:SMLL",  "title": "SMLL"},
+            {"proName": "BMFBOVESPA:ALLD3",  "title": "ALLD3"},
+            {"proName": "BMFBOVESPA:ASAI3",  "title": "ASAI3"},
+            {"proName": "BMFBOVESPA:HBOR3",  "title": "HBOR3"},
+            {"proName": "BMFBOVESPA:JSLG3",  "title": "JSLG3"},
+            {"proName": "BMFBOVESPA:LIGT3",  "title": "LIGT3"},
+            {"proName": "BMFBOVESPA:MGLU3",  "title": "MGLU3"},
+            {"proName": "BMFBOVESPA:MOVI3",  "title": "MOVI3"},
+            {"proName": "BMFBOVESPA:POSI3",  "title": "POSI3"},
+            {"proName": "BMFBOVESPA:QUAL3",  "title": "QUAL3"},
+            {"proName": "BMFBOVESPA:SAPR11",  "title": "SAPR11"},
+            {"proName": "BMFBOVESPA:NASD11",  "title": "NASD11"}
+          ],
+          "showSymbolLogo": false,
+          "colorTheme": "light",
+          "isTransparent": false,
+          "displayMode": "adaptive",
+          "locale": "pt"
+        }
+        </script>
       </div>
     </div>
   </div>
@@ -217,7 +203,7 @@
     </div>
   </div>
 
-  <!-- FIREBASE AUTH -->
+  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
@@ -280,71 +266,15 @@
     detectarDispositivo();
   </script>
 
-  <!-- SCRIPT DE ROLAGEM AUTOMÁTICA INFINITA (SEM BARRA) -->
+  <!-- SCRIPT PARA GARANTIR QUE NENHUMA BARRA DE ROLAGEM APAREÇA E QUE O TICKER RODE -->
   <script>
     (function() {
-      let scrollContainer = document.getElementById('tickerScrollContainer');
-      let animationId = null;
-      let isPaused = false;
-      const SPEED = 0.8;        // pixels por frame (~48px/s a 60fps)
-      
-      function autoScroll() {
-        if (!scrollContainer || isPaused) return;
-        
-        let maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-        if (maxScroll <= 0) {
-          // Ainda não carregou direito, tenta novamente em breve
-          animationId = requestAnimationFrame(autoScroll);
-          return;
-        }
-        
-        let newScrollLeft = scrollContainer.scrollLeft + SPEED;
-        
-        // Se atingiu ou ultrapassou o final
-        if (newScrollLeft >= maxScroll) {
-          // Volta "correndo" para o início (sem animação suave)
-          scrollContainer.scrollLeft = 0;
-          // Continua a rolagem normalmente no próximo frame
-          newScrollLeft = SPEED;
-        }
-        
-        scrollContainer.scrollLeft = newScrollLeft;
-        animationId = requestAnimationFrame(autoScroll);
-      }
-      
-      // Inicia a rolagem somente quando o conteúdo estiver visível e dimensionado
-      function startAutoScroll() {
-        if (animationId) cancelAnimationFrame(animationId);
-        // Pequeno delay para garantir que o widget carregou e o scrollWidth está correto
-        setTimeout(() => {
-          if (scrollContainer && scrollContainer.scrollWidth > scrollContainer.clientWidth) {
-            animationId = requestAnimationFrame(autoScroll);
-          } else {
-            // Tenta novamente após 500ms
-            setTimeout(startAutoScroll, 500);
-          }
-        }, 1000);
-      }
-      
-      // Pausa no hover (opcional, melhora UX)
-      if (scrollContainer) {
-        scrollContainer.addEventListener('mouseenter', () => { isPaused = true; });
-        scrollContainer.addEventListener('mouseleave', () => { isPaused = false; });
-        // Para toque em dispositivos móveis
-        scrollContainer.addEventListener('touchstart', () => { isPaused = true; });
-        scrollContainer.addEventListener('touchend', () => { isPaused = false; });
-      }
-      
-      // Iniciar quando a página estiver totalmente carregada
-      window.addEventListener('load', startAutoScroll);
-      
-      // Reajustar se a janela for redimensionada (reset da rolagem)
-      window.addEventListener('resize', () => {
-        if (scrollContainer) {
-          scrollContainer.scrollLeft = 0;
-          if (animationId) cancelAnimationFrame(animationId);
-          startAutoScroll();
-        }
+      // Remove qualquer barra de rolagem que eventualmente apareça no body
+      document.body.style.overflowX = 'hidden';
+      // Força o widget a recalcular (caso precise) após carregar, sem gambiarra de scroll
+      window.addEventListener('load', function() {
+        // Dispara um resize suave para o widget reajustar a animação
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 500);
       });
     })();
   </script>
