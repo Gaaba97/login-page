@@ -345,11 +345,6 @@
         grid-template-columns: 1fr;
       }
 
-    /* 2 cards por linha quando detectado como smartphone */
-    .mobile-device .dashboard-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
       .dashboard-card {
         min-height: 220px;
         padding: 28px;
@@ -366,6 +361,11 @@
       .ticker-track {
         animation-duration: 120s;
       }
+    }
+
+    /* 2 cards por linha quando detectado como smartphone — deve ficar APÓS o @media para ganhar em especificidade */
+    .mobile-device .dashboard-grid {
+      grid-template-columns: repeat(2, 1fr);
     }
   </style>
 </head>
