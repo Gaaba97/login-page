@@ -66,7 +66,7 @@
       color: white;
     }
 
-    /* ESTILOS PARA SMARTPHONE VERTICAL */
+    /* SMARTPHONE VERTICAL */
     .mobile-device .navbar {
       padding: 18px 20px;
       min-height: 75px;
@@ -86,7 +86,7 @@
       font-weight: bold;
     }
 
-    /* ESTILOS PARA SMARTPHONE HORIZONTAL */
+    /* SMARTPHONE HORIZONTAL */
     .mobile-landscape .navbar {
       padding: 12px 20px;
     }
@@ -103,7 +103,7 @@
       font-size: 18px;
     }
 
-    /* ESTILOS PARA COMPUTADOR (DEFAULT) */
+    /* COMPUTADOR */
     .desktop-device .navbar {
       padding: 10px 20px;
     }
@@ -120,24 +120,6 @@
       font-size: 16px;
     }
 
-    @media (max-width: 768px) {
-      .navbar {
-        padding: 8px 15px;
-      }
-
-      .navbar .welcome {
-        font-size: 14px;
-      }
-
-      .navbar .links {
-        gap: 10px;
-      }
-
-      .navbar a {
-        font-size: 14px;
-      }
-    }
-
     /* ───────────────── TICKER ───────────────── */
 
     .ticker-wrapper {
@@ -150,14 +132,6 @@
       background: #ffffff;
       border-bottom: 1px solid #e7eaee;
       z-index: 999;
-    }
-
-    .mobile-device .ticker-wrapper {
-      top: 75px;
-    }
-
-    .mobile-landscape .ticker-wrapper {
-      top: 55px;
     }
 
     .ticker-track {
@@ -188,12 +162,8 @@
     }
 
     @keyframes tickerMove {
-      from {
-        transform: translateX(0);
-      }
-      to {
-        transform: translateX(-50%);
-      }
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
     }
 
     /* ───────────────── MAIN ───────────────── */
@@ -203,14 +173,6 @@
       padding-bottom: 50px;
       width: 100%;
       min-height: 100vh;
-    }
-
-    .mobile-device .main-wrapper {
-      padding-top: 160px;
-    }
-
-    .mobile-landscape .main-wrapper {
-      padding-top: 140px;
     }
 
     .hero {
@@ -345,12 +307,24 @@
 
     @media (max-width: 900px) {
 
-      .ticker-item {
-        width: 3400px;
+      .navbar {
+        padding: 14px 18px;
       }
 
-      .ticker-track {
-        animation-duration: 120s;
+      .links {
+        gap: 14px;
+      }
+
+      .links a {
+        font-size: 13px;
+      }
+
+      .ticker-wrapper {
+        top: 58px;
+      }
+
+      .main-wrapper {
+        padding-top: 130px;
       }
 
       .hero {
@@ -379,6 +353,14 @@
       .card-title {
         font-size: 26px;
       }
+
+      .ticker-item {
+        width: 3400px;
+      }
+
+      .ticker-track {
+        animation-duration: 120s;
+      }
     }
   </style>
 </head>
@@ -400,18 +382,15 @@
 
   <!-- ───────────── TICKER ───────────── -->
 
-  <div class="ticker-wrapper">
+  <div class="ticker-wrapper" id="tickerWrapper">
 
     <div class="ticker-track">
 
       <!-- BLOCO 1 -->
       <div class="ticker-item">
-
         <div class="ticker-scale">
-
           <div class="tradingview-widget-container">
             <div class="tradingview-widget-container__widget"></div>
-
             <script type="text/javascript"
               src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js"
               async>
@@ -439,9 +418,7 @@
             }
             </script>
           </div>
-
         </div>
-
       </div>
 
       <!-- BLOCO 2 -->
@@ -480,87 +457,59 @@
       <div class="dashboard-grid">
 
         <a href="dashboard.html" class="dashboard-card">
-
           <div>
             <div class="card-number">01</div>
-
-            <div class="card-title">
-              Dashboard
-            </div>
-
+            <div class="card-title">Dashboard</div>
             <div class="card-description">
               Estrutura do veículo, visão executiva, composição e informações institucionais.
             </div>
           </div>
-
           <div class="card-footer">
             <div class="card-status">Acessar módulo</div>
             <div class="card-arrow">→</div>
           </div>
-
         </a>
 
         <a href="lamina.html" class="dashboard-card">
-
           <div>
             <div class="card-number">02</div>
-
-            <div class="card-title">
-              Lâmina
-            </div>
-
+            <div class="card-title">Lâmina</div>
             <div class="card-description">
               Acompanhamento consolidado de performance, métricas e evolução da estratégia.
             </div>
           </div>
-
           <div class="card-footer">
             <div class="card-status">Acessar módulo</div>
             <div class="card-arrow">→</div>
           </div>
-
         </a>
 
         <a href="conteudo.html" class="dashboard-card">
-
           <div>
             <div class="card-number">03</div>
-
-            <div class="card-title">
-              Conteúdo
-            </div>
-
+            <div class="card-title">Conteúdo</div>
             <div class="card-description">
               Vídeos, materiais exclusivos, estudos e comunicação estratégica.
             </div>
           </div>
-
           <div class="card-footer">
             <div class="card-status">Acessar módulo</div>
             <div class="card-arrow">→</div>
           </div>
-
         </a>
 
         <a href="minha-area.html" class="dashboard-card">
-
           <div>
             <div class="card-number">04</div>
-
-            <div class="card-title">
-              Minha Área
-            </div>
-
+            <div class="card-title">Minha Área</div>
             <div class="card-description">
               Informações de aportes, rentabilidade por cota e preferências da conta.
             </div>
           </div>
-
           <div class="card-footer">
             <div class="card-status">Acessar módulo</div>
             <div class="card-arrow">→</div>
           </div>
-
         </a>
 
       </div>
@@ -610,15 +559,9 @@
           if (docSnap.exists()) {
 
             const data = docSnap.data();
-
             const nome = data.nome || "Usuário";
-
             const genero = (data.genero || "masculino").toLowerCase();
-
-            const saudacao =
-              genero === "feminino"
-              ? "Bem-vinda"
-              : "Bem-vindo";
+            const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
 
             document.getElementById("welcomeUser").textContent =
               `${saudacao}, ${nome}`;
@@ -640,20 +583,53 @@
     window.addEventListener("load", () => {
 
       const firstWidget =
-        document.querySelector(
-          ".ticker-item:first-child .ticker-scale"
-        );
+        document.querySelector(".ticker-item:first-child .ticker-scale");
 
       const secondWidget =
-        document.querySelector(
-          ".ticker-item:last-child .ticker-scale"
-        );
+        document.querySelector(".ticker-item:last-child .ticker-scale");
 
       if (firstWidget && secondWidget) {
         secondWidget.innerHTML = firstWidget.innerHTML;
       }
 
     });
+  </script>
+
+  <!-- TIMEOUT TRADINGVIEW: oculta o ticker se não carregar em 10s -->
+  <script>
+    (function () {
+      var tickerLoaded = false;
+
+      /* O widget do TradingView injeta um iframe quando carrega;
+         observamos o DOM para detectar isso */
+      var observer = new MutationObserver(function () {
+        var iframe = document.querySelector("#tickerWrapper iframe");
+        if (iframe) {
+          tickerLoaded = true;
+          observer.disconnect();
+        }
+      });
+
+      observer.observe(document.getElementById("tickerWrapper"), {
+        childList: true,
+        subtree: true
+      });
+
+      setTimeout(function () {
+        if (!tickerLoaded) {
+          observer.disconnect();
+          var wrapper = document.getElementById("tickerWrapper");
+          if (wrapper) {
+            wrapper.style.display = "none";
+          }
+          /* Ajusta o padding do conteúdo principal para compensar o ticker sumido */
+          var main = document.querySelector(".main-wrapper");
+          if (main) {
+            main.style.paddingTop = "60px";
+          }
+        }
+      }, 10000);
+    })();
   </script>
 
   <!-- SCRIPT DE DETECÇÃO DE DISPOSITIVO -->
@@ -682,12 +658,12 @@
       }
     }
 
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', function () {
       clearTimeout(orientationChangeTimeout);
       orientationChangeTimeout = setTimeout(detectarDispositivo, 250);
     });
 
-    window.addEventListener('orientationchange', function() {
+    window.addEventListener('orientationchange', function () {
       clearTimeout(orientationChangeTimeout);
       orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
     });
