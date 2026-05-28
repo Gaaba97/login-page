@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Clube Morpheus</title>
   <link rel="icon" href="favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet" />
 
   <style>
     html, body {
@@ -27,41 +27,115 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(8, 8, 10, 0.96);
-      backdrop-filter: blur(10px);
-      padding: 10px 24px;
+      background-color: rgba(0, 0, 0, 0.9);
+      padding: 10px 20px;
       position: fixed;
       width: 100%;
       top: 0;
       left: 0;
       z-index: 1000;
       color: white;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
     }
 
-    .welcome {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: 0.2px;
+    .navbar .welcome {
+      font-weight: bold;
       white-space: nowrap;
+      font-size: 16px;
     }
 
-    .links {
+    .navbar .links {
       display: flex;
-      align-items: center;
-      gap: 24px;
+      gap: 20px;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      padding-left: 4px;
     }
 
-    .links a {
-      color: rgba(255,255,255,0.88);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      transition: 0.2s ease;
-    }
-
-    .links a:hover {
+    .navbar a {
       color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+      display: inline-block;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .navbar a:hover {
+      transform: scale(1.1);
+      color: white;
+    }
+
+    /* ESTILOS PARA SMARTPHONE VERTICAL */
+    .mobile-device .navbar {
+      padding: 18px 20px;
+      min-height: 75px;
+    }
+
+    .mobile-device .navbar .welcome {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .mobile-device .navbar .links {
+      gap: 20px;
+    }
+
+    .mobile-device .navbar a {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    /* ESTILOS PARA SMARTPHONE HORIZONTAL */
+    .mobile-landscape .navbar {
+      padding: 12px 20px;
+    }
+
+    .mobile-landscape .navbar .welcome {
+      font-size: 18px;
+    }
+
+    .mobile-landscape .navbar .links {
+      gap: 15px;
+    }
+
+    .mobile-landscape .navbar a {
+      font-size: 18px;
+    }
+
+    /* ESTILOS PARA COMPUTADOR (DEFAULT) */
+    .desktop-device .navbar {
+      padding: 10px 20px;
+    }
+
+    .desktop-device .navbar .welcome {
+      font-size: 16px;
+    }
+
+    .desktop-device .navbar .links {
+      gap: 20px;
+    }
+
+    .desktop-device .navbar a {
+      font-size: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 8px 15px;
+      }
+
+      .navbar .welcome {
+        font-size: 14px;
+      }
+
+      .navbar .links {
+        gap: 10px;
+      }
+
+      .navbar a {
+        font-size: 14px;
+      }
     }
 
     /* ───────────────── TICKER ───────────────── */
@@ -76,6 +150,14 @@
       background: #ffffff;
       border-bottom: 1px solid #e7eaee;
       z-index: 999;
+    }
+
+    .mobile-device .ticker-wrapper {
+      top: 75px;
+    }
+
+    .mobile-landscape .ticker-wrapper {
+      top: 55px;
     }
 
     .ticker-track {
@@ -121,6 +203,14 @@
       padding-bottom: 50px;
       width: 100%;
       min-height: 100vh;
+    }
+
+    .mobile-device .main-wrapper {
+      padding-top: 160px;
+    }
+
+    .mobile-landscape .main-wrapper {
+      padding-top: 140px;
     }
 
     .hero {
@@ -255,24 +345,12 @@
 
     @media (max-width: 900px) {
 
-      .navbar {
-        padding: 14px 18px;
+      .ticker-item {
+        width: 3400px;
       }
 
-      .links {
-        gap: 14px;
-      }
-
-      .links a {
-        font-size: 13px;
-      }
-
-      .ticker-wrapper {
-        top: 58px;
-      }
-
-      .main-wrapper {
-        padding-top: 130px;
+      .ticker-track {
+        animation-duration: 120s;
       }
 
       .hero {
@@ -300,14 +378,6 @@
 
       .card-title {
         font-size: 26px;
-      }
-
-      .ticker-item {
-        width: 3400px;
-      }
-
-      .ticker-track {
-        animation-duration: 120s;
       }
     }
   </style>
@@ -393,19 +463,19 @@
 
     <div class="hero">
 
-<div class="hero-top">
-  <div class="hero-kicker">Morpheus Clube de Investimentos</div>
+      <div class="hero-top">
+        <div class="hero-kicker">Morpheus Clube de Investimentos</div>
 
-  <h1 class="hero-title">
-    Plataforma privada de análise,<br>
-    estratégia e acompanhamento.
-  </h1>
+        <h1 class="hero-title">
+          Plataforma privada de análise,<br>
+          estratégia e acompanhamento.
+        </h1>
 
-  <div class="hero-description">
-    Ambiente reservado para acompanhamento de performance,
-    conteúdo institucional, materiais estratégicos e visão consolidada da operação.
-  </div>
-</div>
+        <div class="hero-description">
+          Ambiente reservado para acompanhamento de performance,
+          conteúdo institucional, materiais estratégicos e visão consolidada da operação.
+        </div>
+      </div>
 
       <div class="dashboard-grid">
 
@@ -584,6 +654,46 @@
       }
 
     });
+  </script>
+
+  <!-- SCRIPT DE DETECÇÃO DE DISPOSITIVO -->
+  <script>
+    let orientationChangeTimeout;
+
+    function detectarDispositivo() {
+      const largura = window.innerWidth;
+      const altura = window.innerHeight;
+      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+      const isMobileSize = largura <= 1024 ||
+                          (largura < altura && largura <= 768) ||
+                          (isTouchDevice && (largura <= 1024 || altura <= 1024));
+
+      document.body.classList.remove('desktop-device', 'mobile-device', 'mobile-landscape');
+
+      if (isMobileSize && isTouchDevice) {
+        if (largura > altura) {
+          document.body.classList.add('mobile-device', 'mobile-landscape');
+        } else {
+          document.body.classList.add('mobile-device');
+        }
+      } else {
+        document.body.classList.add('desktop-device');
+      }
+    }
+
+    window.addEventListener('resize', function() {
+      clearTimeout(orientationChangeTimeout);
+      orientationChangeTimeout = setTimeout(detectarDispositivo, 250);
+    });
+
+    window.addEventListener('orientationchange', function() {
+      clearTimeout(orientationChangeTimeout);
+      orientationChangeTimeout = setTimeout(detectarDispositivo, 500);
+    });
+
+    setTimeout(detectarDispositivo, 100);
+    detectarDispositivo();
   </script>
 
 </body>
