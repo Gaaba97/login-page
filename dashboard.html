@@ -345,6 +345,11 @@
         grid-template-columns: 1fr;
       }
 
+    /* 2 cards por linha quando detectado como smartphone */
+    .mobile-device .dashboard-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
       .dashboard-card {
         min-height: 220px;
         padding: 28px;
