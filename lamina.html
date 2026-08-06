@@ -1112,12 +1112,6 @@
         ];
 
         console.log("Cabeçalhos:", headerRow.slice(22, 38));
-        console.log("Dados linha 3:", dataRows[0].slice(22, 38));
-        console.log("Dados linha 4:", dataRows[1].slice(22, 38));
-        console.log("Dados linha 5:", dataRows[2].slice(22, 38));
-        console.log("Dados linha 6:", dataRows[3].slice(22, 38));
-        console.log("Dados linha 7:", dataRows[4].slice(22, 38));
-        console.log("Dados linha 8:", dataRows[5].slice(22, 38));
 
         const tableHeaders = headerRow.slice(22, 38);
         
@@ -1191,8 +1185,14 @@
               } else {
                 const mM = morpheusCells[cellIndex + 1];
                 const mI = ibovCells[cellIndex + 1];
-                const calc = calcularDiferenca(mM, mI);
-                td.textContent = calc !== "-" ? calc : (cellData?.trim() || "");
+                
+                // Se algum dos dados de origem for vazio ou "-", força "-"
+                if (!mM || !mI || mM.trim() === "-" || mI.trim() === "-" || mM.trim() === "" || mI.trim() === "") {
+                  td.textContent = "-";
+                } else {
+                  const calc = calcularDiferenca(mM, mI);
+                  td.textContent = calc;
+                }
               }
               dataRowElement.appendChild(td);
             });
@@ -1238,8 +1238,14 @@
               } else {
                 const mM = morpheusCells[cellIndex + 1];
                 const mI = ibovCells[cellIndex + 1];
-                const calc = calcularDiferenca(mM, mI);
-                td.textContent = calc !== "-" ? calc : (cellData?.trim() || "");
+                
+                // Se algum dos dados de origem for vazio ou "-", força "-"
+                if (!mM || !mI || mM.trim() === "-" || mI.trim() === "-" || mM.trim() === "" || mI.trim() === "") {
+                  td.textContent = "-";
+                } else {
+                  const calc = calcularDiferenca(mM, mI);
+                  td.textContent = calc;
+                }
               }
               dataRowElement.appendChild(td);
             });
