@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Administração — Clube Morpheus</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f5f7fb;
+      font-family: Arial, sans-serif;
+      color: #222;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 25px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #1E4DB7;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-top: 30px;
+    }
+
+    .topo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .botoes-lista {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-secundario {
+      background: #e9edf5;
+      color: #222;
+    }
+
+    .btn-enviar {
+      background: #164CAD;
+      color: white;
+      font-size: 16px;
+      padding: 14px 25px;
+      margin-top: 20px;
+    }
+
+    .btn-enviar:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #listaCotistas {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      max-height: 350px;
+      overflow-y: auto;
+    }
+
+    .cotista {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 15px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .cotista:last-child {
+      border-bottom: none;
+    }
+
+    .cotista input {
+      width: 18px;
+      height: 18px;
+    }
+
+    .nome {
+      font-weight: bold;
+    }
+
+    .email {
+      color: #666;
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      padding: 12px;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 220px;
+      resize: vertical;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .campo {
+      margin-top: 20px;
+    }
+
+    #status {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 7px;
+      display: none;
+    }
+
+    .sucesso {
+      display: block !important;
+      background: #e8f5e9;
+      color: #216e39;
+    }
+
+    .erro {
+      display: block !important;
+      background: #fdecec;
+      color: #a11;
+    }
+
+    #carregando {
+      padding: 20px;
+      text-align: center;
+      color: #666;
+    }
+
+    #loginNecessario {
+      display: none;
+      text-align: center;
+      padding: 40px;
+    }
+
+    #painel {
+      display: none;
+    }
+
+    .contador {
+      color: #666;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div id="loginNecessario" class="card">
+      <h1>Acesso restrito</h1>
+      <p>Faça login para acessar a administração.</p>
+    </div>
+
+    <div id="painel" class="card">
+
+      <div class="topo">
+        <div>
+          <h1>Administração — Clube Morpheus</h1>
+          <div id="usuarioLogado"></div>
+        </div>
+      </div>
+
+      <h2>Cotistas</h2>
+
+      <div class="botoes-lista">
+        <button
+          class="btn-secundario"
+          type="button"
+          id="selecionarTodos"
+        >
+          Selecionar todos
+        </button>
+
+        <button
+          class="btn-secundario"
+          type="button"
+          id="desmarcarTodos"
+        >
+          Desmarcar todos
+        </button>
+      </div>
+
+      <div id="listaCotistas">
+        <div id="carregando">
+          Carregando cotistas...
+        </div>
+      </div>
+
+      <div class="contador">
+        Selecionados:
+        <strong id="contadorSelecionados">0</strong>
+      </div>
+
+      <div class="campo">
+        <label for="assunto">
+          Assunto
+        </label>
+
+        <input
+          type="text"
+          id="assunto"
+          value="Novo conteúdo — Clube Morpheus"
+        >
+      </div>
+
+      <div class="campo">
+        <label for="mensagem">
+          Mensagem
+        </label>
+
+        <textarea
+          id="mensagem"
+          placeholder="Digite aqui a mensagem que deseja enviar aos cotistas..."
+        ></textarea>
+      </div>
+
+      <button
+        class="btn-enviar"
+        id="btnEnviar"
+        type="button"
+      >
+        Enviar e-mail aos cotistas
+      </button>
+
+      <div id="status"></div>
+
+    </div>
+
+  </div>
+
+
+  <script type="module">
+
+    // =========================================================
+    // FIREBASE
+    // =========================================================
+
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    import {
+      getFirestore,
+      collection,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYLyEfTVl8zR1drcNYi7K33IT6ytVJYJ8",
+      authDomain: "login-site-9cbbd.firebaseapp.com",
+      projectId: "login-site-9cbbd",
+      storageBucket: "login-site-9cbbd.appspot.com",
+      messagingSenderId: "703993528666",
+      appId: "1:703993528666:web:1e7a02cb5b611e24c97363"
+    };
+
+
+    const app = initializeApp(firebaseConfig);
+
+    const auth = getAuth(app);
+
+    const db = getFirestore(app);
+
+
+    // =========================================================
+    // ELEMENTOS
+    // =========================================================
+
+    const painel = document.getElementById("painel");
+    const loginNecessario = document.getElementById("loginNecessario");
+    const listaCotistas = document.getElementById("listaCotistas");
+    const contadorSelecionados =
+      document.getElementById("contadorSelecionados");
+
+    const btnEnviar =
+      document.getElementById("btnEnviar");
+
+    const status =
+      document.getElementById("status");
+
+    const assunto =
+      document.getElementById("assunto");
+
+    const mensagem =
+      document.getElementById("mensagem");
+
+
+    // =========================================================
+    // VERIFICA LOGIN
+    // =========================================================
+
+    onAuthStateChanged(auth, async (user) => {
+
+      if (!user) {
+
+        painel.style.display = "none";
+        loginNecessario.style.display = "block";
+
+        return;
+      }
+
+
+      // Somente Gabriel pode abrir o painel
+      if (user.email !== "gabrielssimon7@gmail.com") {
+
+        painel.style.display = "none";
+        loginNecessario.style.display = "block";
+
+        loginNecessario.innerHTML = `
+          <h1>Acesso negado</h1>
+          <p>Esta página é restrita ao administrador.</p>
+        `;
+
+        return;
+      }
+
+
+      painel.style.display = "block";
+      loginNecessario.style.display = "none";
+
+      document.getElementById("usuarioLogado").textContent =
+        `Logado como ${user.email}`;
+
+
+      await carregarCotistas();
+
+    });
+
+
+    // =========================================================
+    // CARREGAR COTISTAS DO FIRESTORE
+    // =========================================================
+
+    async function carregarCotistas() {
+
+      try {
+
+        const snapshot =
+          await getDocs(collection(db, "usuarios"));
+
+        listaCotistas.innerHTML = "";
+
+        let quantidade = 0;
+
+        snapshot.forEach((docSnapshot) => {
+
+          const dados = docSnapshot.data();
+
+          if (!dados.email) {
+            return;
+          }
+
+          const nome =
+            dados.nome ||
+            "Cotista";
+
+          const email =
+            dados.email;
+
+          const div =
+            document.createElement("div");
+
+          div.className = "cotista";
+
+          div.innerHTML = `
+            <input
+              type="checkbox"
+              class="cotista-checkbox"
+              data-email="${escapeAttribute(email)}"
+              data-nome="${escapeAttribute(nome)}"
+            >
+
+            <div>
+              <div class="nome">
+                ${escapeHtml(nome)}
+              </div>
+
+              <div class="email">
+                ${escapeHtml(email)}
+              </div>
+            </div>
+          `;
+
+          listaCotistas.appendChild(div);
+
+          quantidade++;
+        });
+
+
+        if (quantidade === 0) {
+
+          listaCotistas.innerHTML = `
+            <div id="carregando">
+              Nenhum cotista encontrado.
+            </div>
+          `;
+
+        }
+
+
+        atualizarContador();
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        listaCotistas.innerHTML = `
+          <div id="carregando">
+            Erro ao carregar os cotistas.
+          </div>
+        `;
+
+      }
+
+    }
+
+
+    // =========================================================
+    // SELECIONAR TODOS
+    // =========================================================
+
+    document
+      .getElementById("selecionarTodos")
+      .addEventListener("click", () => {
+
+        document
+          .querySelectorAll(".cotista-checkbox")
+          .forEach((checkbox) => {
+
+            checkbox.checked = true;
+
+          });
+
+        atualizarContador();
+
+      });
+
+
+    // =========================================================
+    // DESMARCAR TODOS
+    // =========================================================
+
+    document
+      .getElementById("desmarcarTodos")
+      .addEventListener("click", () => {
+
+        document
+          .querySelectorAll(".cotista-checkbox")
+          .forEach((checkbox) => {
+
+            checkbox.checked = false;
+
+          });
+
+        atualizarContador();
+
+      });
+
+
+    // =========================================================
+    // CONTADOR
+    // =========================================================
+
+    listaCotistas.addEventListener("change", (event) => {
+
+      if (
+        event.target.classList.contains("cotista-checkbox")
+      ) {
+
+        atualizarContador();
+
+      }
+
+    });
+
+
+    function atualizarContador() {
+
+      const selecionados =
+        document.querySelectorAll(
+          ".cotista-checkbox:checked"
+        ).length;
+
+      contadorSelecionados.textContent =
+        selecionados;
+
+    }
+
+
+    // =========================================================
+    // ENVIAR
+    // =========================================================
+
+    btnEnviar.addEventListener("click", async () => {
+
+      status.className = "";
+      status.style.display = "none";
+
+
+      const selecionados =
+        Array.from(
+          document.querySelectorAll(
+            ".cotista-checkbox:checked"
+          )
+        );
+
+
+      if (selecionados.length === 0) {
+
+        mostrarErro(
+          "Selecione pelo menos um cotista."
+        );
+
+        return;
+      }
+
+
+      if (!mensagem.value.trim()) {
+
+        mostrarErro(
+          "Digite uma mensagem antes de enviar."
+        );
+
+        return;
+      }
+
+
+      const confirmacao =
+        confirm(
+          `Enviar este e-mail para ${selecionados.length} cotista(s)?`
+        );
+
+
+      if (!confirmacao) {
+        return;
+      }
+
+
+      btnEnviar.disabled = true;
+
+      btnEnviar.textContent =
+        "Enviando...";
+
+
+      try {
+
+        const user = auth.currentUser;
+
+        if (!user) {
+          throw new Error("Sessão expirada.");
+        }
+
+
+        // Pega o token de autenticação do Firebase
+        const idToken =
+          await user.getIdToken();
+
+
+        const destinatarios =
+          selecionados.map((checkbox) => ({
+            email: checkbox.dataset.email,
+            nome: checkbox.dataset.nome
+          }));
+
+
+        const response =
+          await fetch("/api/enviar-email", {
+
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${idToken}`
+            },
+
+            body: JSON.stringify({
+
+              destinatarios,
+
+              assunto:
+                assunto.value.trim() ||
+                "Novo conteúdo — Clube Morpheus",
+
+              mensagem:
+                mensagem.value.trim()
+
+            })
+
+          });
+
+
+        const data =
+          await response.json();
+
+
+        if (!response.ok || !data.ok) {
+
+          throw new Error(
+            data.error ||
+            "Erro ao enviar os e-mails."
+          );
+
+        }
+
+
+        mostrarSucesso(
+          `E-mail enviado com sucesso para ${data.enviados} cotista(s).`
+        );
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        mostrarErro(
+          "Erro ao enviar: " +
+          error.message
+        );
+
+      } finally {
+
+        btnEnviar.disabled = false;
+
+        btnEnviar.textContent =
+          "Enviar e-mail aos cotistas";
+
+      }
+
+    });
+
+
+    // =========================================================
+    // STATUS
+    // =========================================================
+
+    function mostrarSucesso(texto) {
+
+      status.textContent = texto;
+
+      status.className =
+        "sucesso";
+
+      status.style.display =
+        "block";
+
+    }
+
+
+    function mostrarErro(texto) {
+
+      status.textContent = texto;
+
+      status.className =
+        "erro";
+
+      status.style.display =
+        "block";
+
+    }
+
+
+    // =========================================================
+    // SEGURANÇA VISUAL
+    // =========================================================
+
+    function escapeHtml(text) {
+
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+
+    function escapeAttribute(text) {
+
+      return escapeHtml(text);
+
+    }
+
+  </script>
+
+</body>
+
+</html>
