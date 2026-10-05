@@ -612,30 +612,21 @@
           }));
 
 
-        const response =
-          await fetch(("https://login-page-rose-pi.vercel.app/api/enviar-email", {
-
-            method: "POST",
-
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${idToken}`
-            },
-
-            body: JSON.stringify({
-
-              destinatarios,
-
-              assunto:
-                assunto.value.trim() ||
-                "Novo conteúdo — Clube Morpheus",
-
-              mensagem:
-                mensagem.value.trim()
-
-            })
-
-          });
+const response = await fetch(
+  "https://login-page-rose-pi.vercel.app/api/enviar-email",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${idToken}`
+    },
+    body: JSON.stringify({
+      destinatarios,
+      assunto: assunto.value.trim() || "Novo conteúdo — Clube Morpheus",
+      mensagem: mensagem.value.trim()
+    })
+  }
+);
 
 
         const data =
