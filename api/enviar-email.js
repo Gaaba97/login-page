@@ -71,9 +71,10 @@ res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
       {
         method: "POST",
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+headers: {
+  "Content-Type": "application/json",
+  "Referer": "https://www.clubemorpheus.com/"
+},
 
         body: JSON.stringify({
           idToken: idToken
