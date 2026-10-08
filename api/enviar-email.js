@@ -86,18 +86,23 @@ export default async function handler(req, res) {
       await firebaseResponse.json();
 
 
-    if (
-      !firebaseResponse.ok ||
-      !firebaseData.users ||
-      !firebaseData.users[0]
-    ) {
+if (
+  !firebaseResponse.ok ||
+  !firebaseData.users ||
+  !firebaseData.users[0]
+) {
 
-      return res.status(401).json({
-        ok: false,
-        error: "Sessão Firebase inválida."
-      });
+  return res.status(401).json({
+    ok: false,
+    error:
+      "Firebase: " +
+      (
+        firebaseData?.error?.message ||
+        "token inválido ou não foi possível validar."
+      )
+  });
 
-    }
+}
 
 
     const usuario =
