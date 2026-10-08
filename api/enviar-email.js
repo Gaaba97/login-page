@@ -237,14 +237,16 @@ if (
                 "application/json"
             },
 
-            body: JSON.stringify({
+body: JSON.stringify({
 
-              from:
-                "Clube Morpheus <conteudo@clubemorpheus.com>",
+  from:
+    "Clube Morpheus <conteudo@clubemorpheus.com>",
 
-              to: [
-                destinatario.email
-              ],
+  reply_to: "gabrielssimon7@gmail.com",
+
+  to: [
+    destinatario.email
+  ],
 
               subject:
                 assunto ||
