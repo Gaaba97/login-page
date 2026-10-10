@@ -990,28 +990,23 @@
       const chartContainer = document.querySelector('.main-chart-container');
       const containerRect = chartContainer.getBoundingClientRect();
       
+      // Posição horizontal relativa ao container do gráfico (acompanha exatamente o ponto)
       let left = position.left + tooltip.caretX - containerRect.left;
-      let top = position.top + tooltip.caretY - containerRect.top;
+      
+      // Posição vertical: ancorada na linha mais alta entre as séries naquele ponto
+      const yScale = chart.scales.y;
+      const highestY = Math.min(...tooltip.dataPoints.map(dp => yScale.getPixelForValue(dp.raw.y)));
+      let top = position.top + highestY - containerRect.top;
       
       const tooltipWidth = tooltipEl.offsetWidth;
       const tooltipHeight = tooltipEl.offsetHeight;
       
-      let placement = 'top';
+      // Sempre acima da linha mais alta
+      const placement = 'top';
+      top -= tooltipHeight + 10;
       
-      if (top - tooltipHeight - 10 < 0) {
-        placement = 'bottom';
-        top += 20;
-      } else {
-        top -= tooltipHeight + 10;
-      }
-      
-      if (left + tooltipWidth > containerRect.width) {
-        left = containerRect.width - tooltipWidth - 10;
-      } else if (left < 0) {
-        left = 10;
-      } else {
-        left -= tooltipWidth / 2;
-      }
+      // Centralizado no ponto, podendo exceder a área do gráfico
+      left -= tooltipWidth / 2;
       
       tooltipEl.style.left = left + 'px';
       tooltipEl.style.top = top + 'px';
