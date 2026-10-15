@@ -132,10 +132,21 @@ if (
     // DADOS RECEBIDOS
     // =======================================================
 
+    // html: e-mail completo montado no admin.html, com {{nome}}
+    //       no lugar do nome do cotista (é o mesmo HTML mostrado
+    //       na pré-visualização).
+    // anexos: arquivos anexados e imagens do corpo do e-mail
+    //       (imagens trazem content_id e são referenciadas no
+    //       HTML como src="cid:...").
+    // mensagem: texto puro, usado só quando "html" não vier
+    //       (formato antigo do admin).
+
     const {
       destinatarios,
       mensagem,
-      assunto
+      assunto,
+      html,
+      anexos
     } = req.body;
 
 
@@ -153,9 +164,17 @@ if (
     }
 
 
+    const usarHTML =
+      typeof html === "string" &&
+      html.trim() !== "";
+
+
     if (
-      !mensagem ||
-      !mensagem.trim()
+      !usarHTML &&
+      (
+        !mensagem ||
+        !mensagem.trim()
+      )
     ) {
 
       return res.status(400).json({
@@ -163,6 +182,65 @@ if (
         error:
           "A mensagem está vazia."
       });
+
+    }
+
+
+    // =======================================================
+    // ANEXOS
+    // =======================================================
+
+    if (
+      anexos !== undefined &&
+      !Array.isArray(anexos)
+    ) {
+
+      return res.status(400).json({
+        ok: false,
+        error:
+          "Formato de anexos inválido."
+      });
+
+    }
+
+
+    const anexosResend = [];
+
+
+    for (const anexo of anexos || []) {
+
+      if (
+        !anexo ||
+        typeof anexo.filename !== "string" ||
+        !anexo.filename.trim() ||
+        typeof anexo.content !== "string" ||
+        !anexo.content
+      ) {
+
+        return res.status(400).json({
+          ok: false,
+          error:
+            "Anexo inválido: cada arquivo precisa de nome e conteúdo."
+        });
+
+      }
+
+
+      const item = {
+        filename: anexo.filename,
+        content: anexo.content
+      };
+
+      if (typeof anexo.content_type === "string" && anexo.content_type) {
+        item.content_type = anexo.content_type;
+      }
+
+      // Imagem exibida no corpo do e-mail (src="cid:...")
+      if (typeof anexo.content_id === "string" && anexo.content_id) {
+        item.content_id = anexo.content_id;
+      }
+
+      anexosResend.push(item);
 
     }
 
@@ -189,7 +267,15 @@ if (
         "cotista";
 
 
-      const mensagemHTML = `
+      const mensagemHTML = usarHTML
+
+        // Mesmo HTML da pré-visualização, só com o nome trocado
+        ? html
+            .split("{{nome}}")
+            .join(escapeHtml(nome))
+
+        // Formato antigo (texto puro)
+        : `
         <p>
           Olá ${escapeHtml(nome)}, tudo bem?
         </p>
@@ -253,7 +339,11 @@ body: JSON.stringify({
                 "Novo conteúdo — Clube Morpheus",
 
               html:
-                mensagemHTML
+                mensagemHTML,
+
+              ...(anexosResend.length > 0
+                ? { attachments: anexosResend }
+                : {})
 
             })
           }

@@ -117,6 +117,7 @@
     }
 
     input[type="text"],
+    input[type="url"],
     textarea {
       width: 100%;
       border: 1px solid #ccc;
@@ -180,6 +181,742 @@
       color: #666;
       font-size: 14px;
       margin-top: 10px;
+    }
+
+
+    /* =======================================================
+       EDITOR DE E-MAIL
+       ======================================================= */
+
+    .dica {
+      color: #666;
+      font-size: 13px;
+      font-weight: normal;
+      margin-top: 6px;
+    }
+
+    .barra-ferramentas {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 7px 7px 0 0;
+      background: #f8f9fc;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .grupo {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding-right: 6px;
+      margin-right: 2px;
+      border-right: 1px solid #dde2ea;
+    }
+
+    .grupo:last-child {
+      border-right: none;
+    }
+
+    .ferramenta {
+      background: transparent;
+      color: #2b3340;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .ferramenta:hover {
+      background: #e6eaf2;
+    }
+
+    .ferramenta.ativo {
+      background: #dbe5f7;
+      color: #164CAD;
+    }
+
+    .ferramenta svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .ferramenta-texto {
+      width: auto;
+      padding: 0 10px;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .barra-ferramentas select {
+      height: 32px;
+      border: 1px solid #d4d9e2;
+      border-radius: 5px;
+      background: white;
+      font-size: 13px;
+      padding: 0 6px;
+      color: #2b3340;
+    }
+
+    .cor {
+      position: relative;
+    }
+
+    .cor input[type="color"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .cor .amostra {
+      position: absolute;
+      left: 7px;
+      right: 7px;
+      bottom: 5px;
+      height: 3px;
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    #barraImagem {
+      display: none;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-top: none;
+      background: #eef3fc;
+      font-size: 13px;
+    }
+
+    #barraImagem.visivel {
+      display: flex;
+    }
+
+    #barraImagem .rotulo {
+      font-weight: bold;
+      color: #164CAD;
+    }
+
+    #barraImagem input[type="text"] {
+      width: 150px;
+      padding: 6px 8px;
+      font-size: 13px;
+    }
+
+    #barraImagem select {
+      height: 30px;
+      border: 1px solid #d4d9e2;
+      border-radius: 5px;
+      font-size: 13px;
+    }
+
+    .moldura-editor {
+      border: 1px solid #ccc;
+      border-top: none;
+      border-radius: 0 0 7px 7px;
+      background: #eef1f6;
+      padding: 20px 12px;
+      overflow-x: auto;
+    }
+
+    #editor {
+      width: 600px;
+      max-width: 100%;
+      min-height: 340px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 32px;
+      border-radius: 6px;
+      outline: none;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    #editor:focus {
+      box-shadow: 0 0 0 2px #b9cbef;
+    }
+
+    #editor img {
+      cursor: pointer;
+    }
+
+    #editor img.img-selecionada {
+      outline: 3px solid #164CAD;
+      outline-offset: 2px;
+    }
+
+    #editor:empty::before {
+      content: "Escreva aqui a mensagem aos cotistas...";
+      color: #9aa3b0;
+    }
+
+    /* Tipografia do conteúdo — espelha os estilos aplicados
+       no HTML do e-mail (montarConteudoEmail) */
+
+    .conteudo-email {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #1f2937;
+    }
+
+    .conteudo-email::after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+
+    .conteudo-email p,
+    .conteudo-email div {
+      margin: 0 0 16px;
+    }
+
+    .conteudo-email h1 {
+      margin: 24px 0 12px;
+      font-size: 24px;
+      line-height: 1.3;
+      color: #0f2a5c;
+    }
+
+    .conteudo-email h2 {
+      margin: 20px 0 10px;
+      font-size: 19px;
+      line-height: 1.35;
+      color: #164CAD;
+    }
+
+    .conteudo-email h3 {
+      margin: 18px 0 8px;
+      font-size: 16px;
+      line-height: 1.4;
+      color: #1f2937;
+    }
+
+    .conteudo-email blockquote {
+      margin: 0 0 16px;
+      padding: 4px 0 4px 16px;
+      border-left: 3px solid #164CAD;
+      color: #4b5563;
+    }
+
+    .conteudo-email ul,
+    .conteudo-email ol {
+      margin: 0 0 16px;
+      padding: 0 0 0 24px;
+    }
+
+    .conteudo-email li {
+      margin: 0 0 6px;
+    }
+
+    .conteudo-email a {
+      color: #164CAD;
+    }
+
+    .conteudo-email a[data-botao] {
+      display: inline-block;
+      padding: 12px 20px;
+      background: #164CAD;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .conteudo-email hr {
+      border: 0;
+      border-top: 1px solid #e5e7eb;
+      margin: 24px 0;
+      height: 0;
+    }
+
+    .conteudo-email table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 16px;
+      font-size: 14px;
+    }
+
+    .conteudo-email th {
+      text-align: left;
+      padding: 8px 10px;
+      background: #164CAD;
+      color: #ffffff;
+      font-weight: bold;
+      border: 1px solid #164CAD;
+    }
+
+    .conteudo-email td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .conteudo-email table[data-zebra="1"] tbody tr:nth-child(even) td {
+      background: #f5f7fb;
+    }
+
+    .conteudo-email img {
+      max-width: 100%;
+      height: auto;
+      vertical-align: top;
+    }
+
+    .conteudo-email img[data-align="center"],
+    .conteudo-email img[data-align="full"] {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .conteudo-email img[data-align="left"] {
+      float: left;
+      margin: 4px 16px 8px 0;
+    }
+
+    .conteudo-email img[data-align="right"] {
+      float: right;
+      margin: 4px 0 8px 16px;
+    }
+
+
+    /* =======================================================
+       OPÇÕES, ANEXOS E AÇÕES
+       ======================================================= */
+
+    details.opcoes {
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 0 15px;
+    }
+
+    details.opcoes summary {
+      cursor: pointer;
+      font-weight: bold;
+      padding: 13px 0;
+    }
+
+    details.opcoes .linha-opcao {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-weight: normal;
+    }
+
+    details.opcoes textarea {
+      min-height: 70px;
+    }
+
+    #zonaAnexos {
+      border: 2px dashed #c8d1e0;
+      border-radius: 8px;
+      padding: 18px;
+      text-align: center;
+      color: #555;
+      font-size: 14px;
+      background: #fafbfd;
+    }
+
+    #zonaAnexos.arrastando {
+      border-color: #164CAD;
+      background: #eef3fc;
+    }
+
+    #zonaAnexos button {
+      margin-top: 8px;
+    }
+
+    #listaAnexos {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0 0;
+    }
+
+    #listaAnexos li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 12px;
+      border: 1px solid #e3e7ee;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    #listaAnexos li span.tamanho {
+      color: #777;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+
+    #listaAnexos li button {
+      padding: 5px 10px;
+      font-size: 12px;
+      background: #fdecec;
+      color: #a11;
+    }
+
+    .medidor {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .medidor .trilho {
+      height: 6px;
+      background: #e9edf5;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .medidor .preenchido {
+      height: 100%;
+      width: 0;
+      background: #164CAD;
+      transition: width 0.2s;
+    }
+
+    .medidor.alerta .preenchido {
+      background: #d97706;
+    }
+
+    .medidor.excedido {
+      color: #a11;
+    }
+
+    .medidor.excedido .preenchido {
+      background: #c62828;
+    }
+
+    #infoRascunho {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    #infoRascunho button {
+      background: none;
+      color: #164CAD;
+      padding: 0 4px;
+      font-size: 13px;
+      text-decoration: underline;
+    }
+
+    .acoes {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .acoes .btn-enviar {
+      margin-top: 0;
+    }
+
+    .acoes .btn-secundario {
+      padding: 14px 20px;
+      font-size: 15px;
+    }
+
+
+    /* =======================================================
+       JANELAS (gráfico, tabela, botão, pré-visualização)
+       ======================================================= */
+
+    dialog {
+      border: none;
+      border-radius: 12px;
+      padding: 0;
+      width: min(920px, calc(100vw - 24px));
+      max-height: calc(100vh - 24px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+
+    dialog::backdrop {
+      background: rgba(15, 23, 32, 0.55);
+    }
+
+    .janela-topo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 16px 22px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .janela-topo h3 {
+      margin: 0;
+      font-size: 17px;
+      color: #164CAD;
+    }
+
+    .janela-corpo {
+      padding: 20px 22px;
+      overflow: auto;
+      max-height: calc(100vh - 160px);
+    }
+
+    .janela-rodape {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 14px 22px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .btn-primario {
+      background: #164CAD;
+      color: white;
+    }
+
+    .btn-fechar {
+      background: transparent;
+      font-size: 22px;
+      line-height: 1;
+      padding: 4px 10px;
+      color: #555;
+    }
+
+    .grade-grafico {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+    }
+
+    .grade-grafico label {
+      font-size: 13px;
+      margin: 12px 0 6px;
+    }
+
+    .grade-grafico label:first-child {
+      margin-top: 0;
+    }
+
+    .grade-grafico select,
+    .grade-grafico input[type="text"] {
+      width: 100%;
+      height: 36px;
+      padding: 0 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .grade-grafico textarea {
+      min-height: 170px;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      white-space: pre;
+    }
+
+    .linha-dupla {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .caixa-previa-grafico {
+      background: #eef1f6;
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 340px;
+    }
+
+    .caixa-previa-grafico canvas {
+      background: white;
+      border-radius: 4px;
+      max-width: 100%;
+    }
+
+    #erroGrafico,
+    #erroTabela {
+      color: #a11;
+      font-size: 13px;
+      margin-top: 10px;
+      min-height: 16px;
+    }
+
+    .marcar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: normal !important;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    #previaTabela {
+      margin-top: 16px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+      max-height: 260px;
+      overflow: auto;
+    }
+
+    #janelaBotao .campo:first-child {
+      margin-top: 0;
+    }
+
+
+    /* Pré-visualização */
+
+    #janelaPrevia {
+      width: min(1000px, calc(100vw - 24px));
+    }
+
+    .controles-previa {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .alternador {
+      display: inline-flex;
+      background: #e9edf5;
+      border-radius: 7px;
+      padding: 3px;
+    }
+
+    .alternador button {
+      background: transparent;
+      padding: 7px 14px;
+      font-size: 13px;
+      border-radius: 5px;
+    }
+
+    .alternador button.ativo {
+      background: white;
+      color: #164CAD;
+      font-weight: bold;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .controles-previa select {
+      height: 34px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 13px;
+      max-width: 260px;
+    }
+
+    .cabecalho-caixa {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 14px;
+      margin-bottom: 14px;
+      background: #fafbfd;
+    }
+
+    .cabecalho-caixa .assunto-previa {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #111;
+    }
+
+    .cabecalho-caixa .meta {
+      color: #555;
+      margin-top: 3px;
+    }
+
+    .cabecalho-caixa .meta strong {
+      color: #222;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #d9dee8;
+      border-radius: 16px;
+      padding: 5px 11px;
+      font-size: 12px;
+      background: white;
+    }
+
+    .palco-previa {
+      background: #dfe3ea;
+      border-radius: 8px;
+      padding: 16px 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .palco-previa iframe {
+      border: none;
+      width: 100%;
+      background: white;
+      display: block;
+    }
+
+    .palco-previa.celular iframe {
+      /* 375px de tela + 2 x 10px de borda */
+      width: 395px;
+      border-radius: 22px;
+      border: 10px solid #1f2933;
+    }
+
+    .aviso-previa {
+      font-size: 12px;
+      color: #666;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 720px) {
+      .container {
+        margin: 10px auto;
+        padding: 10px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .grade-grafico {
+        grid-template-columns: 1fr;
+      }
+
+      #editor {
+        padding: 20px;
+      }
     }
   </style>
 </head>
@@ -246,29 +983,449 @@
       </div>
 
       <div class="campo">
-        <label for="mensagem">
-          Mensagem
+        <label for="preheader">
+          Texto de prévia
+          <div class="dica">Aparece na caixa de entrada logo depois do assunto. Opcional.</div>
         </label>
 
-        <textarea
-          id="mensagem"
-          placeholder="Digite aqui a mensagem que deseja enviar aos cotistas..."
-        ></textarea>
+        <input
+          type="text"
+          id="preheader"
+          maxlength="150"
+          placeholder="Ex.: Resultado de setembro e próximos passos do clube"
+        >
       </div>
 
-      <button
-        class="btn-enviar"
-        id="btnEnviar"
-        type="button"
-      >
-        Enviar e-mail aos cotistas
-      </button>
+      <div class="campo">
+        <label>
+          Mensagem
+          <div class="dica">
+            Imagens: botão de imagem, colar (Ctrl+V) ou arrastar para o texto. Clique numa imagem para posicioná-la.
+          </div>
+        </label>
+
+        <div class="barra-ferramentas" id="barraFerramentas">
+
+          <div class="grupo">
+            <button type="button" class="ferramenta" data-cmd="undo" title="Desfazer (Ctrl+Z)">
+              <svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
+            </button>
+            <button type="button" class="ferramenta" data-cmd="redo" title="Refazer (Ctrl+Y)">
+              <svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg>
+            </button>
+          </div>
+
+          <div class="grupo">
+            <select id="seletorBloco" title="Estilo do parágrafo">
+              <option value="">Estilo</option>
+              <option value="p">Parágrafo</option>
+              <option value="h1">Título</option>
+              <option value="h2">Subtítulo</option>
+              <option value="h3">Seção</option>
+              <option value="blockquote">Destaque</option>
+            </select>
+
+            <select id="seletorFonte" title="Fonte">
+              <option value="">Fonte</option>
+              <option value="Arial, Helvetica, sans-serif">Arial</option>
+              <option value="Verdana, Geneva, sans-serif">Verdana</option>
+              <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+              <option value="'Trebuchet MS', Helvetica, sans-serif">Trebuchet</option>
+              <option value="Georgia, 'Times New Roman', serif">Georgia</option>
+              <option value="'Times New Roman', Times, serif">Times</option>
+              <option value="'Courier New', Courier, monospace">Courier</option>
+            </select>
+
+            <select id="seletorTamanho" title="Tamanho da letra">
+              <option value="">Tamanho</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="15">15 (padrão)</option>
+              <option value="17">17</option>
+              <option value="19">19</option>
+              <option value="22">22</option>
+              <option value="26">26</option>
+              <option value="32">32</option>
+            </select>
+          </div>
+
+          <div class="grupo">
+            <button type="button" class="ferramenta" data-cmd="bold" title="Negrito (Ctrl+B)"><b>N</b></button>
+            <button type="button" class="ferramenta" data-cmd="italic" title="Itálico (Ctrl+I)"><i style="font-family:Georgia,serif">I</i></button>
+            <button type="button" class="ferramenta" data-cmd="underline" title="Sublinhado (Ctrl+U)"><u>S</u></button>
+            <button type="button" class="ferramenta" data-cmd="strikeThrough" title="Tachado"><s>T</s></button>
+
+            <span class="ferramenta cor" title="Cor do texto">
+              <svg viewBox="0 0 24 24"><path d="m6 17 6-14 6 14"/><path d="M8.5 11h7"/></svg>
+              <span class="amostra" id="amostraCorTexto" style="background:#c62828"></span>
+              <input type="color" id="corTexto" value="#c62828">
+            </span>
+
+            <span class="ferramenta cor" title="Cor de destaque (marca-texto)">
+              <svg viewBox="0 0 24 24"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+              <span class="amostra" id="amostraCorFundo" style="background:#fff3a3"></span>
+              <input type="color" id="corFundo" value="#fff3a3">
+            </span>
+          </div>
+
+          <div class="grupo">
+            <button type="button" class="ferramenta" data-cmd="justifyLeft" title="Alinhar à esquerda">
+              <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h12M3 18h16"/></svg>
+            </button>
+            <button type="button" class="ferramenta" data-cmd="justifyCenter" title="Centralizar">
+              <svg viewBox="0 0 24 24"><path d="M3 6h18M6 12h12M4 18h16"/></svg>
+            </button>
+            <button type="button" class="ferramenta" data-cmd="justifyRight" title="Alinhar à direita">
+              <svg viewBox="0 0 24 24"><path d="M3 6h18M9 12h12M5 18h16"/></svg>
+            </button>
+            <button type="button" class="ferramenta" data-cmd="justifyFull" title="Justificar">
+              <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+            </button>
+          </div>
+
+          <div class="grupo">
+            <button type="button" class="ferramenta" data-cmd="insertUnorderedList" title="Lista com marcadores">
+              <svg viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>
+            </button>
+            <button type="button" class="ferramenta" data-cmd="insertOrderedList" title="Lista numerada">
+              <svg viewBox="0 0 24 24"><path d="M10 6h11M10 12h11M10 18h11"/><path d="M4 4v4M3 18h3l-3 3h3" /></svg>
+            </button>
+            <button type="button" class="ferramenta" id="btnLink" title="Inserir link (Ctrl+K)">
+              <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
+            </button>
+            <button type="button" class="ferramenta" data-cmd="unlink" title="Remover link">
+              <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/><path d="M3 3l18 18"/></svg>
+            </button>
+          </div>
+
+          <div class="grupo">
+            <button type="button" class="ferramenta" id="btnImagem" title="Inserir imagem">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg>
+            </button>
+            <button type="button" class="ferramenta" id="btnGrafico" title="Inserir gráfico">
+              <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+            </button>
+            <button type="button" class="ferramenta" id="btnTabela" title="Inserir tabela (colar do Excel)">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+            </button>
+            <button type="button" class="ferramenta" id="btnBotao" title="Inserir botão com link">
+              <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="3"/><path d="M8 12h8"/></svg>
+            </button>
+            <button type="button" class="ferramenta" data-cmd="insertHorizontalRule" title="Linha divisória">
+              <svg viewBox="0 0 24 24"><path d="M3 12h18"/></svg>
+            </button>
+            <button type="button" class="ferramenta ferramenta-texto" id="btnNome" title="Insere o nome de cada cotista no texto">
+              {{nome}}
+            </button>
+          </div>
+
+          <div class="grupo">
+            <button type="button" class="ferramenta" data-cmd="removeFormat" title="Limpar formatação">
+              <svg viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/><path d="m3 3 18 18"/></svg>
+            </button>
+          </div>
+
+        </div>
+
+        <div id="barraImagem">
+          <span class="rotulo" id="rotuloImagem">Imagem</span>
+
+          <select id="imgAlinhamento" title="Posição da imagem">
+            <option value="center">Centralizada</option>
+            <option value="full">Largura total</option>
+            <option value="left">À esquerda, texto ao lado</option>
+            <option value="right">À direita, texto ao lado</option>
+          </select>
+
+          <select id="imgLargura" title="Largura da imagem">
+            <option value="25">25%</option>
+            <option value="33">33%</option>
+            <option value="50">50%</option>
+            <option value="66">66%</option>
+            <option value="75">75%</option>
+            <option value="100">100%</option>
+          </select>
+
+          <input type="text" id="imgAlt" placeholder="Descrição (texto alternativo)" title="Lido por leitores de tela e mostrado se a imagem não carregar">
+          <input type="text" id="imgLink" placeholder="Link ao clicar (opcional)">
+
+          <button type="button" class="ferramenta" id="imgSubir" title="Mover para cima">
+            <svg viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></svg>
+          </button>
+          <button type="button" class="ferramenta" id="imgDescer" title="Mover para baixo">
+            <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <button type="button" class="btn-secundario" id="imgEditarGrafico" style="padding:6px 10px;font-size:13px;">Editar gráfico</button>
+          <button type="button" class="ferramenta" id="imgRemover" title="Remover imagem">
+            <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+          </button>
+        </div>
+
+        <div class="moldura-editor">
+          <div
+            id="editor"
+            class="conteudo-email"
+            contenteditable="true"
+            spellcheck="true"
+          ><p><br></p></div>
+        </div>
+
+        <input type="file" id="arquivoImagem" accept="image/png,image/jpeg,image/gif,image/webp" multiple hidden>
+      </div>
+
+      <details class="opcoes">
+        <summary>Opções do e-mail</summary>
+
+        <label class="linha-opcao">
+          <input type="checkbox" id="optSaudacao" checked>
+          Começar com “Olá {nome do cotista}, tudo bem?”
+        </label>
+
+        <label class="linha-opcao">
+          <input type="checkbox" id="optBotaoSite" checked>
+          Incluir o botão “Acessar o Clube Morpheus” no final
+        </label>
+
+        <label class="linha-opcao">
+          <input type="checkbox" id="optAvisoRentabilidade">
+          Incluir no rodapé: “Rentabilidade passada não é garantia de rentabilidade futura.”
+        </label>
+
+        <div class="campo" style="margin-top:6px;margin-bottom:15px;">
+          <label for="optRodape" style="font-size:14px;">Texto do rodapé</label>
+          <textarea id="optRodape">Você recebe este e-mail por ser cotista do Morpheus Clube de Investimentos.</textarea>
+        </div>
+      </details>
+
+      <div class="campo">
+        <label>Anexos</label>
+
+        <div id="zonaAnexos">
+          Arraste arquivos para cá (PDF, planilhas, apresentações...)
+          <br>
+          <button type="button" class="btn-secundario" id="btnAnexar">Escolher arquivos</button>
+          <input type="file" id="arquivoAnexo" multiple hidden>
+        </div>
+
+        <ul id="listaAnexos"></ul>
+
+        <div class="medidor" id="medidor">
+          <span id="textoMedidor">Tamanho do e-mail: 0 MB de 4 MB</span>
+          <div class="trilho"><div class="preenchido" id="barraMedidor"></div></div>
+        </div>
+      </div>
+
+      <div id="infoRascunho"></div>
+
+      <div class="acoes">
+        <button class="btn-secundario" id="btnPrevia" type="button">
+          Pré-visualizar
+        </button>
+
+        <button class="btn-secundario" id="btnTeste" type="button">
+          Enviar teste para mim
+        </button>
+
+        <button
+          class="btn-enviar"
+          id="btnEnviar"
+          type="button"
+        >
+          Enviar e-mail aos cotistas
+        </button>
+      </div>
 
       <div id="status"></div>
 
     </div>
 
   </div>
+
+
+  <!-- =========================================================
+       JANELA: GRÁFICO
+       ========================================================= -->
+
+  <dialog id="janelaGrafico">
+    <div class="janela-topo">
+      <h3>Gráfico</h3>
+      <button type="button" class="btn-fechar" data-fechar>&times;</button>
+    </div>
+
+    <div class="janela-corpo">
+      <div class="grade-grafico">
+        <div>
+          <label for="grafTipo">Tipo</label>
+          <select id="grafTipo">
+            <option value="linha">Linha (evolução no tempo)</option>
+            <option value="colunas">Colunas (comparar períodos)</option>
+            <option value="barras">Barras horizontais (ranking)</option>
+            <option value="rosca">Rosca (composição da carteira)</option>
+          </select>
+
+          <label for="grafTitulo">Título</label>
+          <input type="text" id="grafTitulo" placeholder="Ex.: Rentabilidade acumulada em 2026">
+
+          <label for="grafDados">Dados (copie do Excel e cole aqui)</label>
+          <textarea id="grafDados" spellcheck="false" placeholder="Mês&#9;Morpheus&#9;CDI&#10;Jan&#9;1,2%&#9;0,9%&#10;Fev&#9;2,1%&#9;1,8%"></textarea>
+          <div class="dica">1ª coluna: rótulos (meses, ativos...). 1ª linha: nomes das séries.</div>
+
+          <div class="linha-dupla">
+            <div>
+              <label for="grafFormato">Valores em</label>
+              <select id="grafFormato">
+                <option value="percentual">Percentual (%)</option>
+                <option value="numero">Número</option>
+                <option value="moeda">Reais (R$)</option>
+              </select>
+            </div>
+            <div>
+              <label for="grafCasas">Casas decimais</label>
+              <select id="grafCasas">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2" selected>2</option>
+              </select>
+            </div>
+          </div>
+
+          <label class="marcar">
+            <input type="checkbox" id="grafValores" checked>
+            Mostrar valores no gráfico
+          </label>
+
+          <div id="erroGrafico"></div>
+        </div>
+
+        <div class="caixa-previa-grafico">
+          <canvas id="canvasGrafico" width="536" height="300"></canvas>
+          <div class="dica" style="margin-top:10px;">É exatamente esta imagem que vai no e-mail.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="janela-rodape">
+      <button type="button" class="btn-secundario" data-fechar>Cancelar</button>
+      <button type="button" class="btn-primario" id="grafInserir">Inserir gráfico</button>
+    </div>
+  </dialog>
+
+
+  <!-- =========================================================
+       JANELA: TABELA
+       ========================================================= -->
+
+  <dialog id="janelaTabela">
+    <div class="janela-topo">
+      <h3>Tabela</h3>
+      <button type="button" class="btn-fechar" data-fechar>&times;</button>
+    </div>
+
+    <div class="janela-corpo">
+      <label for="tabDados">Copie as células no Excel e cole aqui</label>
+      <textarea id="tabDados" spellcheck="false" style="min-height:140px;font-family:Consolas,monospace;font-size:13px;white-space:pre;" placeholder="Ativo&#9;Peso&#9;Retorno no mês&#10;PETR4&#9;12,5%&#9;3,1%"></textarea>
+
+      <div class="dica">
+        Ou crie uma tabela vazia com
+        <input type="number" id="tabLinhas" value="3" min="1" max="30" style="width:56px;"> linhas e
+        <input type="number" id="tabColunas" value="3" min="1" max="10" style="width:56px;"> colunas (deixe o campo acima em branco).
+      </div>
+
+      <label class="marcar"><input type="checkbox" id="tabCabecalho" checked> Primeira linha é cabeçalho</label>
+      <label class="marcar"><input type="checkbox" id="tabZebra" checked> Linhas alternadas em cinza</label>
+
+      <div id="erroTabela"></div>
+      <div id="previaTabela" class="conteudo-email"></div>
+    </div>
+
+    <div class="janela-rodape">
+      <button type="button" class="btn-secundario" data-fechar>Cancelar</button>
+      <button type="button" class="btn-primario" id="tabInserir">Inserir tabela</button>
+    </div>
+  </dialog>
+
+
+  <!-- =========================================================
+       JANELA: BOTÃO
+       ========================================================= -->
+
+  <dialog id="janelaBotao" style="width:min(480px, calc(100vw - 24px));">
+    <div class="janela-topo">
+      <h3>Botão com link</h3>
+      <button type="button" class="btn-fechar" data-fechar>&times;</button>
+    </div>
+
+    <div class="janela-corpo">
+      <div class="campo">
+        <label for="botaoTexto">Texto do botão</label>
+        <input type="text" id="botaoTexto" placeholder="Ex.: Ver o relatório completo">
+      </div>
+
+      <div class="campo">
+        <label for="botaoLink">Link</label>
+        <input type="url" id="botaoLink" placeholder="https://www.clubemorpheus.com/...">
+      </div>
+
+      <div class="campo">
+        <label for="botaoAlinhamento">Posição</label>
+        <select id="botaoAlinhamento" style="height:38px;border:1px solid #ccc;border-radius:6px;padding:0 8px;">
+          <option value="left">À esquerda</option>
+          <option value="center">Centralizado</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="janela-rodape">
+      <button type="button" class="btn-secundario" data-fechar>Cancelar</button>
+      <button type="button" class="btn-primario" id="botaoInserir">Inserir botão</button>
+    </div>
+  </dialog>
+
+
+  <!-- =========================================================
+       JANELA: PRÉ-VISUALIZAÇÃO
+       ========================================================= -->
+
+  <dialog id="janelaPrevia">
+    <div class="janela-topo">
+      <div class="controles-previa">
+        <h3>Pré-visualização</h3>
+
+        <div class="alternador" id="alternadorDispositivo">
+          <button type="button" data-dispositivo="desktop" class="ativo">Computador</button>
+          <button type="button" data-dispositivo="celular">Celular</button>
+        </div>
+
+        <select id="previaCotista" title="Ver o e-mail como este cotista"></select>
+      </div>
+
+      <button type="button" class="btn-fechar" data-fechar>&times;</button>
+    </div>
+
+    <div class="janela-corpo">
+      <div class="cabecalho-caixa">
+        <div class="assunto-previa" id="previaAssunto"></div>
+        <div class="meta"><strong>Clube Morpheus</strong> &lt;conteudo@clubemorpheus.com&gt;</div>
+        <div class="meta">Para: <span id="previaPara"></span></div>
+        <div class="meta" id="previaPreheaderLinha">Prévia na caixa de entrada: <em id="previaPreheader"></em></div>
+        <div class="chips" id="previaAnexos"></div>
+      </div>
+
+      <div class="palco-previa" id="palcoPrevia">
+        <iframe
+          id="iframePrevia"
+          title="Pré-visualização do e-mail"
+          sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+        ></iframe>
+      </div>
+
+      <div class="aviso-previa">
+        Este é exatamente o HTML que será enviado, com o nome do cotista escolhido.
+        Gmail, Outlook e apps de celular podem mostrar pequenas diferenças de fonte e espaçamento —
+        use “Enviar teste para mim” para conferir na sua caixa de entrada.
+      </div>
+    </div>
+  </dialog>
 
 
   <script type="module">
@@ -323,14 +1480,53 @@
     const btnEnviar =
       document.getElementById("btnEnviar");
 
+    const btnTeste =
+      document.getElementById("btnTeste");
+
     const status =
       document.getElementById("status");
 
     const assunto =
       document.getElementById("assunto");
 
-    const mensagem =
-      document.getElementById("mensagem");
+    const preheader =
+      document.getElementById("preheader");
+
+    const editor =
+      document.getElementById("editor");
+
+
+    // =========================================================
+    // CONFIGURAÇÕES DO E-MAIL
+    // =========================================================
+
+    const URL_API =
+      "https://api.clubemorpheus.com/api/enviar-email";
+
+    const EMAIL_ADMIN =
+      "gabrielssimon7@gmail.com";
+
+    // Largura útil do conteúdo: 600px do e-mail - 2 x 32px de margem
+    const LARGURA_CONTEUDO = 536;
+
+    // Imagens são reduzidas para no máximo esta largura (nitidez em telas retina)
+    const LARGURA_MAX_IMAGEM = 1200;
+
+    // A Vercel recusa requisições acima de ~4,5 MB; fica uma folga
+    const LIMITE_BYTES = 4 * 1024 * 1024;
+
+    const CHAVE_RASCUNHO = "morpheus_admin_rascunho_v1";
+
+    const AZUL = "#164CAD";
+
+    // Cores das séries dos gráficos (validadas para daltonismo)
+    const PALETA_GRAFICO = [
+      "#164CAD", "#eb6834", "#1baf7a", "#eda100",
+      "#e87ba4", "#008300", "#6250d6", "#e34948"
+    ];
+
+    const URL_CHART_JS =
+      "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js";
 
 
     // =========================================================
@@ -349,7 +1545,7 @@
 
 
       // Somente Gabriel pode abrir o painel
-      if (user.email !== "gabrielssimon7@gmail.com") {
+      if (user.email !== EMAIL_ADMIN) {
 
         painel.style.display = "none";
         loginNecessario.style.display = "block";
@@ -537,8 +1733,3097 @@
 
 
     // =========================================================
+    // EDITOR — COMANDOS BÁSICOS
+    // =========================================================
+
+    document.execCommand("defaultParagraphSeparator", false, "p");
+
+    let ultimaSelecao = null;
+
+
+    // Guarda a posição do cursor no editor, para que botões e
+    // listas da barra possam agir sobre o texto selecionado
+    document.addEventListener("selectionchange", () => {
+
+      const selecao = window.getSelection();
+
+      if (
+        selecao.rangeCount > 0 &&
+        editor.contains(selecao.getRangeAt(0).commonAncestorContainer)
+      ) {
+
+        ultimaSelecao = selecao.getRangeAt(0).cloneRange();
+
+        atualizarBotoesAtivos();
+
+      }
+
+    });
+
+
+    function restaurarSelecao() {
+
+      editor.focus();
+
+      const selecao = window.getSelection();
+
+      if (
+        ultimaSelecao &&
+        editor.contains(ultimaSelecao.commonAncestorContainer)
+      ) {
+
+        selecao.removeAllRanges();
+        selecao.addRange(ultimaSelecao);
+
+      } else {
+
+        // Sem cursor no editor: posiciona no final do texto
+        const range = document.createRange();
+        range.selectNodeContents(editor);
+        range.collapse(false);
+        selecao.removeAllRanges();
+        selecao.addRange(range);
+
+      }
+
+    }
+
+
+    function comando(nome, valor = null) {
+
+      restaurarSelecao();
+
+      document.execCommand("styleWithCSS", false, true);
+      document.execCommand(nome, false, valor);
+
+      registrarMudanca();
+
+    }
+
+
+    const barraFerramentas =
+      document.getElementById("barraFerramentas");
+
+
+    // Evita que clicar na barra tire o foco/seleção do editor
+    barraFerramentas.addEventListener("mousedown", (event) => {
+
+      if (event.target.closest("button")) {
+        event.preventDefault();
+      }
+
+    });
+
+
+    barraFerramentas
+      .querySelectorAll("[data-cmd]")
+      .forEach((botao) => {
+
+        botao.addEventListener("click", () => {
+
+          if (botao.dataset.cmd === "insertHorizontalRule") {
+
+            inserirBloco(document.createElement("hr"));
+            return;
+
+          }
+
+          comando(botao.dataset.cmd);
+
+        });
+
+      });
+
+
+    function atualizarBotoesAtivos() {
+
+      barraFerramentas
+        .querySelectorAll("[data-cmd]")
+        .forEach((botao) => {
+
+          const cmd = botao.dataset.cmd;
+
+          if (
+            ["bold", "italic", "underline", "strikeThrough",
+             "insertUnorderedList", "insertOrderedList",
+             "justifyLeft", "justifyCenter", "justifyRight",
+             "justifyFull"].includes(cmd)
+          ) {
+
+            let ativo = false;
+
+            try {
+              ativo = document.queryCommandState(cmd);
+            } catch (e) {
+              ativo = false;
+            }
+
+            botao.classList.toggle("ativo", ativo);
+
+          }
+
+        });
+
+    }
+
+
+    // Estilo de parágrafo (título, subtítulo...)
+    document
+      .getElementById("seletorBloco")
+      .addEventListener("change", (event) => {
+
+        if (event.target.value) {
+          comando("formatBlock", event.target.value);
+        }
+
+        event.target.value = "";
+
+      });
+
+
+    // Fonte
+    document
+      .getElementById("seletorFonte")
+      .addEventListener("change", (event) => {
+
+        if (event.target.value) {
+          comando("fontName", event.target.value);
+        }
+
+        event.target.value = "";
+
+      });
+
+
+    // Tamanho da letra (em px, como o e-mail usa)
+    document
+      .getElementById("seletorTamanho")
+      .addEventListener("change", (event) => {
+
+        const px = event.target.value;
+
+        event.target.value = "";
+
+        if (!px) {
+          return;
+        }
+
+        restaurarSelecao();
+
+        document.execCommand("styleWithCSS", false, false);
+        document.execCommand("fontSize", false, "7");
+        document.execCommand("styleWithCSS", false, true);
+
+        editor
+          .querySelectorAll('font[size="7"]')
+          .forEach((font) => {
+
+            const span = document.createElement("span");
+
+            span.style.fontSize = px + "px";
+
+            while (font.firstChild) {
+              span.appendChild(font.firstChild);
+            }
+
+            font.replaceWith(span);
+
+          });
+
+        editor
+          .querySelectorAll('span[style*="xxx-large"]')
+          .forEach((span) => {
+
+            span.style.fontSize = px + "px";
+
+          });
+
+        registrarMudanca();
+
+      });
+
+
+    // Cores
+    function ligarCor(idInput, idAmostra, cmd) {
+
+      const input = document.getElementById(idInput);
+      const amostra = document.getElementById(idAmostra);
+
+      // Guarda a seleção antes do seletor de cor abrir
+      input.addEventListener("pointerdown", () => {
+
+        const selecao = window.getSelection();
+
+        if (
+          selecao.rangeCount > 0 &&
+          editor.contains(selecao.getRangeAt(0).commonAncestorContainer)
+        ) {
+          ultimaSelecao = selecao.getRangeAt(0).cloneRange();
+        }
+
+      });
+
+      input.addEventListener("change", () => {
+
+        amostra.style.background = input.value;
+        comando(cmd, input.value);
+
+      });
+
+    }
+
+    ligarCor("corTexto", "amostraCorTexto", "foreColor");
+    ligarCor("corFundo", "amostraCorFundo", "hiliteColor");
+
+
+    // Link
+    function inserirLink() {
+
+      const range = ultimaSelecao;
+
+      let url = prompt(
+        "Endereço do link:",
+        "https://"
+      );
+
+      if (!url || url.trim() === "https://") {
+        return;
+      }
+
+      url = normalizarUrl(url);
+
+      if (!url) {
+        alert("Endereço inválido.");
+        return;
+      }
+
+      ultimaSelecao = range;
+
+      restaurarSelecao();
+
+      const selecao = window.getSelection();
+
+      if (selecao.isCollapsed) {
+
+        document.execCommand(
+          "insertHTML",
+          false,
+          `<a href="${escapeAttribute(url)}" target="_blank">${escapeHtml(url)}</a>`
+        );
+
+      } else {
+
+        document.execCommand("createLink", false, url);
+
+      }
+
+      editor
+        .querySelectorAll("a:not([target])")
+        .forEach((a) => a.setAttribute("target", "_blank"));
+
+      registrarMudanca();
+
+    }
+
+    document
+      .getElementById("btnLink")
+      .addEventListener("click", inserirLink);
+
+
+    editor.addEventListener("keydown", (event) => {
+
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === "k"
+      ) {
+
+        event.preventDefault();
+        inserirLink();
+
+      }
+
+    });
+
+
+    // {{nome}}
+    document
+      .getElementById("btnNome")
+      .addEventListener("click", () => {
+
+        comando("insertText", "{{nome}}");
+
+      });
+
+
+    // =========================================================
+    // EDITOR — BLOCOS (imagem, tabela, botão, linha)
+    // =========================================================
+
+    // Bloco de primeiro nível do editor onde está o cursor
+    function blocoDoNo(no) {
+
+      while (no && no.parentNode !== editor) {
+        no = no.parentNode;
+      }
+
+      return no && no.parentNode === editor ? no : null;
+
+    }
+
+
+    function blocoVazio(bloco) {
+
+      return (
+        bloco.nodeType === Node.ELEMENT_NODE &&
+        ["P", "DIV", "H1", "H2", "H3"].includes(bloco.tagName) &&
+        bloco.textContent.trim() === "" &&
+        !bloco.querySelector("img, table, hr")
+      );
+
+    }
+
+
+    // Insere um elemento como bloco próprio, logo após o
+    // parágrafo do cursor (ou no lugar dele, se estiver vazio)
+    function inserirBloco(elemento) {
+
+      const bloco =
+        ultimaSelecao &&
+        editor.contains(ultimaSelecao.startContainer)
+          ? blocoDoNo(ultimaSelecao.startContainer)
+          : null;
+
+      if (bloco && blocoVazio(bloco)) {
+
+        bloco.replaceWith(elemento);
+
+      } else if (bloco) {
+
+        bloco.after(elemento);
+
+      } else {
+
+        editor.appendChild(elemento);
+
+      }
+
+      // Garante um parágrafo depois, para continuar escrevendo
+      const proximo = elemento.nextSibling;
+
+      if (
+        !proximo ||
+        proximo.nodeType !== Node.ELEMENT_NODE ||
+        ["TABLE", "HR"].includes(proximo.tagName)
+      ) {
+
+        const p = document.createElement("p");
+        p.innerHTML = "<br>";
+        elemento.after(p);
+
+      }
+
+      // Cursor no parágrafo seguinte
+      const range = document.createRange();
+      range.selectNodeContents(elemento.nextSibling);
+      range.collapse(true);
+
+      const selecao = window.getSelection();
+      selecao.removeAllRanges();
+      selecao.addRange(range);
+
+      ultimaSelecao = range.cloneRange();
+
+      registrarMudanca();
+
+    }
+
+
+    // =========================================================
+    // IMAGENS
+    // =========================================================
+
+    const arquivoImagem =
+      document.getElementById("arquivoImagem");
+
+    document
+      .getElementById("btnImagem")
+      .addEventListener("click", () => arquivoImagem.click());
+
+
+    arquivoImagem.addEventListener("change", async () => {
+
+      const arquivos = Array.from(arquivoImagem.files);
+
+      arquivoImagem.value = "";
+
+      for (const arquivo of arquivos) {
+        await inserirArquivoImagem(arquivo);
+      }
+
+    });
+
+
+    function novoIdImagem() {
+
+      return (
+        "img" +
+        Date.now().toString(36) +
+        Math.random().toString(36).slice(2, 7)
+      );
+
+    }
+
+
+    function lerComoDataURL(arquivo) {
+
+      return new Promise((resolve, reject) => {
+
+        const leitor = new FileReader();
+
+        leitor.onload = () => resolve(leitor.result);
+        leitor.onerror = () => reject(leitor.error);
+
+        leitor.readAsDataURL(arquivo);
+
+      });
+
+    }
+
+
+    function carregarImagem(src) {
+
+      return new Promise((resolve, reject) => {
+
+        const img = new Image();
+
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("Imagem inválida."));
+
+        img.src = src;
+
+      });
+
+    }
+
+
+    function bytesDeDataURL(dataUrl) {
+
+      const base64 = dataUrl.split(",")[1] || "";
+
+      return Math.round(base64.length * 0.75);
+
+    }
+
+
+    // Reduz imagens grandes e converte formatos que o Outlook
+    // não mostra (webp) para JPEG
+    async function otimizarImagem(dataUrl) {
+
+      const tipo =
+        (dataUrl.match(/^data:([^;]+);/) || [])[1] || "";
+
+      const bytes = bytesDeDataURL(dataUrl);
+
+      const img = await carregarImagem(dataUrl);
+
+      const largura = img.naturalWidth;
+      const altura = img.naturalHeight;
+
+      // GIF animado: mantém como está se não for enorme
+      if (tipo === "image/gif" && bytes < 1000000) {
+        return { dataUrl, largura, altura };
+      }
+
+      if (
+        largura <= LARGURA_MAX_IMAGEM &&
+        ["image/png", "image/jpeg"].includes(tipo) &&
+        bytes < 400000
+      ) {
+        return { dataUrl, largura, altura };
+      }
+
+      const escala =
+        largura > LARGURA_MAX_IMAGEM
+          ? LARGURA_MAX_IMAGEM / largura
+          : 1;
+
+      const novaLargura = Math.round(largura * escala);
+      const novaAltura = Math.round(altura * escala);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = novaLargura;
+      canvas.height = novaAltura;
+
+      const ctx = canvas.getContext("2d");
+
+      if (tipo === "image/png") {
+
+        ctx.drawImage(img, 0, 0, novaLargura, novaAltura);
+
+        const png = canvas.toDataURL("image/png");
+
+        if (bytesDeDataURL(png) < 600000) {
+          return { dataUrl: png, largura: novaLargura, altura: novaAltura };
+        }
+
+        ctx.clearRect(0, 0, novaLargura, novaAltura);
+
+      }
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, novaLargura, novaAltura);
+      ctx.drawImage(img, 0, 0, novaLargura, novaAltura);
+
+      return {
+        dataUrl: canvas.toDataURL("image/jpeg", 0.86),
+        largura: novaLargura,
+        altura: novaAltura
+      };
+
+    }
+
+
+    function larguraPadrao(larguraPixels) {
+
+      if (larguraPixels >= LARGURA_CONTEUDO) {
+        return 100;
+      }
+
+      const proporcao = (larguraPixels / LARGURA_CONTEUDO) * 100;
+
+      const opcoes = [25, 33, 50, 66, 75, 100];
+
+      let escolha = 25;
+
+      opcoes.forEach((opcao) => {
+
+        if (opcao <= proporcao) {
+          escolha = opcao;
+        }
+
+      });
+
+      return escolha;
+
+    }
+
+
+    function criarElementoImagem({ dataUrl, largura, alt = "", grafico = null }) {
+
+      const img = document.createElement("img");
+
+      img.src = dataUrl;
+      img.alt = alt;
+      img.dataset.cid = novoIdImagem();
+      img.dataset.align = "center";
+      img.dataset.width = String(grafico ? 100 : larguraPadrao(largura));
+
+      if (grafico) {
+        img.dataset.grafico = JSON.stringify(grafico);
+      }
+
+      aplicarLarguraNoEditor(img);
+
+      return img;
+
+    }
+
+
+    function aplicarLarguraNoEditor(img) {
+
+      const pct = Number(img.dataset.width) || 100;
+
+      img.style.width =
+        img.dataset.align === "full"
+          ? "100%"
+          : pct + "%";
+
+    }
+
+
+    async function inserirArquivoImagem(arquivo) {
+
+      if (!arquivo.type.startsWith("image/")) {
+        return;
+      }
+
+      try {
+
+        const original = await lerComoDataURL(arquivo);
+        const otimizada = await otimizarImagem(original);
+
+        const img = criarElementoImagem({
+          ...otimizada,
+          alt: arquivo.name.replace(/\.[^.]+$/, "")
+        });
+
+        const p = document.createElement("p");
+        p.appendChild(img);
+
+        inserirBloco(p);
+        selecionarImagem(img);
+
+      } catch (error) {
+
+        console.error(error);
+        mostrarErro("Não foi possível abrir a imagem " + arquivo.name + ".");
+
+      }
+
+    }
+
+
+    // Imagens que chegaram por colagem de conteúdo (ex.: do Word
+    // ou de um site) ganham identificador e são otimizadas
+    async function normalizarImagensNovas() {
+
+      const imagens =
+        Array.from(editor.querySelectorAll("img:not([data-cid])"));
+
+      for (const img of imagens) {
+
+        const src = img.getAttribute("src") || "";
+
+        if (src.startsWith("data:image/")) {
+
+          try {
+
+            const otimizada = await otimizarImagem(src);
+
+            img.src = otimizada.dataUrl;
+            img.dataset.width = String(larguraPadrao(otimizada.largura));
+
+          } catch (error) {
+
+            img.remove();
+            continue;
+
+          }
+
+        } else if (src.startsWith("https://")) {
+
+          img.dataset.width = "100";
+
+        } else {
+
+          img.remove();
+          continue;
+
+        }
+
+        img.dataset.cid = novoIdImagem();
+        img.dataset.align = "center";
+        img.removeAttribute("width");
+        img.removeAttribute("height");
+        img.removeAttribute("style");
+
+        aplicarLarguraNoEditor(img);
+
+      }
+
+      registrarMudanca();
+
+    }
+
+
+    // ---- Seleção e ajustes da imagem ----
+
+    const barraImagem = document.getElementById("barraImagem");
+    const imgAlinhamento = document.getElementById("imgAlinhamento");
+    const imgLargura = document.getElementById("imgLargura");
+    const imgAlt = document.getElementById("imgAlt");
+    const imgLink = document.getElementById("imgLink");
+    const imgEditarGrafico = document.getElementById("imgEditarGrafico");
+
+    let imagemSelecionada = null;
+
+
+    function selecionarImagem(img) {
+
+      if (imagemSelecionada && imagemSelecionada !== img) {
+        imagemSelecionada.classList.remove("img-selecionada");
+      }
+
+      imagemSelecionada = img;
+
+      img.classList.add("img-selecionada");
+
+      imgAlinhamento.value = img.dataset.align || "center";
+      imgLargura.value = img.dataset.width || "100";
+      imgLargura.disabled = img.dataset.align === "full";
+      imgAlt.value = img.alt || "";
+      imgLink.value = img.dataset.href || "";
+
+      const ehGrafico = Boolean(img.dataset.grafico);
+
+      imgEditarGrafico.style.display = ehGrafico ? "" : "none";
+
+      document.getElementById("rotuloImagem").textContent =
+        ehGrafico ? "Gráfico" : "Imagem";
+
+      barraImagem.classList.add("visivel");
+
+    }
+
+
+    function desselecionarImagem() {
+
+      if (imagemSelecionada) {
+        imagemSelecionada.classList.remove("img-selecionada");
+      }
+
+      imagemSelecionada = null;
+
+      barraImagem.classList.remove("visivel");
+
+    }
+
+
+    editor.addEventListener("click", (event) => {
+
+      if (event.target.tagName === "IMG") {
+
+        selecionarImagem(event.target);
+
+      } else {
+
+        desselecionarImagem();
+
+      }
+
+    });
+
+
+    editor.addEventListener("input", () => {
+
+      if (imagemSelecionada && !editor.contains(imagemSelecionada)) {
+        desselecionarImagem();
+      }
+
+    });
+
+
+    imgAlinhamento.addEventListener("change", () => {
+
+      if (!imagemSelecionada) return;
+
+      imagemSelecionada.dataset.align = imgAlinhamento.value;
+
+      // Texto ao lado: imagem grande demais não deixa espaço
+      if (
+        ["left", "right"].includes(imgAlinhamento.value) &&
+        Number(imagemSelecionada.dataset.width) > 50
+      ) {
+
+        imagemSelecionada.dataset.width = "33";
+        imgLargura.value = "33";
+
+      }
+
+      imgLargura.disabled = imgAlinhamento.value === "full";
+
+      aplicarLarguraNoEditor(imagemSelecionada);
+      registrarMudanca();
+
+    });
+
+
+    imgLargura.addEventListener("change", () => {
+
+      if (!imagemSelecionada) return;
+
+      imagemSelecionada.dataset.width = imgLargura.value;
+
+      aplicarLarguraNoEditor(imagemSelecionada);
+      registrarMudanca();
+
+    });
+
+
+    imgAlt.addEventListener("input", () => {
+
+      if (!imagemSelecionada) return;
+
+      imagemSelecionada.alt = imgAlt.value;
+      registrarMudanca();
+
+    });
+
+
+    imgLink.addEventListener("change", () => {
+
+      if (!imagemSelecionada) return;
+
+      const valor = imgLink.value.trim();
+
+      if (!valor) {
+
+        delete imagemSelecionada.dataset.href;
+
+      } else {
+
+        const url = normalizarUrl(valor);
+
+        if (!url) {
+          alert("Endereço inválido.");
+          return;
+        }
+
+        imagemSelecionada.dataset.href = url;
+        imgLink.value = url;
+
+      }
+
+      registrarMudanca();
+
+    });
+
+
+    function moverImagem(direcao) {
+
+      if (!imagemSelecionada) return;
+
+      const bloco = blocoDoNo(imagemSelecionada);
+
+      if (!bloco) return;
+
+      if (direcao < 0 && bloco.previousElementSibling) {
+
+        bloco.previousElementSibling.before(bloco);
+
+      } else if (direcao > 0 && bloco.nextElementSibling) {
+
+        bloco.nextElementSibling.after(bloco);
+
+      }
+
+      imagemSelecionada.scrollIntoView({ block: "nearest" });
+
+      registrarMudanca();
+
+    }
+
+    document
+      .getElementById("imgSubir")
+      .addEventListener("click", () => moverImagem(-1));
+
+    document
+      .getElementById("imgDescer")
+      .addEventListener("click", () => moverImagem(1));
+
+
+    document
+      .getElementById("imgRemover")
+      .addEventListener("click", () => {
+
+        if (!imagemSelecionada) return;
+
+        const bloco = blocoDoNo(imagemSelecionada);
+
+        imagemSelecionada.remove();
+
+        if (bloco && blocoVazio(bloco) && editor.children.length > 1) {
+          bloco.remove();
+        }
+
+        desselecionarImagem();
+        registrarMudanca();
+
+      });
+
+
+    imgEditarGrafico.addEventListener("click", () => {
+
+      if (!imagemSelecionada || !imagemSelecionada.dataset.grafico) return;
+
+      abrirJanelaGrafico(imagemSelecionada);
+
+    });
+
+
+    // ---- Colar e arrastar ----
+
+    editor.addEventListener("paste", async (event) => {
+
+      const dados = event.clipboardData;
+
+      if (!dados) return;
+
+      const imagens =
+        Array.from(dados.files || [])
+          .filter((arquivo) => arquivo.type.startsWith("image/"));
+
+      const html = dados.getData("text/html");
+
+      // Print de tela / imagem copiada (o navegador às vezes
+      // manda junto um HTML que só contém a própria imagem)
+      const htmlSoComImagem =
+        html &&
+        new DOMParser()
+          .parseFromString(html, "text/html")
+          .body.textContent.trim() === "";
+
+      if (imagens.length > 0 && (!html || htmlSoComImagem)) {
+
+        event.preventDefault();
+
+        for (const arquivo of imagens) {
+          await inserirArquivoImagem(arquivo);
+        }
+
+        return;
+
+      }
+
+      if (html) {
+
+        event.preventDefault();
+
+        document.execCommand(
+          "insertHTML",
+          false,
+          sanitizarHTML(html)
+        );
+
+        await normalizarImagensNovas();
+
+        return;
+
+      }
+
+      // Texto puro: comportamento normal do navegador
+      setTimeout(registrarMudanca, 0);
+
+    });
+
+
+    editor.addEventListener("drop", async (event) => {
+
+      const arquivos =
+        Array.from(event.dataTransfer?.files || [])
+          .filter((arquivo) => arquivo.type.startsWith("image/"));
+
+      // Arrastar uma imagem que já está no texto: o navegador
+      // move sozinho; só registramos a mudança
+      if (arquivos.length === 0) {
+
+        setTimeout(async () => {
+          await normalizarImagensNovas();
+        }, 0);
+
+        return;
+
+      }
+
+      event.preventDefault();
+
+      // Posiciona o cursor onde o arquivo foi solto
+      const posicao =
+        document.caretRangeFromPoint
+          ? document.caretRangeFromPoint(event.clientX, event.clientY)
+          : null;
+
+      if (posicao && editor.contains(posicao.startContainer)) {
+        ultimaSelecao = posicao;
+      }
+
+      for (const arquivo of arquivos) {
+        await inserirArquivoImagem(arquivo);
+      }
+
+    });
+
+
+    // =========================================================
+    // LIMPEZA DE CONTEÚDO COLADO
+    // =========================================================
+
+    const TAGS_PERMITIDAS = new Set([
+      "P", "BR", "B", "STRONG", "I", "EM", "U", "S", "STRIKE",
+      "SPAN", "A", "H1", "H2", "H3", "UL", "OL", "LI", "IMG",
+      "TABLE", "THEAD", "TBODY", "TR", "TD", "TH", "HR",
+      "BLOCKQUOTE", "DIV", "SUB", "SUP"
+    ]);
+
+    const TAGS_DESCARTAR = new Set([
+      "SCRIPT", "STYLE", "META", "LINK", "TITLE", "HEAD",
+      "IFRAME", "OBJECT", "EMBED", "SVG", "NOSCRIPT",
+      "TEMPLATE", "XML", "FORM", "INPUT", "BUTTON", "SELECT",
+      "TEXTAREA", "VIDEO", "AUDIO", "CANVAS"
+    ]);
+
+    const ESTILOS_PERMITIDOS = [
+      "color", "background-color", "font-weight", "font-style",
+      "text-decoration", "text-align", "font-family", "font-size"
+    ];
+
+
+    function sanitizarHTML(html) {
+
+      const documento =
+        new DOMParser().parseFromString(html, "text/html");
+
+      limparNo(documento.body);
+
+      return documento.body.innerHTML;
+
+    }
+
+
+    function limparNo(raiz) {
+
+      Array.from(raiz.childNodes).forEach((no) => {
+
+        if (no.nodeType === Node.COMMENT_NODE) {
+          no.remove();
+          return;
+        }
+
+        if (no.nodeType !== Node.ELEMENT_NODE) {
+          return;
+        }
+
+        let elemento = no;
+        let tag = elemento.tagName.toUpperCase();
+
+        if (TAGS_DESCARTAR.has(tag)) {
+          elemento.remove();
+          return;
+        }
+
+        // Equivalências
+        if (["H4", "H5", "H6"].includes(tag)) {
+          elemento = trocarTag(elemento, "h3");
+          tag = "H3";
+        }
+
+        if (tag === "FONT") {
+
+          const span = trocarTag(elemento, "span");
+
+          if (elemento.getAttribute("color")) {
+            span.style.color = elemento.getAttribute("color");
+          }
+
+          if (elemento.getAttribute("face")) {
+            span.style.fontFamily = elemento.getAttribute("face");
+          }
+
+          elemento = span;
+          tag = "SPAN";
+
+        }
+
+        if (!TAGS_PERMITIDAS.has(tag)) {
+
+          // Mantém o conteúdo, descarta a etiqueta
+          limparNo(elemento);
+          elemento.replaceWith(...Array.from(elemento.childNodes));
+          return;
+
+        }
+
+        limparAtributos(elemento, tag);
+        limparNo(elemento);
+
+      });
+
+    }
+
+
+    function trocarTag(elemento, novaTag) {
+
+      const novo = document.createElement(novaTag);
+
+      Array.from(elemento.attributes).forEach((atributo) => {
+        novo.setAttribute(atributo.name, atributo.value);
+      });
+
+      while (elemento.firstChild) {
+        novo.appendChild(elemento.firstChild);
+      }
+
+      elemento.replaceWith(novo);
+
+      return novo;
+
+    }
+
+
+    function limparAtributos(elemento, tag) {
+
+      const estilo = elemento.style;
+      const estilosMantidos = [];
+
+      ESTILOS_PERMITIDOS.forEach((propriedade) => {
+
+        const valor = estilo.getPropertyValue(propriedade);
+
+        if (valor) {
+          estilosMantidos.push(`${propriedade}:${valor}`);
+        }
+
+      });
+
+      const href = elemento.getAttribute("href");
+      const src = elemento.getAttribute("src");
+      const alt = elemento.getAttribute("alt");
+      const colspan = elemento.getAttribute("colspan");
+      const rowspan = elemento.getAttribute("rowspan");
+
+      Array.from(elemento.attributes).forEach((atributo) => {
+        elemento.removeAttribute(atributo.name);
+      });
+
+      if (estilosMantidos.length > 0 && tag !== "IMG") {
+        elemento.setAttribute("style", estilosMantidos.join(";"));
+      }
+
+      if (tag === "A" && href && /^(https?:|mailto:)/i.test(href)) {
+        elemento.setAttribute("href", href);
+        elemento.setAttribute("target", "_blank");
+      }
+
+      if (tag === "IMG") {
+
+        if (src && /^(https:|data:image\/)/i.test(src)) {
+          elemento.setAttribute("src", src);
+          elemento.setAttribute("alt", alt || "");
+        } else {
+          elemento.remove();
+        }
+
+      }
+
+      if (["TD", "TH"].includes(tag)) {
+        if (colspan) elemento.setAttribute("colspan", colspan);
+        if (rowspan) elemento.setAttribute("rowspan", rowspan);
+      }
+
+      if (tag === "TABLE") {
+        elemento.dataset.zebra = "1";
+      }
+
+    }
+
+
+    // =========================================================
+    // GRÁFICOS
+    // =========================================================
+
+    const janelaGrafico = document.getElementById("janelaGrafico");
+    const grafTipo = document.getElementById("grafTipo");
+    const grafTitulo = document.getElementById("grafTitulo");
+    const grafDados = document.getElementById("grafDados");
+    const grafFormato = document.getElementById("grafFormato");
+    const grafCasas = document.getElementById("grafCasas");
+    const grafValores = document.getElementById("grafValores");
+    const erroGrafico = document.getElementById("erroGrafico");
+    const canvasGrafico = document.getElementById("canvasGrafico");
+
+    let graficoAtual = null;
+    let imagemGraficoEmEdicao = null;
+    let promessaChartJs = null;
+
+
+    function carregarChartJs() {
+
+      if (window.Chart) {
+        return Promise.resolve(window.Chart);
+      }
+
+      if (!promessaChartJs) {
+
+        promessaChartJs = new Promise((resolve, reject) => {
+
+          const script = document.createElement("script");
+
+          script.src = URL_CHART_JS;
+          script.onload = () => resolve(window.Chart);
+          script.onerror = () => {
+            promessaChartJs = null;
+            reject(new Error("Não foi possível carregar a biblioteca de gráficos. Verifique a internet."));
+          };
+
+          document.head.appendChild(script);
+
+        });
+
+      }
+
+      return promessaChartJs;
+
+    }
+
+
+    document
+      .getElementById("btnGrafico")
+      .addEventListener("click", () => abrirJanelaGrafico(null));
+
+
+    function abrirJanelaGrafico(imagem) {
+
+      imagemGraficoEmEdicao = imagem;
+
+      const config =
+        imagem && imagem.dataset.grafico
+          ? JSON.parse(imagem.dataset.grafico)
+          : null;
+
+      grafTipo.value = config?.tipo || "linha";
+      grafTitulo.value = config?.titulo || "";
+      grafDados.value = config?.dados || "";
+      grafFormato.value = config?.formato || "percentual";
+      grafCasas.value = String(config?.casas ?? 2);
+      grafValores.checked = config ? Boolean(config.mostrarValores) : true;
+
+      document.getElementById("grafInserir").textContent =
+        imagem ? "Atualizar gráfico" : "Inserir gráfico";
+
+      janelaGrafico.showModal();
+
+      desenharGrafico();
+
+    }
+
+
+    function configGraficoDoFormulario() {
+
+      return {
+        tipo: grafTipo.value,
+        titulo: grafTitulo.value.trim(),
+        dados: grafDados.value,
+        formato: grafFormato.value,
+        casas: Number(grafCasas.value),
+        mostrarValores: grafValores.checked
+      };
+
+    }
+
+
+    [grafTipo, grafFormato, grafCasas, grafValores].forEach((campo) => {
+      campo.addEventListener("change", desenharGrafico);
+    });
+
+    let temporizadorGrafico = null;
+
+    [grafTitulo, grafDados].forEach((campo) => {
+
+      campo.addEventListener("input", () => {
+
+        clearTimeout(temporizadorGrafico);
+        temporizadorGrafico = setTimeout(desenharGrafico, 250);
+
+      });
+
+    });
+
+
+    function lerTabelaColada(texto) {
+
+      const linhas =
+        texto
+          .replace(/\r/g, "")
+          .split("\n")
+          .filter((linha) => linha.trim() !== "");
+
+      if (linhas.length === 0) {
+        return [];
+      }
+
+      const separador =
+        linhas[0].includes("\t")
+          ? "\t"
+          : linhas[0].includes(";")
+            ? ";"
+            : "\t";
+
+      return linhas.map((linha) =>
+        linha.split(separador).map((celula) => celula.trim())
+      );
+
+    }
+
+
+    // Aceita "1.234,56", "12,5%", "R$ 1.000", "(3,2)", "-0,8%"
+    function paraNumero(texto) {
+
+      if (texto === undefined || texto === null) {
+        return null;
+      }
+
+      let s =
+        String(texto)
+          .replace(/−/g, "-")
+          .replace(/R\$|%|\s| /g, "");
+
+      if (!s) {
+        return null;
+      }
+
+      let negativo = false;
+
+      if (/^\(.*\)$/.test(s)) {
+        negativo = true;
+        s = s.slice(1, -1);
+      }
+
+      if (s.includes(",")) {
+        s = s.replace(/\./g, "").replace(",", ".");
+      } else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) {
+        s = s.replace(/\./g, "");
+      }
+
+      const numero = Number(s);
+
+      if (!Number.isFinite(numero)) {
+        return null;
+      }
+
+      return negativo ? -numero : numero;
+
+    }
+
+
+    function prepararDadosGrafico(config) {
+
+      const matriz = lerTabelaColada(config.dados);
+
+      if (matriz.length === 0) {
+        return { erro: "Cole os dados do Excel para ver o gráfico." };
+      }
+
+      const colunas = Math.max(...matriz.map((linha) => linha.length));
+
+      if (colunas < 2) {
+        return { erro: "São necessárias ao menos 2 colunas: rótulos e valores." };
+      }
+
+      // Primeira linha é cabeçalho se a 2ª célula não for número
+      const temCabecalho = paraNumero(matriz[0][1]) === null;
+
+      const cabecalho =
+        temCabecalho
+          ? matriz[0]
+          : [""].concat(
+              Array.from({ length: colunas - 1 }, (_, i) => `Série ${i + 1}`)
+            );
+
+      const linhas = temCabecalho ? matriz.slice(1) : matriz;
+
+      if (linhas.length === 0) {
+        return { erro: "Não há linhas de dados abaixo do cabeçalho." };
+      }
+
+      let series = [];
+
+      for (let coluna = 1; coluna < colunas; coluna++) {
+
+        series.push({
+          nome: cabecalho[coluna] || `Série ${coluna}`,
+          valores: linhas.map((linha) => paraNumero(linha[coluna]))
+        });
+
+      }
+
+      series = series.filter((serie) =>
+        serie.valores.some((valor) => valor !== null)
+      );
+
+      if (series.length === 0) {
+        return { erro: "Nenhum valor numérico encontrado." };
+      }
+
+      if (series.length > PALETA_GRAFICO.length) {
+        return { erro: `Use no máximo ${PALETA_GRAFICO.length} séries por gráfico.` };
+      }
+
+      if (config.tipo === "rosca") {
+
+        series = series.slice(0, 1);
+
+        if (series[0].valores.some((valor) => valor !== null && valor < 0)) {
+          return { erro: "O gráfico de rosca não aceita valores negativos." };
+        }
+
+        if (linhas.length > PALETA_GRAFICO.length) {
+          return { erro: `A rosca aceita até ${PALETA_GRAFICO.length} fatias. Agrupe as menores em “Outros”.` };
+        }
+
+      }
+
+      return {
+        rotulos: linhas.map((linha) => linha[0] || ""),
+        series
+      };
+
+    }
+
+
+    function formatarValor(valor, config, casas = config.casas) {
+
+      const formato = new Intl.NumberFormat("pt-BR", {
+        minimumFractionDigits: casas,
+        maximumFractionDigits: casas
+      });
+
+      if (config.formato === "moeda") {
+        return "R$ " + formato.format(valor);
+      }
+
+      if (config.formato === "percentual") {
+        return formato.format(valor) + "%";
+      }
+
+      return formato.format(valor);
+
+    }
+
+
+    // Fundo branco (o PNG não fica transparente no e-mail)
+    const pluginFundo = {
+      id: "fundoBranco",
+      beforeDraw(chart) {
+        const ctx = chart.ctx;
+        ctx.save();
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, chart.width, chart.height);
+        ctx.restore();
+      }
+    };
+
+
+    // Rótulos de valor desenhados direto no gráfico
+    const pluginRotulos = {
+      id: "rotulosMorpheus",
+      afterDatasetsDraw(chart, args, opcoes) {
+
+        if (!opcoes || !opcoes.ativo) return;
+
+        const { ctx } = chart;
+        const config = opcoes.config;
+        const tipo = opcoes.tipo;
+
+        ctx.save();
+        ctx.font = "bold 11px Arial";
+        ctx.fillStyle = "#1f2937";
+
+        if (tipo === "linha") {
+
+          // Só o último ponto de cada série, sem sobreposição
+          const rotulos = [];
+
+          chart.data.datasets.forEach((dataset, i) => {
+
+            const meta = chart.getDatasetMeta(i);
+
+            for (let j = dataset.data.length - 1; j >= 0; j--) {
+
+              if (dataset.data[j] !== null) {
+
+                const ponto = meta.data[j];
+
+                rotulos.push({
+                  x: ponto.x + 8,
+                  y: ponto.y,
+                  texto: formatarValor(dataset.data[j], config)
+                });
+
+                break;
+
+              }
+
+            }
+
+          });
+
+          rotulos.sort((a, b) => a.y - b.y);
+
+          for (let i = 1; i < rotulos.length; i++) {
+            if (rotulos[i].y - rotulos[i - 1].y < 14) {
+              rotulos[i].y = rotulos[i - 1].y + 14;
+            }
+          }
+
+          ctx.textAlign = "left";
+          ctx.textBaseline = "middle";
+
+          rotulos.forEach((r) => ctx.fillText(r.texto, r.x, r.y));
+
+        }
+
+        if (tipo === "colunas" || tipo === "barras") {
+
+          const total =
+            chart.data.datasets.reduce((soma, d) => soma + d.data.length, 0);
+
+          if (total > 40) {
+            ctx.restore();
+            return;
+          }
+
+          chart.data.datasets.forEach((dataset, i) => {
+
+            chart.getDatasetMeta(i).data.forEach((barra, j) => {
+
+              const valor = dataset.data[j];
+
+              if (valor === null) return;
+
+              const texto = formatarValor(valor, config);
+
+              if (tipo === "colunas") {
+
+                ctx.textAlign = "center";
+                ctx.textBaseline = valor >= 0 ? "bottom" : "top";
+                ctx.fillText(texto, barra.x, valor >= 0 ? barra.y - 4 : barra.y + 4);
+
+              } else {
+
+                ctx.textBaseline = "middle";
+                ctx.textAlign = valor >= 0 ? "left" : "right";
+                ctx.fillText(texto, valor >= 0 ? barra.x + 5 : barra.x - 5, barra.y);
+
+              }
+
+            });
+
+          });
+
+        }
+
+        if (tipo === "rosca") {
+
+          const dados = chart.data.datasets[0].data;
+          const total = dados.reduce((soma, v) => soma + (v || 0), 0);
+
+          ctx.fillStyle = "#ffffff";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+
+          chart.getDatasetMeta(0).data.forEach((arco, j) => {
+
+            const parcela = total ? (dados[j] || 0) / total : 0;
+
+            if (parcela < 0.06) return;
+
+            const posicao = arco.tooltipPosition();
+
+            ctx.fillText(
+              formatarValor(parcela * 100, { formato: "percentual" }, 1),
+              posicao.x,
+              posicao.y
+            );
+
+          });
+
+        }
+
+        ctx.restore();
+
+      }
+    };
+
+
+    async function desenharGrafico() {
+
+      erroGrafico.textContent = "";
+
+      const config = configGraficoDoFormulario();
+
+      let Chart;
+
+      try {
+        Chart = await carregarChartJs();
+      } catch (error) {
+        erroGrafico.textContent = error.message;
+        return null;
+      }
+
+      const dados = prepararDadosGrafico(config);
+
+      if (graficoAtual) {
+        graficoAtual.destroy();
+        graficoAtual = null;
+      }
+
+      const ctx = canvasGrafico.getContext("2d");
+
+      if (dados.erro) {
+
+        erroGrafico.textContent = dados.erro;
+
+        canvasGrafico.width = LARGURA_CONTEUDO;
+        canvasGrafico.height = 300;
+        canvasGrafico.style.width = LARGURA_CONTEUDO + "px";
+        canvasGrafico.style.height = "300px";
+
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvasGrafico.width, canvasGrafico.height);
+
+        return null;
+
+      }
+
+      canvasGrafico.width = LARGURA_CONTEUDO;
+      canvasGrafico.height = 300;
+
+      const varias = dados.series.length > 1;
+      const tipo = config.tipo;
+
+      const tipoChart =
+        tipo === "linha" ? "line"
+          : tipo === "rosca" ? "doughnut"
+            : "bar";
+
+      const datasets =
+        tipo === "rosca"
+          ? [{
+              data: dados.series[0].valores,
+              backgroundColor: PALETA_GRAFICO.slice(0, dados.rotulos.length),
+              borderColor: "#ffffff",
+              borderWidth: 2
+            }]
+          : dados.series.map((serie, i) => ({
+              label: serie.nome,
+              data: serie.valores,
+              borderColor: PALETA_GRAFICO[i],
+              backgroundColor: PALETA_GRAFICO[i],
+              borderWidth: 2,
+              pointRadius: tipo === "linha" && dados.rotulos.length <= 13 ? 3 : 0,
+              pointBackgroundColor: PALETA_GRAFICO[i],
+              tension: 0.25,
+              spanGaps: true,
+              borderRadius: tipo === "linha" ? 0 : 4,
+              borderSkipped: "start",
+              barPercentage: 0.8,
+              categoryPercentage: 0.75
+            }));
+
+      const fonte = { family: "Arial", size: 11 };
+
+      const eixoValores = {
+        grid: { color: "#e5e7eb" },
+        border: { display: false },
+        ticks: {
+          color: "#6b7280",
+          font: fonte,
+          callback: (valor) => formatarValor(valor, config, Math.min(config.casas, 1))
+        }
+      };
+
+      const eixoRotulos = {
+        grid: { display: false },
+        border: { color: "#d1d5db" },
+        ticks: {
+          color: "#6b7280",
+          font: fonte,
+          maxRotation: 0,
+          autoSkip: true
+        }
+      };
+
+      // Espaço para os rótulos de valor não serem cortados
+      let espacoDireita = 8;
+      let espacoTopo = 4;
+
+      if (config.mostrarValores && tipo === "linha") {
+
+        ctx.font = "bold 11px Arial";
+
+        const maiorTexto =
+          Math.max(...dados.series.flatMap((s) =>
+            s.valores.filter((v) => v !== null)
+                     .map((v) => ctx.measureText(formatarValor(v, config)).width)
+          ));
+
+        espacoDireita = maiorTexto + 14;
+
+      }
+
+      if (config.mostrarValores && tipo === "barras") {
+        espacoDireita = 60;
+      }
+
+      if (config.mostrarValores && tipo === "colunas") {
+        espacoTopo = 18;
+      }
+
+      const opcoes = {
+        responsive: false,
+        animation: false,
+        devicePixelRatio: 2,
+        layout: {
+          padding: { top: espacoTopo, right: espacoDireita, bottom: 4, left: 4 }
+        },
+        plugins: {
+          title: {
+            display: Boolean(config.titulo),
+            text: config.titulo,
+            align: "start",
+            color: "#1f2937",
+            font: { family: "Arial", size: 14, weight: "bold" },
+            padding: { bottom: 10 }
+          },
+          legend: {
+            display: varias || tipo === "rosca",
+            position: tipo === "rosca" ? "right" : "top",
+            align: "start",
+            labels: {
+              color: "#374151",
+              font: { family: "Arial", size: 12 },
+              usePointStyle: true,
+              pointStyle: "circle",
+              boxWidth: 8,
+              boxHeight: 8,
+              padding: 12
+            }
+          },
+          tooltip: { enabled: false },
+          rotulosMorpheus: {
+            ativo: config.mostrarValores,
+            config,
+            tipo
+          }
+        }
+      };
+
+      if (tipo === "rosca") {
+
+        opcoes.cutout = "58%";
+
+        const total =
+          dados.series[0].valores.reduce((soma, v) => soma + (v || 0), 0);
+
+        opcoes.plugins.legend.labels.generateLabels = (chart) => {
+
+          const itens =
+            Chart.overrides.doughnut.plugins.legend.labels.generateLabels(chart);
+
+          itens.forEach((item, j) => {
+
+            const valor = dados.series[0].valores[j] || 0;
+            const parcela = total ? (valor / total) * 100 : 0;
+
+            item.text =
+              `${dados.rotulos[j]}  ${formatarValor(parcela, { formato: "percentual" }, 1)}`;
+
+          });
+
+          return itens;
+
+        };
+
+      } else if (tipo === "barras") {
+
+        opcoes.indexAxis = "y";
+        opcoes.scales = { x: eixoValores, y: eixoRotulos };
+
+      } else {
+
+        opcoes.scales = { x: eixoRotulos, y: eixoValores };
+
+      }
+
+      graficoAtual = new Chart(canvasGrafico, {
+        type: tipoChart,
+        data: {
+          labels: dados.rotulos,
+          datasets
+        },
+        options: opcoes,
+        plugins: [pluginFundo, pluginRotulos]
+      });
+
+      return graficoAtual;
+
+    }
+
+
+    document
+      .getElementById("grafInserir")
+      .addEventListener("click", async () => {
+
+        const grafico = await desenharGrafico();
+
+        if (!grafico) {
+          if (!erroGrafico.textContent) {
+            erroGrafico.textContent = "Não foi possível gerar o gráfico.";
+          }
+          return;
+        }
+
+        const config = configGraficoDoFormulario();
+        const dataUrl = grafico.toBase64Image("image/png", 1);
+        const descricao = config.titulo || "Gráfico";
+
+        if (imagemGraficoEmEdicao && editor.contains(imagemGraficoEmEdicao)) {
+
+          imagemGraficoEmEdicao.src = dataUrl;
+          imagemGraficoEmEdicao.dataset.grafico = JSON.stringify(config);
+
+          if (!imagemGraficoEmEdicao.alt || imagemGraficoEmEdicao.alt === "Gráfico") {
+            imagemGraficoEmEdicao.alt = descricao;
+          }
+
+          janelaGrafico.close();
+
+          selecionarImagem(imagemGraficoEmEdicao);
+          registrarMudanca();
+
+          return;
+
+        }
+
+        janelaGrafico.close();
+
+        const img = criarElementoImagem({
+          dataUrl,
+          largura: LARGURA_CONTEUDO * 2,
+          alt: descricao,
+          grafico: config
+        });
+
+        const p = document.createElement("p");
+        p.appendChild(img);
+
+        inserirBloco(p);
+        selecionarImagem(img);
+
+      });
+
+
+    // =========================================================
+    // TABELAS
+    // =========================================================
+
+    const janelaTabela = document.getElementById("janelaTabela");
+    const tabDados = document.getElementById("tabDados");
+    const tabCabecalho = document.getElementById("tabCabecalho");
+    const tabZebra = document.getElementById("tabZebra");
+    const tabLinhas = document.getElementById("tabLinhas");
+    const tabColunas = document.getElementById("tabColunas");
+    const previaTabela = document.getElementById("previaTabela");
+    const erroTabela = document.getElementById("erroTabela");
+
+
+    document
+      .getElementById("btnTabela")
+      .addEventListener("click", () => {
+
+        tabDados.value = "";
+        erroTabela.textContent = "";
+
+        janelaTabela.showModal();
+        atualizarPreviaTabela();
+
+        tabDados.focus();
+
+      });
+
+
+    [tabDados, tabCabecalho, tabZebra, tabLinhas, tabColunas].forEach((campo) => {
+      campo.addEventListener("input", atualizarPreviaTabela);
+      campo.addEventListener("change", atualizarPreviaTabela);
+    });
+
+
+    function ehNumerico(texto) {
+
+      return /^[\s(−+\-]*(R\$)?\s*[\d.,]+\s*%?\)?\s*$/.test(texto) &&
+        paraNumero(texto) !== null;
+
+    }
+
+
+    function montarTabela() {
+
+      let matriz = lerTabelaColada(tabDados.value);
+
+      if (matriz.length === 0) {
+
+        const linhas = Math.min(Math.max(Number(tabLinhas.value) || 3, 1), 30);
+        const colunas = Math.min(Math.max(Number(tabColunas.value) || 3, 1), 10);
+
+        matriz =
+          Array.from({ length: linhas }, (_, i) =>
+            Array.from({ length: colunas }, () => "")
+          );
+
+      }
+
+      const colunas = Math.max(...matriz.map((linha) => linha.length));
+
+      const tabela = document.createElement("table");
+
+      tabela.dataset.zebra = tabZebra.checked ? "1" : "0";
+
+      let linhasCorpo = matriz;
+
+      if (tabCabecalho.checked) {
+
+        const thead = document.createElement("thead");
+        const tr = document.createElement("tr");
+
+        for (let c = 0; c < colunas; c++) {
+
+          const th = document.createElement("th");
+          const texto = matriz[0][c] || "";
+
+          th.textContent = texto;
+
+          if (!texto) th.innerHTML = "<br>";
+          if (c > 0 && matriz.slice(1).some((l) => ehNumerico(l[c] || ""))) {
+            th.style.textAlign = "right";
+          }
+
+          tr.appendChild(th);
+
+        }
+
+        thead.appendChild(tr);
+        tabela.appendChild(thead);
+
+        linhasCorpo = matriz.slice(1);
+
+      }
+
+      const tbody = document.createElement("tbody");
+
+      linhasCorpo.forEach((linha) => {
+
+        const tr = document.createElement("tr");
+
+        for (let c = 0; c < colunas; c++) {
+
+          const td = document.createElement("td");
+          const texto = linha[c] || "";
+
+          td.textContent = texto;
+
+          if (!texto) td.innerHTML = "<br>";
+          if (ehNumerico(texto)) td.style.textAlign = "right";
+
+          tr.appendChild(td);
+
+        }
+
+        tbody.appendChild(tr);
+
+      });
+
+      tabela.appendChild(tbody);
+
+      return tabela;
+
+    }
+
+
+    function atualizarPreviaTabela() {
+
+      previaTabela.innerHTML = "";
+      previaTabela.appendChild(montarTabela());
+
+    }
+
+
+    document
+      .getElementById("tabInserir")
+      .addEventListener("click", () => {
+
+        const tabela = montarTabela();
+
+        janelaTabela.close();
+
+        inserirBloco(tabela);
+
+      });
+
+
+    // =========================================================
+    // BOTÃO COM LINK
+    // =========================================================
+
+    const janelaBotao = document.getElementById("janelaBotao");
+    const botaoTexto = document.getElementById("botaoTexto");
+    const botaoLink = document.getElementById("botaoLink");
+    const botaoAlinhamento = document.getElementById("botaoAlinhamento");
+
+
+    document
+      .getElementById("btnBotao")
+      .addEventListener("click", () => {
+
+        botaoTexto.value = "";
+        botaoLink.value = "";
+
+        janelaBotao.showModal();
+        botaoTexto.focus();
+
+      });
+
+
+    document
+      .getElementById("botaoInserir")
+      .addEventListener("click", () => {
+
+        const texto = botaoTexto.value.trim();
+        const url = normalizarUrl(botaoLink.value);
+
+        if (!texto) {
+          alert("Digite o texto do botão.");
+          return;
+        }
+
+        if (!url) {
+          alert("Digite um link válido.");
+          return;
+        }
+
+        const p = document.createElement("p");
+
+        if (botaoAlinhamento.value === "center") {
+          p.style.textAlign = "center";
+        }
+
+        const a = document.createElement("a");
+
+        a.href = url;
+        a.target = "_blank";
+        a.dataset.botao = "1";
+        a.textContent = texto;
+
+        p.appendChild(a);
+
+        janelaBotao.close();
+
+        inserirBloco(p);
+
+      });
+
+
+    // Fechar janelas
+    document
+      .querySelectorAll("[data-fechar]")
+      .forEach((botao) => {
+
+        botao.addEventListener("click", () => {
+          botao.closest("dialog").close();
+        });
+
+      });
+
+
+    // =========================================================
+    // ANEXOS
+    // =========================================================
+
+    const zonaAnexos = document.getElementById("zonaAnexos");
+    const arquivoAnexo = document.getElementById("arquivoAnexo");
+    const listaAnexos = document.getElementById("listaAnexos");
+
+    const anexos = [];
+
+
+    document
+      .getElementById("btnAnexar")
+      .addEventListener("click", () => arquivoAnexo.click());
+
+
+    arquivoAnexo.addEventListener("change", async () => {
+
+      const arquivos = Array.from(arquivoAnexo.files);
+
+      arquivoAnexo.value = "";
+
+      await adicionarAnexos(arquivos);
+
+    });
+
+
+    zonaAnexos.addEventListener("dragover", (event) => {
+
+      event.preventDefault();
+      zonaAnexos.classList.add("arrastando");
+
+    });
+
+    zonaAnexos.addEventListener("dragleave", () => {
+
+      zonaAnexos.classList.remove("arrastando");
+
+    });
+
+    zonaAnexos.addEventListener("drop", async (event) => {
+
+      event.preventDefault();
+      zonaAnexos.classList.remove("arrastando");
+
+      await adicionarAnexos(Array.from(event.dataTransfer.files || []));
+
+    });
+
+
+    async function adicionarAnexos(arquivos) {
+
+      for (const arquivo of arquivos) {
+
+        const dataUrl = await lerComoDataURL(arquivo);
+
+        anexos.push({
+          filename: arquivo.name,
+          content_type: arquivo.type || "application/octet-stream",
+          content: dataUrl.split(",")[1] || "",
+          tamanho: arquivo.size
+        });
+
+      }
+
+      desenharAnexos();
+      atualizarMedidor();
+
+    }
+
+
+    function desenharAnexos() {
+
+      listaAnexos.innerHTML = "";
+
+      anexos.forEach((anexo, i) => {
+
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+          <div>
+            📎 ${escapeHtml(anexo.filename)}
+            <span class="tamanho">${formatarBytes(anexo.tamanho)}</span>
+          </div>
+          <button type="button">Remover</button>
+        `;
+
+        li.querySelector("button").addEventListener("click", () => {
+
+          anexos.splice(i, 1);
+
+          desenharAnexos();
+          atualizarMedidor();
+
+        });
+
+        listaAnexos.appendChild(li);
+
+      });
+
+    }
+
+
+    function formatarBytes(bytes) {
+
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + " KB";
+
+      return (bytes / 1024 / 1024).toFixed(1).replace(".", ",") + " MB";
+
+    }
+
+
+    // =========================================================
+    // TAMANHO DO E-MAIL
+    // =========================================================
+
+    function estimarTamanho() {
+
+      let total = editor.innerHTML.length + 15000;
+
+      anexos.forEach((anexo) => {
+        total += anexo.content.length;
+      });
+
+      return total;
+
+    }
+
+
+    function atualizarMedidor() {
+
+      const tamanho = estimarTamanho();
+      const proporcao = tamanho / LIMITE_BYTES;
+
+      const medidor = document.getElementById("medidor");
+
+      document.getElementById("barraMedidor").style.width =
+        Math.min(proporcao * 100, 100) + "%";
+
+      medidor.classList.toggle("alerta", proporcao > 0.75 && proporcao <= 1);
+      medidor.classList.toggle("excedido", proporcao > 1);
+
+      document.getElementById("textoMedidor").textContent =
+        `Tamanho do e-mail: ${formatarBytes(tamanho)} de ${formatarBytes(LIMITE_BYTES)}` +
+        (proporcao > 1
+          ? " — grande demais. Reduza imagens/anexos ou envie arquivos grandes como link (ex.: OneDrive)."
+          : "");
+
+    }
+
+
+    // =========================================================
+    // RASCUNHO AUTOMÁTICO
+    // =========================================================
+
+    const infoRascunho = document.getElementById("infoRascunho");
+
+    const camposOpcoes = {
+      optSaudacao: document.getElementById("optSaudacao"),
+      optBotaoSite: document.getElementById("optBotaoSite"),
+      optAvisoRentabilidade: document.getElementById("optAvisoRentabilidade"),
+      optRodape: document.getElementById("optRodape")
+    };
+
+    let temporizadorRascunho = null;
+
+
+    function registrarMudanca() {
+
+      atualizarMedidor();
+
+      clearTimeout(temporizadorRascunho);
+      temporizadorRascunho = setTimeout(salvarRascunho, 800);
+
+    }
+
+
+    function salvarRascunho() {
+
+      const rascunho = {
+        assunto: assunto.value,
+        preheader: preheader.value,
+        html: editor.innerHTML,
+        opcoes: {
+          optSaudacao: camposOpcoes.optSaudacao.checked,
+          optBotaoSite: camposOpcoes.optBotaoSite.checked,
+          optAvisoRentabilidade: camposOpcoes.optAvisoRentabilidade.checked,
+          optRodape: camposOpcoes.optRodape.value
+        },
+        salvoEm: new Date().toISOString()
+      };
+
+      try {
+
+        localStorage.setItem(CHAVE_RASCUNHO, JSON.stringify(rascunho));
+
+        infoRascunho.innerHTML =
+          `Rascunho salvo neste navegador às ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}.` +
+          (anexos.length ? " Anexos não ficam no rascunho." : "") +
+          ` <button type="button" id="btnNovoEmail">Começar um e-mail novo</button>`;
+
+      } catch (error) {
+
+        infoRascunho.innerHTML =
+          "Rascunho não salvo: as imagens ocupam mais espaço do que o navegador permite guardar." +
+          ` <button type="button" id="btnNovoEmail">Começar um e-mail novo</button>`;
+
+      }
+
+    }
+
+
+    function carregarRascunho() {
+
+      let rascunho = null;
+
+      try {
+        rascunho = JSON.parse(localStorage.getItem(CHAVE_RASCUNHO) || "null");
+      } catch (error) {
+        rascunho = null;
+      }
+
+      if (!rascunho || !rascunho.html) {
+        return;
+      }
+
+      assunto.value = rascunho.assunto ?? assunto.value;
+      preheader.value = rascunho.preheader || "";
+      editor.innerHTML = rascunho.html;
+
+      editor
+        .querySelectorAll(".img-selecionada")
+        .forEach((img) => img.classList.remove("img-selecionada"));
+
+      const opcoes = rascunho.opcoes || {};
+
+      if ("optSaudacao" in opcoes) camposOpcoes.optSaudacao.checked = opcoes.optSaudacao;
+      if ("optBotaoSite" in opcoes) camposOpcoes.optBotaoSite.checked = opcoes.optBotaoSite;
+      if ("optAvisoRentabilidade" in opcoes) camposOpcoes.optAvisoRentabilidade.checked = opcoes.optAvisoRentabilidade;
+      if ("optRodape" in opcoes) camposOpcoes.optRodape.value = opcoes.optRodape;
+
+      const data = new Date(rascunho.salvoEm);
+
+      infoRascunho.innerHTML =
+        `Rascunho restaurado (salvo em ${data.toLocaleDateString("pt-BR")} às ${data.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}).` +
+        ` <button type="button" id="btnNovoEmail">Começar um e-mail novo</button>`;
+
+    }
+
+
+    infoRascunho.addEventListener("click", (event) => {
+
+      if (event.target.id !== "btnNovoEmail") return;
+
+      if (!confirm("Apagar o rascunho atual e começar um e-mail novo?")) return;
+
+      localStorage.removeItem(CHAVE_RASCUNHO);
+
+      assunto.value = "Novo conteúdo — Clube Morpheus";
+      preheader.value = "";
+      editor.innerHTML = "<p><br></p>";
+
+      anexos.length = 0;
+
+      desenharAnexos();
+      desselecionarImagem();
+      atualizarMedidor();
+
+      infoRascunho.textContent = "";
+
+    });
+
+
+    [assunto, preheader, ...Object.values(camposOpcoes)].forEach((campo) => {
+      campo.addEventListener("input", registrarMudanca);
+      campo.addEventListener("change", registrarMudanca);
+    });
+
+    editor.addEventListener("input", registrarMudanca);
+
+
+    carregarRascunho();
+    atualizarMedidor();
+
+
+    // =========================================================
+    // MONTAGEM DO E-MAIL
+    // =========================================================
+    // Uma única função gera o HTML enviado. A pré-visualização
+    // usa exatamente esse HTML, trocando {{nome}} da mesma forma
+    // que a API faz e mostrando as imagens no lugar dos "cid:".
+
+    const FONTE_EMAIL = "Arial,Helvetica,sans-serif";
+
+    const ESTILOS_EMAIL = {
+      P: "margin:0 0 16px;",
+      DIV: "margin:0 0 16px;",
+      H1: "margin:24px 0 12px;font-size:24px;line-height:1.3;color:#0f2a5c;font-weight:bold;",
+      H2: "margin:20px 0 10px;font-size:19px;line-height:1.35;color:#164CAD;font-weight:bold;",
+      H3: "margin:18px 0 8px;font-size:16px;line-height:1.4;color:#1f2937;font-weight:bold;",
+      BLOCKQUOTE: "margin:0 0 16px;padding:4px 0 4px 16px;border-left:3px solid #164CAD;color:#4b5563;",
+      UL: "margin:0 0 16px;padding:0 0 0 24px;",
+      OL: "margin:0 0 16px;padding:0 0 0 24px;",
+      LI: "margin:0 0 6px;",
+      A: "color:#164CAD;text-decoration:underline;",
+      HR: "border:0;border-top:1px solid #e5e7eb;margin:24px 0;height:0;",
+      TABLE: "width:100%;border-collapse:collapse;margin:0 0 16px;font-size:14px;font-family:" + FONTE_EMAIL + ";",
+      TH: "text-align:left;padding:8px 10px;background:#164CAD;color:#ffffff;font-weight:bold;border:1px solid #164CAD;",
+      TD: "padding:8px 10px;border-bottom:1px solid #e5e7eb;"
+    };
+
+    const ESTILO_BOTAO =
+      "display:inline-block;padding:12px 20px;background:#164CAD;color:#ffffff;" +
+      "text-decoration:none;border-radius:6px;font-weight:bold;font-family:" + FONTE_EMAIL + ";";
+
+
+    // Junta o estilo padrão com o que o usuário aplicou
+    // (o que o usuário aplicou prevalece)
+    function mesclarEstilo(elemento, padrao) {
+
+      const proprio = elemento.getAttribute("style") || "";
+
+      elemento.setAttribute(
+        "style",
+        padrao + (proprio && !proprio.trim().endsWith(";") ? proprio + ";" : proprio)
+      );
+
+    }
+
+
+    function blocoSomenteComImagem(bloco, img) {
+
+      if (!bloco || bloco === img) return false;
+
+      const textoSemImagem =
+        bloco.textContent.replace(/​/g, "").trim();
+
+      return (
+        textoSemImagem === "" &&
+        bloco.querySelectorAll("img").length === 1 &&
+        !bloco.querySelector("table, hr")
+      );
+
+    }
+
+
+    function montarConteudoEmail() {
+
+      // Documento à parte: nada aqui é carregado pelo navegador
+      // (evita tentar abrir os endereços "cid:")
+      const docInerte = document.implementation.createHTMLDocument("");
+      const copia = docInerte.importNode(editor, true);
+
+      docInerte.body.appendChild(copia);
+
+      const imagensInline = new Map();
+
+      // Texto solto na raiz vira parágrafo
+      let paragrafoAtual = null;
+
+      Array.from(copia.childNodes).forEach((no) => {
+
+        const ehBloco =
+          no.nodeType === Node.ELEMENT_NODE &&
+          ["P", "DIV", "H1", "H2", "H3", "BLOCKQUOTE", "UL", "OL", "TABLE", "HR"]
+            .includes(no.tagName);
+
+        if (ehBloco) {
+          paragrafoAtual = null;
+          return;
+        }
+
+        if (no.nodeType === Node.TEXT_NODE && no.textContent.trim() === "" && !paragrafoAtual) {
+          no.remove();
+          return;
+        }
+
+        if (!paragrafoAtual) {
+          paragrafoAtual = docInerte.createElement("p");
+          no.before(paragrafoAtual);
+        }
+
+        paragrafoAtual.appendChild(no);
+
+      });
+
+      // Linhas vazias no começo e no fim não entram no e-mail
+      while (copia.firstElementChild && blocoVazio(copia.firstElementChild)) {
+        copia.firstElementChild.remove();
+      }
+
+      while (copia.lastElementChild && blocoVazio(copia.lastElementChild)) {
+        copia.lastElementChild.remove();
+      }
+
+      // Imagens
+      copia.querySelectorAll("img").forEach((img) => {
+
+        const src = img.getAttribute("src") || "";
+        const alinhamento = img.dataset.align || "center";
+        const pct = alinhamento === "full" ? 100 : (Number(img.dataset.width) || 100);
+        const largura = Math.round(LARGURA_CONTEUDO * pct / 100);
+
+        let srcFinal = src;
+
+        if (src.startsWith("data:")) {
+
+          const cid = img.dataset.cid || novoIdImagem();
+          const tipo = (src.match(/^data:([^;]+);/) || [])[1] || "image/png";
+          const extensao = tipo === "image/jpeg" ? "jpg" : (tipo.split("/")[1] || "png");
+
+          if (!imagensInline.has(cid)) {
+
+            imagensInline.set(cid, {
+              filename: `${cid}.${extensao}`,
+              content: src.split(",")[1] || "",
+              content_type: tipo,
+              content_id: cid,
+              dataUrl: src
+            });
+
+          }
+
+          srcFinal = "cid:" + cid;
+
+        }
+
+        const nova = docInerte.createElement("img");
+
+        nova.setAttribute("src", srcFinal);
+        nova.setAttribute("alt", img.getAttribute("alt") || "");
+        nova.setAttribute("width", String(largura));
+
+        const bloco = img.closest("p, div, h1, h2, h3, li, td, th, blockquote");
+        const sozinha = blocoSomenteComImagem(bloco, img);
+
+        if (alinhamento === "left" || alinhamento === "right") {
+
+          nova.setAttribute("align", alinhamento);
+          nova.setAttribute("class", "mm-flutua");
+          nova.setAttribute(
+            "style",
+            `float:${alinhamento};` +
+            (alinhamento === "left" ? "margin:4px 16px 8px 0;" : "margin:4px 0 8px 16px;") +
+            `width:${largura}px;max-width:100%;height:auto;border:0;`
+          );
+
+        } else {
+
+          nova.setAttribute("class", "mm-img");
+          nova.setAttribute(
+            "style",
+            `display:${sozinha ? "inline-block" : "block"};` +
+            (sozinha ? "" : "margin:0 auto;") +
+            `width:${largura}px;max-width:100%;height:auto;border:0;`
+          );
+
+          if (sozinha) {
+            bloco.dataset.centralizar = "1";
+          }
+
+        }
+
+        let substituto = nova;
+
+        if (img.dataset.href) {
+
+          const link = docInerte.createElement("a");
+
+          link.setAttribute("href", img.dataset.href);
+          link.setAttribute("target", "_blank");
+          link.setAttribute("style", "text-decoration:none;border:0;");
+          link.appendChild(nova);
+
+          substituto = link;
+
+        }
+
+        img.replaceWith(substituto);
+
+      });
+
+      // Tabelas: alinhamento numérico e linhas zebradas
+      copia.querySelectorAll("table").forEach((tabela) => {
+
+        tabela.setAttribute("role", "presentation");
+        tabela.setAttribute("cellpadding", "0");
+        tabela.setAttribute("cellspacing", "0");
+        tabela.setAttribute("width", "100%");
+
+        const zebra = tabela.dataset.zebra === "1";
+
+        tabela.querySelectorAll("tbody tr, tr").forEach((tr) => {
+
+          if (tr.closest("thead")) return;
+
+          const indice =
+            Array.from(tr.parentNode.children).indexOf(tr);
+
+          tr.querySelectorAll("td").forEach((td) => {
+
+            if (zebra && indice % 2 === 1 && !td.style.backgroundColor) {
+              td.style.backgroundColor = "#f5f7fb";
+            }
+
+            if (!td.style.textAlign && ehNumerico(td.textContent.trim())) {
+              td.style.textAlign = "right";
+            }
+
+          });
+
+        });
+
+      });
+
+      // Estilos padrão de cada elemento
+      copia.querySelectorAll("*").forEach((elemento) => {
+
+        const tag = elemento.tagName;
+
+        if (tag === "IMG") return;
+
+        if (tag === "A" && elemento.dataset.botao) {
+
+          mesclarEstilo(elemento, ESTILO_BOTAO);
+          elemento.setAttribute("target", "_blank");
+
+        } else if (tag === "A" && elemento.querySelector("img")) {
+
+          // link de imagem: estilo já definido acima
+
+        } else if (ESTILOS_EMAIL[tag]) {
+
+          mesclarEstilo(elemento, ESTILOS_EMAIL[tag]);
+
+        }
+
+        if (elemento.dataset.centralizar) {
+          elemento.style.textAlign = "center";
+        }
+
+        if (tag === "A") {
+          elemento.setAttribute("target", "_blank");
+        }
+
+      });
+
+      // Remove marcações internas do editor
+      copia.querySelectorAll("*").forEach((elemento) => {
+
+        Array.from(elemento.attributes).forEach((atributo) => {
+
+          if (
+            atributo.name.startsWith("data-") ||
+            atributo.name === "contenteditable" ||
+            atributo.name === "spellcheck" ||
+            (atributo.name === "class" && !/^mm-/.test(atributo.value))
+          ) {
+            elemento.removeAttribute(atributo.name);
+          }
+
+        });
+
+      });
+
+      return {
+        html: copia.innerHTML,
+        imagensInline: Array.from(imagensInline.values())
+      };
+
+    }
+
+
+    function textoParaHTML(texto) {
+
+      return escapeHtml(texto).replace(/\n/g, "<br>");
+
+    }
+
+
+    function montarEmail() {
+
+      const conteudo = montarConteudoEmail();
+
+      const opcoes = {
+        saudacao: camposOpcoes.optSaudacao.checked,
+        botaoSite: camposOpcoes.optBotaoSite.checked,
+        aviso: camposOpcoes.optAvisoRentabilidade.checked,
+        rodape: camposOpcoes.optRodape.value.trim()
+      };
+
+      const textoPrevia = preheader.value.trim();
+      const tituloEmail = assunto.value.trim() || "Novo conteúdo — Clube Morpheus";
+
+      const html = `<!DOCTYPE html>
+<html lang="pt-BR" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>${escapeHtml(tituloEmail)}</title>
+<style>
+  body { margin:0; padding:0; }
+  img { -ms-interpolation-mode:bicubic; }
+  @media only screen and (max-width:620px) {
+    .mm-container { width:100% !important; }
+    .mm-pad { padding:24px 20px !important; }
+    .mm-topo { padding:18px 20px !important; }
+    .mm-rodape { padding:18px 20px 22px !important; }
+    .mm-img { max-width:100% !important; height:auto !important; }
+    .mm-flutua { float:none !important; display:block !important; margin:0 auto 16px !important; max-width:100% !important; height:auto !important; }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#eef1f6;">
+${textoPrevia
+  ? `<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#eef1f6;">${escapeHtml(textoPrevia)}${"&#8204;&nbsp;".repeat(60)}</div>`
+  : ""}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eef1f6;">
+<tr>
+<td align="center" style="padding:24px 12px;">
+<table role="presentation" class="mm-container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:10px;">
+<tr>
+<td class="mm-topo" style="background:#164CAD;padding:22px 32px;border-radius:10px 10px 0 0;font-family:${FONTE_EMAIL};">
+<div style="font-size:20px;font-weight:bold;letter-spacing:3px;color:#ffffff;">MORPHEUS</div>
+<div style="font-size:12px;letter-spacing:1px;color:#c9d7f2;margin-top:2px;">Clube de Investimentos</div>
+</td>
+</tr>
+<tr>
+<td class="mm-pad" style="padding:32px;font-family:${FONTE_EMAIL};font-size:15px;line-height:1.6;color:#1f2937;">
+${opcoes.saudacao ? `<p style="margin:0 0 16px;">Olá {{nome}}, tudo bem?</p>` : ""}
+${conteudo.html}
+${opcoes.botaoSite
+  ? `<p style="margin:24px 0 0;"><a href="https://www.clubemorpheus.com" target="_blank" style="display:inline-block;padding:12px 20px;background:#164CAD;color:#ffffff;text-decoration:none;border-radius:6px;font-family:Arial,sans-serif;">Acessar o Clube Morpheus</a></p>`
+  : ""}
+<div style="clear:both;font-size:0;line-height:0;">&nbsp;</div>
+</td>
+</tr>
+<tr>
+<td class="mm-rodape" style="padding:20px 32px 24px;border-top:1px solid #e5e7eb;font-family:${FONTE_EMAIL};font-size:12px;line-height:1.5;color:#6b7280;">
+${opcoes.rodape ? `<div style="margin:0 0 6px;">${textoParaHTML(opcoes.rodape)}</div>` : ""}
+${opcoes.aviso ? `<div style="margin:0 0 6px;">Rentabilidade passada não é garantia de rentabilidade futura.</div>` : ""}
+<div><a href="https://www.clubemorpheus.com" target="_blank" style="color:#164CAD;text-decoration:none;">clubemorpheus.com</a></div>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>`;
+
+      return {
+        html,
+        imagensInline: conteudo.imagensInline
+      };
+
+    }
+
+
+    // Mesma troca feita pela API (api/enviar-email.js)
+    function personalizar(html, nome) {
+
+      return html
+        .split("{{nome}}")
+        .join(escapeHtml(nome || "cotista"));
+
+    }
+
+
+    function conteudoVazio() {
+
+      return (
+        editor.textContent.replace(/​/g, "").trim() === "" &&
+        !editor.querySelector("img, table, hr")
+      );
+
+    }
+
+
+    // =========================================================
+    // PRÉ-VISUALIZAÇÃO
+    // =========================================================
+
+    const janelaPrevia = document.getElementById("janelaPrevia");
+    const iframePrevia = document.getElementById("iframePrevia");
+    const palcoPrevia = document.getElementById("palcoPrevia");
+    const previaCotista = document.getElementById("previaCotista");
+
+
+    function listarCotistasParaPrevia() {
+
+      const selecionados =
+        Array.from(document.querySelectorAll(".cotista-checkbox:checked"));
+
+      const todos =
+        Array.from(document.querySelectorAll(".cotista-checkbox"));
+
+      const lista = selecionados.length ? selecionados : todos;
+
+      return lista.map((checkbox) => ({
+        email: checkbox.dataset.email,
+        nome: checkbox.dataset.nome
+      }));
+
+    }
+
+
+    function abrirPrevia() {
+
+      const cotistas = listarCotistasParaPrevia();
+
+      const anterior = previaCotista.value;
+
+      previaCotista.innerHTML = "";
+
+      (cotistas.length ? cotistas : [{ email: EMAIL_ADMIN, nome: "Gabriel" }])
+        .forEach((cotista, i) => {
+
+          const opcao = document.createElement("option");
+
+          opcao.value = String(i);
+          opcao.textContent = `Ver como: ${cotista.nome}`;
+          opcao.dataset.nome = cotista.nome;
+          opcao.dataset.email = cotista.email;
+
+          previaCotista.appendChild(opcao);
+
+        });
+
+      if (anterior && previaCotista.querySelector(`option[value="${anterior}"]`)) {
+        previaCotista.value = anterior;
+      }
+
+      janelaPrevia.showModal();
+
+      renderizarPrevia();
+
+    }
+
+
+    function renderizarPrevia() {
+
+      const email = montarEmail();
+
+      const opcao = previaCotista.selectedOptions[0];
+
+      const nome = opcao ? opcao.dataset.nome : "cotista";
+      const enderecoEmail = opcao ? opcao.dataset.email : "";
+
+      let html = personalizar(email.html, nome);
+
+      // As imagens chegam ao cotista como anexos "cid:"; aqui
+      // são mostradas a partir do próprio arquivo
+      email.imagensInline.forEach((imagem) => {
+
+        html = html
+          .split(`src="cid:${imagem.content_id}"`)
+          .join(`src="${imagem.dataUrl}"`);
+
+      });
+
+      document.getElementById("previaAssunto").textContent =
+        assunto.value.trim() || "Novo conteúdo — Clube Morpheus";
+
+      document.getElementById("previaPara").textContent =
+        `${nome} <${enderecoEmail}>`;
+
+      const textoPrevia = preheader.value.trim();
+
+      document.getElementById("previaPreheaderLinha").style.display =
+        textoPrevia ? "" : "none";
+
+      document.getElementById("previaPreheader").textContent = textoPrevia;
+
+      const chips = document.getElementById("previaAnexos");
+
+      chips.innerHTML = "";
+
+      anexos.forEach((anexo) => {
+
+        const chip = document.createElement("span");
+
+        chip.className = "chip";
+        chip.textContent = `📎 ${anexo.filename} · ${formatarBytes(anexo.tamanho)}`;
+
+        chips.appendChild(chip);
+
+      });
+
+      iframePrevia.style.height = "600px";
+      iframePrevia.srcdoc = html;
+
+    }
+
+
+    iframePrevia.addEventListener("load", ajustarAlturaPrevia);
+
+
+    function ajustarAlturaPrevia() {
+
+      try {
+
+        const doc = iframePrevia.contentDocument;
+
+        if (!doc) return;
+
+        iframePrevia.style.height =
+          Math.max(doc.documentElement.scrollHeight, 300) + "px";
+
+      } catch (error) {
+
+        iframePrevia.style.height = "900px";
+
+      }
+
+    }
+
+
+    document
+      .getElementById("alternadorDispositivo")
+      .addEventListener("click", (event) => {
+
+        const botao = event.target.closest("button[data-dispositivo]");
+
+        if (!botao) return;
+
+        document
+          .querySelectorAll("#alternadorDispositivo button")
+          .forEach((b) => b.classList.toggle("ativo", b === botao));
+
+        palcoPrevia.classList.toggle(
+          "celular",
+          botao.dataset.dispositivo === "celular"
+        );
+
+        // Recalcula a altura depois que a largura mudar
+        requestAnimationFrame(() => requestAnimationFrame(ajustarAlturaPrevia));
+
+      });
+
+
+    previaCotista.addEventListener("change", renderizarPrevia);
+
+    document
+      .getElementById("btnPrevia")
+      .addEventListener("click", () => {
+
+        desselecionarImagem();
+        abrirPrevia();
+
+      });
+
+
+    // =========================================================
     // ENVIAR
     // =========================================================
+
+    function textoPuroDaMensagem() {
+
+      const texto = editor.innerText.replace(/​/g, "").trim();
+
+      return texto || "(mensagem com imagens)";
+
+    }
+
+
+    async function enviar(destinatarios, assuntoFinal) {
+
+      const user = auth.currentUser;
+
+      if (!user) {
+        throw new Error("Sessão expirada.");
+      }
+
+
+      // Pega o token de autenticação do Firebase
+      const idToken =
+        await user.getIdToken();
+
+
+      const email = montarEmail();
+
+      const corpo = JSON.stringify({
+        destinatarios,
+        assunto: assuntoFinal,
+        html: email.html,
+        // Usado pela API apenas se ela ainda estiver na versão antiga
+        mensagem: textoPuroDaMensagem(),
+        anexos: [
+          ...email.imagensInline.map((imagem) => ({
+            filename: imagem.filename,
+            content: imagem.content,
+            content_type: imagem.content_type,
+            content_id: imagem.content_id
+          })),
+          ...anexos.map((anexo) => ({
+            filename: anexo.filename,
+            content: anexo.content,
+            content_type: anexo.content_type
+          }))
+        ]
+      });
+
+
+      const tamanho = new Blob([corpo]).size;
+
+      if (tamanho > LIMITE_BYTES) {
+
+        throw new Error(
+          `o e-mail ficou com ${formatarBytes(tamanho)}, acima do limite de ${formatarBytes(LIMITE_BYTES)}. ` +
+          "Reduza imagens/anexos ou envie arquivos grandes como link."
+        );
+
+      }
+
+
+      const response = await fetch(
+        URL_API,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${idToken}`
+          },
+          body: corpo
+        }
+      );
+
+
+      let data = null;
+
+      try {
+        data = await response.json();
+      } catch (error) {
+        data = null;
+      }
+
+
+      if (!data) {
+
+        throw new Error(
+          response.status === 413
+            ? "o servidor recusou o e-mail por ser grande demais."
+            : `resposta inesperada do servidor (HTTP ${response.status}).`
+        );
+
+      }
+
+
+      if (!response.ok && response.status !== 207) {
+
+        throw new Error(
+          data.error ||
+          "Erro ao enviar os e-mails."
+        );
+
+      }
+
+      return data;
+
+    }
+
+
+    function validarAntesDeEnviar() {
+
+      if (conteudoVazio()) {
+
+        mostrarErro(
+          "Digite uma mensagem antes de enviar."
+        );
+
+        return false;
+      }
+
+      if (estimarTamanho() > LIMITE_BYTES) {
+
+        mostrarErro(
+          "O e-mail está grande demais. Reduza imagens/anexos ou envie arquivos grandes como link."
+        );
+
+        return false;
+      }
+
+      return true;
+
+    }
+
+
+    function descreverResultado(data, total) {
+
+      if (data.ok) {
+        return null;
+      }
+
+      const falhas =
+        (data.resultados || [])
+          .filter((item) => !item.ok)
+          .map((item) => item.email);
+
+      return (
+        `Enviado para ${data.enviados || 0} de ${total}. ` +
+        `Falhou para: ${falhas.join(", ") || "(não informado)"}.`
+      );
+
+    }
+
 
     btnEnviar.addEventListener("click", async () => {
 
@@ -564,19 +4849,22 @@
       }
 
 
-      if (!mensagem.value.trim()) {
-
-        mostrarErro(
-          "Digite uma mensagem antes de enviar."
-        );
-
+      if (!validarAntesDeEnviar()) {
         return;
       }
 
 
+      const imagens = editor.querySelectorAll("img").length;
+
+      const resumo = [
+        `${selecionados.length} cotista(s)`,
+        imagens ? `${imagens} imagem(ns)/gráfico(s)` : null,
+        anexos.length ? `${anexos.length} anexo(s)` : null
+      ].filter(Boolean).join(", ");
+
       const confirmacao =
         confirm(
-          `Enviar este e-mail para ${selecionados.length} cotista(s)?`
+          `Enviar este e-mail?\n\n${resumo}`
         );
 
 
@@ -586,24 +4874,13 @@
 
 
       btnEnviar.disabled = true;
+      btnTeste.disabled = true;
 
       btnEnviar.textContent =
         "Enviando...";
 
 
       try {
-
-        const user = auth.currentUser;
-
-        if (!user) {
-          throw new Error("Sessão expirada.");
-        }
-
-
-        // Pega o token de autenticação do Firebase
-        const idToken =
-          await user.getIdToken();
-
 
         const destinatarios =
           selecionados.map((checkbox) => ({
@@ -612,40 +4889,25 @@
           }));
 
 
-const response = await fetch(
-  "https://api.clubemorpheus.com/api/enviar-email",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${idToken}`
-    },
-    body: JSON.stringify({
-      destinatarios,
-      assunto: assunto.value.trim() || "Novo conteúdo — Clube Morpheus",
-      mensagem: mensagem.value.trim()
-    })
-  }
-);
+        const data = await enviar(
+          destinatarios,
+          assunto.value.trim() || "Novo conteúdo — Clube Morpheus"
+        );
 
 
-        const data =
-          await response.json();
+        const parcial = descreverResultado(data, destinatarios.length);
 
+        if (parcial) {
 
-        if (!response.ok || !data.ok) {
+          mostrarErro(parcial);
 
-          throw new Error(
-            data.error ||
-            "Erro ao enviar os e-mails."
+        } else {
+
+          mostrarSucesso(
+            `E-mail enviado com sucesso para ${data.enviados} cotista(s).`
           );
 
         }
-
-
-        mostrarSucesso(
-          `E-mail enviado com sucesso para ${data.enviados} cotista(s).`
-        );
 
 
       } catch (error) {
@@ -660,9 +4922,71 @@ const response = await fetch(
       } finally {
 
         btnEnviar.disabled = false;
+        btnTeste.disabled = false;
 
         btnEnviar.textContent =
           "Enviar e-mail aos cotistas";
+
+      }
+
+    });
+
+
+    // Envia só para o administrador, com o nome do cadastro dele
+    btnTeste.addEventListener("click", async () => {
+
+      status.className = "";
+      status.style.display = "none";
+
+      if (!validarAntesDeEnviar()) {
+        return;
+      }
+
+      const cadastro =
+        document.querySelector(
+          `.cotista-checkbox[data-email="${EMAIL_ADMIN}"]`
+        );
+
+      const destinatarios = [{
+        email: EMAIL_ADMIN,
+        nome: cadastro ? cadastro.dataset.nome : "Gabriel"
+      }];
+
+      btnEnviar.disabled = true;
+      btnTeste.disabled = true;
+
+      btnTeste.textContent = "Enviando teste...";
+
+      try {
+
+        const data = await enviar(
+          destinatarios,
+          "[TESTE] " + (assunto.value.trim() || "Novo conteúdo — Clube Morpheus")
+        );
+
+        const parcial = descreverResultado(data, 1);
+
+        if (parcial) {
+          mostrarErro(parcial);
+        } else {
+          mostrarSucesso(`Teste enviado para ${EMAIL_ADMIN}. Confira sua caixa de entrada.`);
+        }
+
+      } catch (error) {
+
+        console.error(error);
+
+        mostrarErro(
+          "Erro ao enviar o teste: " +
+          error.message
+        );
+
+      } finally {
+
+        btnEnviar.disabled = false;
+        btnTeste.disabled = false;
+
+        btnTeste.textContent = "Enviar teste para mim";
 
       }
 
@@ -718,6 +5042,35 @@ const response = await fetch(
     function escapeAttribute(text) {
 
       return escapeHtml(text);
+
+    }
+
+
+    function normalizarUrl(valor) {
+
+      let url = String(valor || "").trim();
+
+      if (!url) return "";
+
+      if (!/^(https?:|mailto:)/i.test(url)) {
+        url = "https://" + url.replace(/^\/+/, "");
+      }
+
+      try {
+
+        const objeto = new URL(url);
+
+        if (!["http:", "https:", "mailto:"].includes(objeto.protocol)) {
+          return "";
+        }
+
+        return objeto.href;
+
+      } catch (error) {
+
+        return "";
+
+      }
 
     }
 
