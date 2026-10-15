@@ -339,7 +339,8 @@
     }
 
     #editor {
-      width: 600px;
+      /* 600px de conteúdo + 2 x 32px de margem interna */
+      width: 664px;
       max-width: 100%;
       min-height: 340px;
       margin: 0 auto;
@@ -873,9 +874,10 @@
     }
 
     .palco-previa {
-      background: #dfe3ea;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
       border-radius: 8px;
-      padding: 16px 0;
+      padding: 20px 24px;
       display: flex;
       justify-content: center;
     }
@@ -1298,7 +1300,7 @@
         </div>
 
         <div class="caixa-previa-grafico">
-          <canvas id="canvasGrafico" width="536" height="300"></canvas>
+          <canvas id="canvasGrafico" width="600" height="320"></canvas>
           <div class="dica" style="margin-top:10px;">É exatamente esta imagem que vai no e-mail.</div>
         </div>
       </div>
@@ -1506,8 +1508,8 @@
     const EMAIL_ADMIN =
       "gabrielssimon7@gmail.com";
 
-    // Largura útil do conteúdo: 600px do e-mail - 2 x 32px de margem
-    const LARGURA_CONTEUDO = 536;
+    // Largura útil do conteúdo do e-mail
+    const LARGURA_CONTEUDO = 600;
 
     // Imagens são reduzidas para no máximo esta largura (nitidez em telas retina)
     const LARGURA_MAX_IMAGEM = 1200;
@@ -3354,9 +3356,9 @@
         erroGrafico.textContent = dados.erro;
 
         canvasGrafico.width = LARGURA_CONTEUDO;
-        canvasGrafico.height = 300;
+        canvasGrafico.height = 320;
         canvasGrafico.style.width = LARGURA_CONTEUDO + "px";
-        canvasGrafico.style.height = "300px";
+        canvasGrafico.style.height = "320px";
 
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvasGrafico.width, canvasGrafico.height);
@@ -3366,7 +3368,7 @@
       }
 
       canvasGrafico.width = LARGURA_CONTEUDO;
-      canvasGrafico.height = 300;
+      canvasGrafico.height = 320;
 
       const varias = dados.series.length > 1;
       const tipo = config.tipo;
@@ -4422,50 +4424,26 @@
   body { margin:0; padding:0; }
   img { -ms-interpolation-mode:bicubic; }
   @media only screen and (max-width:620px) {
-    .mm-container { width:100% !important; }
-    .mm-pad { padding:24px 20px !important; }
-    .mm-topo { padding:18px 20px !important; }
-    .mm-rodape { padding:18px 20px 22px !important; }
     .mm-img { max-width:100% !important; height:auto !important; }
     .mm-flutua { float:none !important; display:block !important; margin:0 auto 16px !important; max-width:100% !important; height:auto !important; }
   }
 </style>
 </head>
-<body style="margin:0;padding:0;background:#eef1f6;">
+<body style="margin:0;padding:0;background:#ffffff;">
 ${textoPrevia
-  ? `<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#eef1f6;">${escapeHtml(textoPrevia)}${"&#8204;&nbsp;".repeat(60)}</div>`
+  ? `<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#ffffff;">${escapeHtml(textoPrevia)}${"&#8204;&nbsp;".repeat(60)}</div>`
   : ""}
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eef1f6;">
-<tr>
-<td align="center" style="padding:24px 12px;">
-<table role="presentation" class="mm-container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:10px;">
-<tr>
-<td class="mm-topo" style="background:#164CAD;padding:22px 32px;border-radius:10px 10px 0 0;font-family:${FONTE_EMAIL};">
-<div style="font-size:20px;font-weight:bold;letter-spacing:3px;color:#ffffff;">MORPHEUS</div>
-<div style="font-size:12px;letter-spacing:1px;color:#c9d7f2;margin-top:2px;">Clube de Investimentos</div>
-</td>
-</tr>
-<tr>
-<td class="mm-pad" style="padding:32px;font-family:${FONTE_EMAIL};font-size:15px;line-height:1.6;color:#1f2937;">
+<div class="mm-container" style="max-width:600px;font-family:${FONTE_EMAIL};font-size:15px;line-height:1.6;color:#1f2937;text-align:left;">
 ${opcoes.saudacao ? `<p style="margin:0 0 16px;">Olá {{nome}}, tudo bem?</p>` : ""}
 ${conteudo.html}
 ${opcoes.botaoSite
   ? `<p style="margin:24px 0 0;"><a href="https://www.clubemorpheus.com" target="_blank" style="display:inline-block;padding:12px 20px;background:#164CAD;color:#ffffff;text-decoration:none;border-radius:6px;font-family:Arial,sans-serif;">Acessar o Clube Morpheus</a></p>`
   : ""}
 <div style="clear:both;font-size:0;line-height:0;">&nbsp;</div>
-</td>
-</tr>
-<tr>
-<td class="mm-rodape" style="padding:20px 32px 24px;border-top:1px solid #e5e7eb;font-family:${FONTE_EMAIL};font-size:12px;line-height:1.5;color:#6b7280;">
-${opcoes.rodape ? `<div style="margin:0 0 6px;">${textoParaHTML(opcoes.rodape)}</div>` : ""}
-${opcoes.aviso ? `<div style="margin:0 0 6px;">Rentabilidade passada não é garantia de rentabilidade futura.</div>` : ""}
-<div><a href="https://www.clubemorpheus.com" target="_blank" style="color:#164CAD;text-decoration:none;">clubemorpheus.com</a></div>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+${opcoes.rodape || opcoes.aviso
+  ? `<div style="margin:24px 0 0;font-size:12px;line-height:1.5;color:#6b7280;">${opcoes.rodape ? `<div style="margin:0 0 4px;">${textoParaHTML(opcoes.rodape)}</div>` : ""}${opcoes.aviso ? `<div>Rentabilidade passada não é garantia de rentabilidade futura.</div>` : ""}</div>`
+  : ""}
+</div>
 </body>
 </html>`;
 
