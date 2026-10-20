@@ -579,6 +579,40 @@
     .mobile-landscape .vol-chart-title {
       font-size: 16px;
     }
+
+    /* GRÁFICOS EM CASCATA - ATRIBUIÇÃO DE PERFORMANCE (COLUNAS BU:BZ) */
+    .waterfall-charts-container {
+      gap: 10px;
+    }
+
+    .waterfall-chart {
+      padding: 5px 15px;
+    }
+
+    .waterfall-chart h3 {
+      margin-bottom: 8px;
+    }
+
+    .waterfall-chart canvas {
+      height: 110px !important;
+    }
+
+    .mobile-device .waterfall-charts-container {
+      flex-direction: column;
+    }
+
+    .mobile-device .waterfall-chart {
+      flex: none;
+      width: auto;
+    }
+
+    .mobile-device .waterfall-chart canvas {
+      height: 260px !important;
+    }
+
+    .mobile-landscape .waterfall-chart canvas {
+      height: 110px !important;
+    }
   </style>
 </head>
 <body>
@@ -632,6 +666,24 @@
         <h3 class="vol-chart-title">Volatilidade Anualizada – Janela Móvel Mensal</h3>
         <div class="chart-container">
           <canvas id="volatilidadeChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Gráficos em cascata - Atribuição de Performance (colunas BU:BZ) -->
+      <div class="side-charts-container waterfall-charts-container">
+        <div class="side-chart waterfall-chart">
+          <h3>Atribuição de Performance Mensal</h3>
+          <canvas id="atribuicaoMensalChart"></canvas>
+        </div>
+
+        <div class="side-chart waterfall-chart">
+          <h3>Atribuição de Performance Anual</h3>
+          <canvas id="atribuicaoAnualChart"></canvas>
+        </div>
+
+        <div class="side-chart waterfall-chart">
+          <h3>Atribuição de Performance Desde o Início</h3>
+          <canvas id="atribuicaoInicioChart"></canvas>
         </div>
       </div>
     </div>
@@ -816,6 +868,7 @@
         createSideCharts(rows);
         loadTableData(rows);
         createVolatilidadeChart(rows);
+        createAtribuicaoCharts(rows);
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -1540,6 +1593,170 @@
       } catch (error) {
         console.error("Erro ao criar gráfico de volatilidade:", error);
       }
+    }
+
+    // ===== GRÁFICOS EM CASCATA - ATRIBUIÇÃO DE PERFORMANCE (COLUNAS BU:BZ, LINHAS 2 A 7) =====
+    // Em cada par de colunas: rótulo na 1ª e valor na 2ª (ex.: "Ações" | "22.79%")
+    function createAtribuicaoCharts(rows) {
+      const graficos = [
+        { canvasId: 'atribuicaoMensalChart', col: 72 }, // BU:BV - Mensal
+        { canvasId: 'atribuicaoAnualChart',  col: 74 }, // BW:BX - Anual
+        { canvasId: 'atribuicaoInicioChart', col: 76 }  // BY:BZ - Desde o Início
+      ];
+
+      graficos.forEach(({ canvasId, col }) => {
+        try {
+          const labels = [];
+          const values = [];
+
+          for (let i = 1; i <= 6; i++) { // linhas 2 a 7 da planilha
+            if (!rows[i]) continue;
+            const cols = rows[i].split(",");
+            const label = cols[col]?.trim();
+            const value = parseFloat(cols[col + 1]);
+
+            if (label && !isNaN(value)) {
+              labels.push(label);
+              values.push(value);
+            }
+          }
+
+          if (labels.length === 0) {
+            throw new Error("Nenhum dado válido encontrado");
+          }
+
+          createWaterfallChart(canvasId, labels, values);
+        } catch (error) {
+          console.error(`Erro ao criar gráfico em cascata ${canvasId}:`, error);
+        }
+      });
+    }
+
+    function createWaterfallChart(canvasId, labels, values) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext("2d");
+
+      const isMobileVertical = document.body.classList.contains('mobile-device') &&
+                          !document.body.classList.contains('mobile-landscape');
+
+      const fontSize = isMobileVertical ? 20 : 11;
+
+      // Cores do modelo: altas em verde, quedas em vermelho, Morpheus azul-marinho, IBOV laranja
+      const COR_ALTA = '#275317';
+      const COR_QUEDA = '#C00000';
+      const COR_MORPHEUS = '#0E2841';
+      const COR_IBOV = '#C04F15';
+
+      // Morpheus e IBOV são barras inteiras (a partir do zero); as demais acumulam em cascata
+      let acumulado = 0;
+      const barras = [];
+      const cores = [];
+
+      labels.forEach((label, i) => {
+        const v = values[i];
+        const nome = label.toLowerCase();
+
+        if (nome === 'morpheus') {
+          barras.push([0, v]);
+          cores.push(COR_MORPHEUS);
+        } else if (nome === 'ibov') {
+          barras.push([0, v]);
+          cores.push(COR_IBOV);
+        } else {
+          barras.push([acumulado, acumulado + v]);
+          cores.push(v >= 0 ? COR_ALTA : COR_QUEDA);
+          acumulado += v;
+        }
+      });
+
+      // Rótulo de valor acima de cada barra (ex.: 22,79%)
+      const rotulosPlugin = {
+        id: 'rotulosCascata',
+        afterDatasetsDraw(chart) {
+          const c = chart.ctx;
+          const meta = chart.getDatasetMeta(0);
+
+          c.save();
+          c.font = `400 ${fontSize}px Montserrat`;
+          c.fillStyle = '#000';
+          c.textAlign = 'center';
+          c.textBaseline = 'bottom';
+
+          meta.data.forEach((bar, i) => {
+            const { x, y, base } = bar.getProps(['x', 'y', 'base'], true);
+            const texto = values[i].toFixed(2).replace('.', ',') + '%';
+            c.fillText(texto, x, Math.min(y, base) - 3);
+          });
+
+          c.restore();
+        }
+      };
+
+      const chart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            data: barras,
+            backgroundColor: cores,
+            borderWidth: 0,
+            borderRadius: 0,
+            borderSkipped: false,
+            barPercentage: 0.75,
+            categoryPercentage: 0.8,
+            minBarLength: 2,
+          }]
+        },
+        plugins: [rotulosPlugin],
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: { top: fontSize + 8 }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              enabled: false
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: '#000',
+                autoSkip: false,
+                maxRotation: 0,
+                font: {
+                  family: 'Montserrat',
+                  size: fontSize,
+                  weight: '300'
+                }
+              },
+              grid: {
+                display: false
+              }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: '#000',
+                maxTicksLimit: 4,
+                font: {
+                  family: 'Montserrat',
+                  size: fontSize,
+                  weight: '300'
+                },
+                callback: (v) => (Number.isInteger(v) ? v : v.toFixed(1).replace('.', ',')) + '%'
+              },
+              grid: { color: "rgba(0,0,0,0.05)" }
+            }
+          }
+        }
+      });
+
+      window.chartInstances[canvasId] = chart;
     }
 
     loadData();
