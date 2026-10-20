@@ -579,6 +579,55 @@
     .mobile-landscape .vol-chart-title {
       font-size: 16px;
     }
+
+    /* ATRIBUIÇÃO DE PERFORMANCE (ANUAL E DESDE O INÍCIO) AO LADO DA VOLATILIDADE - COLUNAS BW:BZ */
+    .atribuicao-lateral {
+      flex: 1;
+      min-width: 250px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Altura fixa: o gráfico é desenhado exatamente no tamanho exibido (sem achatar/borrar) */
+    .cascata-container {
+      position: relative;
+      height: 173px;
+    }
+
+    .cascata-container canvas {
+      height: 173px !important;
+    }
+
+    /* Celular em pé: um embaixo do outro, largura total */
+    .mobile-device .atribuicao-lateral {
+      flex: none;
+      width: 100%;
+      gap: 30px;
+    }
+
+    .mobile-device .cascata-container {
+      height: 340px;
+    }
+
+    .mobile-device .cascata-container canvas {
+      height: 340px !important;
+    }
+
+    /* Celular deitado: coluna ao lado da volatilidade, como no PC */
+    .mobile-landscape .atribuicao-lateral {
+      flex: 1;
+      width: auto;
+      gap: 15px;
+    }
+
+    .mobile-landscape .cascata-container {
+      height: 135px;
+    }
+
+    .mobile-landscape .cascata-container canvas {
+      height: 135px !important;
+    }
   </style>
 </head>
 <body>
@@ -632,6 +681,23 @@
         <h3 class="vol-chart-title">Volatilidade Anualizada – Janela Móvel Mensal</h3>
         <div class="chart-container">
           <canvas id="volatilidadeChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Atribuição de Performance em cascata: Anual (BW:BX) e Desde o Início (BY:BZ) -->
+      <div class="atribuicao-lateral">
+        <div>
+          <h3 class="vol-chart-title">Atribuição de Performance Anual</h3>
+          <div class="cascata-container">
+            <canvas id="atribuicaoAnualChart"></canvas>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="vol-chart-title">Atribuição de Performance Desde o Início</h3>
+          <div class="cascata-container">
+            <canvas id="atribuicaoInicioChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
@@ -816,6 +882,7 @@
         createSideCharts(rows);
         loadTableData(rows);
         createVolatilidadeChart(rows);
+        createAtribuicaoCharts(rows);
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -1540,6 +1607,189 @@
       } catch (error) {
         console.error("Erro ao criar gráfico de volatilidade:", error);
       }
+    }
+
+    // ===== ATRIBUIÇÃO DE PERFORMANCE EM CASCATA - ANUAL (BW:BX) E DESDE O INÍCIO (BY:BZ), LINHAS 2 A 7 =====
+    // Em cada par de colunas: rótulo na 1ª e valor na 2ª (ex.: "Ações" | "20.02%")
+    function createAtribuicaoCharts(rows) {
+      const graficos = [
+        { canvasId: 'atribuicaoAnualChart',  col: 74 }, // BW:BX - Anual
+        { canvasId: 'atribuicaoInicioChart', col: 76 }  // BY:BZ - Desde o Início
+      ];
+
+      // Só desenha depois que a fonte Montserrat carregar, para os rótulos não saírem cortados no eixo
+      const fontesProntas = (document.fonts && document.fonts.load)
+        ? Promise.all([
+            document.fonts.load('400 16px Montserrat'),
+            document.fonts.load('500 16px Montserrat')
+          ]).catch(() => {})
+        : Promise.resolve();
+
+      fontesProntas.then(() => graficos.forEach(({ canvasId, col }) => {
+        try {
+          const labels = [];
+          const values = [];
+
+          for (let i = 1; i <= 6; i++) { // linhas 2 a 7 da planilha
+            if (!rows[i]) continue;
+            const cols = rows[i].split(",");
+            const label = cols[col]?.trim();
+            const value = parseFloat(cols[col + 1]);
+
+            if (label && !isNaN(value)) {
+              labels.push(label);
+              values.push(value);
+            }
+          }
+
+          if (labels.length === 0) {
+            throw new Error("Nenhum dado válido encontrado");
+          }
+
+          createWaterfallChart(canvasId, labels, values);
+        } catch (error) {
+          console.error(`Erro ao criar gráfico em cascata ${canvasId}:`, error);
+        }
+      }));
+    }
+
+    function createWaterfallChart(canvasId, labels, values) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext("2d");
+
+      const isMobileVertical = document.body.classList.contains('mobile-device') &&
+                          !document.body.classList.contains('mobile-landscape');
+
+      const axisFontSize = isMobileVertical ? 20 : 12;
+      const labelFontSize = isMobileVertical ? 20 : 13;
+
+      // Cores do modelo (Excel): altas em verde, quedas em vermelho, Morpheus azul-marinho, IBOV laranja
+      const COR_ALTA = '#275317';
+      const COR_QUEDA = '#C00000';
+      const COR_MORPHEUS = '#0E2841';
+      const COR_IBOV = '#C04F15';
+
+      // Morpheus e IBOV são barras inteiras (a partir do zero); as demais acumulam em cascata
+      let acumulado = 0;
+      const barras = [];
+      const cores = [];
+
+      labels.forEach((label, i) => {
+        const v = values[i];
+        const nome = label.toLowerCase();
+
+        if (nome === 'morpheus') {
+          barras.push([0, v]);
+          cores.push(COR_MORPHEUS);
+        } else if (nome === 'ibov') {
+          barras.push([0, v]);
+          cores.push(COR_IBOV);
+        } else {
+          barras.push([acumulado, acumulado + v]);
+          cores.push(v >= 0 ? COR_ALTA : COR_QUEDA);
+          acumulado += v;
+        }
+      });
+
+      // Se houver valores negativos, deixa folga embaixo para o rótulo
+      const minimo = Math.min(0, ...barras.flat());
+      const maximo = Math.max(0, ...barras.flat());
+      const folga = (maximo - minimo) * 0.15;
+
+      // Valor de cada barra (ex.: 20,02%): acima; abaixo só quando a barra sai do zero para baixo
+      const rotulosPlugin = {
+        id: 'rotulosCascata',
+        afterDatasetsDraw(chart) {
+          const c = chart.ctx;
+          const meta = chart.getDatasetMeta(0);
+
+          c.save();
+          c.font = `500 ${labelFontSize}px Montserrat`;
+          c.fillStyle = '#000';
+          c.textAlign = 'center';
+
+          meta.data.forEach((bar, i) => {
+            const { x, y, base } = bar.getProps(['x', 'y', 'base'], true);
+            const texto = values[i].toFixed(2).replace('.', ',') + '%';
+
+            if (values[i] < 0 && barras[i][0] === 0) {
+              c.textBaseline = 'top';
+              c.fillText(texto, x, Math.max(y, base) + 4);
+            } else {
+              c.textBaseline = 'bottom';
+              c.fillText(texto, x, Math.min(y, base) - 4);
+            }
+          });
+
+          c.restore();
+        }
+      };
+
+      const chart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            data: barras,
+            backgroundColor: cores,
+            borderWidth: 0,
+            borderSkipped: false,
+            barPercentage: 0.85,
+            categoryPercentage: 0.9,
+            minBarLength: 2,
+          }]
+        },
+        plugins: [rotulosPlugin],
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: { top: labelFontSize + 8 }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              enabled: false
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                color: '#000',
+                autoSkip: false,
+                maxRotation: 0,
+                font: {
+                  family: 'Montserrat',
+                  size: axisFontSize,
+                  weight: '400'
+                }
+              }
+            },
+            y: {
+              beginAtZero: true,
+              suggestedMin: minimo < 0 ? minimo - folga : 0,
+              ticks: {
+                color: '#000',
+                maxTicksLimit: 5,
+                font: {
+                  family: 'Montserrat',
+                  size: axisFontSize,
+                  weight: '400'
+                },
+                callback: (v) => (Number.isInteger(v) ? v : v.toFixed(1).replace('.', ',')) + '%'
+              },
+              grid: { color: "rgba(0,0,0,0.05)" }
+            }
+          }
+        }
+      });
+
+      window.chartInstances[canvasId] = chart;
     }
 
     loadData();
