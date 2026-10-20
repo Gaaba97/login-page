@@ -580,16 +580,91 @@
       font-size: 16px;
     }
 
-    /* GRADE 2x2 NO PC: VOLATILIDADE (AV:AX) + 3 GRÁFICOS EM CASCATA (BU:BZ) */
-    .vol-chart-section.grade-2x2 {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 30px 20px;
+    /* ATRIBUIÇÃO DE PERFORMANCE EM CASCATA (BU:BZ): 3 GRÁFICOS LADO A LADO NO PC */
+    .atribuicao-section {
+      width: 95%;
+      max-width: 1200px;
+      margin: 20px auto 30px;
     }
 
-    /* No celular, um gráfico por linha */
-    .mobile-device .vol-chart-section.grade-2x2 {
+    .atribuicao-legenda {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 24px;
+      margin: -4px 0 22px;
+      font-family: "Montserrat", sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #333;
+    }
+
+    .atribuicao-legenda .cor {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin-right: 6px;
+      vertical-align: -1px;
+    }
+
+    .atribuicao-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 28px;
+    }
+
+    .atribuicao-periodo {
+      font-family: "Montserrat", sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #164CAD;
+      text-align: center;
+      padding-bottom: 6px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid #e6e6e6;
+    }
+
+    .cascata-container {
+      position: relative;
+      height: 210px;
+    }
+
+    .cascata-container canvas {
+      height: 210px !important;
+    }
+
+    /* Celular: um gráfico por linha, maior */
+    .mobile-device .atribuicao-section {
+      width: 98%;
+      max-width: none;
+    }
+
+    .mobile-device .atribuicao-grid {
       grid-template-columns: minmax(0, 1fr);
+      gap: 36px;
+    }
+
+    .mobile-device .atribuicao-legenda {
+      font-size: 18px;
+    }
+
+    .mobile-device .atribuicao-legenda .cor {
+      width: 15px;
+      height: 15px;
+    }
+
+    .mobile-device .atribuicao-periodo {
+      font-size: 18px;
+    }
+
+    .mobile-device .cascata-container {
+      height: 340px;
+    }
+
+    .mobile-device .cascata-container canvas {
+      height: 340px !important;
     }
   </style>
 </head>
@@ -638,33 +713,46 @@
       </table>
     </div>
 
-    <!-- Grade 2x2: Volatilidade Anualizada (colunas AV:AX) + Atribuição de Performance em cascata (colunas BU:BZ) -->
-    <div class="charts-main-container vol-chart-section grade-2x2">
+    <!-- Gráfico de Volatilidade Anualizada (janela móvel mensal) - colunas AV:AX -->
+    <div class="charts-main-container vol-chart-section">
       <div class="main-chart-container" id="volChartContainer">
         <h3 class="vol-chart-title">Volatilidade Anualizada – Janela Móvel Mensal</h3>
         <div class="chart-container">
           <canvas id="volatilidadeChart"></canvas>
         </div>
       </div>
+    </div>
 
-      <div class="main-chart-container">
-        <h3 class="vol-chart-title">Atribuição de Performance Mensal</h3>
-        <div class="chart-container">
-          <canvas id="atribuicaoMensalChart"></canvas>
-        </div>
+    <!-- Atribuição de Performance em cascata - colunas BU:BZ (cores da legenda iguais às de createWaterfallChart) -->
+    <div class="atribuicao-section">
+      <h3 class="vol-chart-title">Atribuição de Performance</h3>
+      <div class="atribuicao-legenda">
+        <span><span class="cor" style="background: #2E7D32;"></span>Contribuição positiva</span>
+        <span><span class="cor" style="background: #C62828;"></span>Contribuição negativa</span>
+        <span><span class="cor" style="background: #164CAD;"></span>Morpheus</span>
+        <span><span class="cor" style="background: #2B2B2B;"></span>IBOV</span>
       </div>
 
-      <div class="main-chart-container">
-        <h3 class="vol-chart-title">Atribuição de Performance Anual</h3>
-        <div class="chart-container">
-          <canvas id="atribuicaoAnualChart"></canvas>
+      <div class="atribuicao-grid">
+        <div class="atribuicao-item">
+          <div class="atribuicao-periodo">Mensal</div>
+          <div class="cascata-container">
+            <canvas id="atribuicaoMensalChart"></canvas>
+          </div>
         </div>
-      </div>
 
-      <div class="main-chart-container">
-        <h3 class="vol-chart-title">Atribuição de Performance Desde o Início</h3>
-        <div class="chart-container">
-          <canvas id="atribuicaoInicioChart"></canvas>
+        <div class="atribuicao-item">
+          <div class="atribuicao-periodo">Anual</div>
+          <div class="cascata-container">
+            <canvas id="atribuicaoAnualChart"></canvas>
+          </div>
+        </div>
+
+        <div class="atribuicao-item">
+          <div class="atribuicao-periodo">Desde o Início</div>
+          <div class="cascata-container">
+            <canvas id="atribuicaoInicioChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
@@ -1620,20 +1708,25 @@
       const isMobileVertical = document.body.classList.contains('mobile-device') &&
                           !document.body.classList.contains('mobile-landscape');
 
-      // Mesmos tamanhos de fonte do gráfico principal
-      const axisFontSize = isMobileVertical ? 22 : 15;
-      const labelFontSize = isMobileVertical ? 20 : 14;
+      // Fontes: no PC diminuem um pouco se o gráfico ficar estreito; no celular seguem o padrão da página
+      const tickFont = (c) => ({
+        family: 'Montserrat',
+        weight: '400',
+        size: isMobileVertical ? 20 : (c.chart.width < 340 ? 10 : 12)
+      });
+      const labelSize = (chart) => isMobileVertical ? 20 : (chart.width < 340 ? 11 : 13);
 
-      // Cores do modelo: altas em verde, quedas em vermelho, Morpheus azul-marinho, IBOV laranja
-      const COR_ALTA = '#275317';
-      const COR_QUEDA = '#C00000';
-      const COR_MORPHEUS = '#0E2841';
-      const COR_IBOV = '#C04F15';
+      // Cores: contribuições em verde/vermelho; Morpheus no azul e IBOV no preto do site (iguais à legenda no HTML)
+      const COR_ALTA = '#2E7D32';
+      const COR_QUEDA = '#C62828';
+      const COR_MORPHEUS = '#164CAD';
+      const COR_IBOV = '#2B2B2B';
 
       // Morpheus e IBOV são barras inteiras (a partir do zero); as demais acumulam em cascata
       let acumulado = 0;
       const barras = [];
       const cores = [];
+      const tipos = []; // 'passo' (cascata), 'total' (Morpheus) ou 'referencia' (IBOV)
 
       labels.forEach((label, i) => {
         const v = values[i];
@@ -1642,33 +1735,79 @@
         if (nome === 'morpheus') {
           barras.push([0, v]);
           cores.push(COR_MORPHEUS);
+          tipos.push('total');
         } else if (nome === 'ibov') {
           barras.push([0, v]);
           cores.push(COR_IBOV);
+          tipos.push('referencia');
         } else {
           barras.push([acumulado, acumulado + v]);
           cores.push(v >= 0 ? COR_ALTA : COR_QUEDA);
+          tipos.push('passo');
           acumulado += v;
         }
       });
 
-      // Rótulo de valor acima de cada barra (ex.: 22,79%)
-      const rotulosPlugin = {
-        id: 'rotulosCascata',
+      // Escala: sempre inclui o zero; folga embaixo se houver barras negativas
+      const extremos = barras.flat();
+      const minimo = Math.min(0, ...extremos);
+      const maximo = Math.max(0, ...extremos);
+      const folga = (maximo - minimo) * 0.12;
+
+      const cascataPlugin = {
+        id: 'cascata',
+        // Linha do zero e linhas tracejadas ligando os degraus (desenhadas atrás das barras)
+        beforeDatasetsDraw(chart) {
+          const c = chart.ctx;
+          const { left, right } = chart.chartArea;
+          const escalaY = chart.scales.y;
+          const meta = chart.getDatasetMeta(0);
+          const zero = Math.round(escalaY.getPixelForValue(0)) + 0.5;
+
+          c.save();
+          c.strokeStyle = 'rgba(0,0,0,0.25)';
+          c.lineWidth = 1;
+          c.beginPath();
+          c.moveTo(left, zero);
+          c.lineTo(right, zero);
+          c.stroke();
+
+          c.strokeStyle = 'rgba(0,0,0,0.35)';
+          c.setLineDash([3, 3]);
+          for (let i = 0; i < barras.length - 1; i++) {
+            if (tipos[i] !== 'passo' || tipos[i + 1] === 'referencia') continue;
+            const a = meta.data[i].getProps(['x', 'width'], true);
+            const b = meta.data[i + 1].getProps(['x', 'width'], true);
+            const nivel = Math.round(escalaY.getPixelForValue(barras[i][1])) + 0.5;
+            c.beginPath();
+            c.moveTo(a.x + a.width / 2, nivel);
+            c.lineTo(b.x - b.width / 2, nivel);
+            c.stroke();
+          }
+          c.restore();
+        },
+        // Valor de cada barra (ex.: 22,79%): acima; abaixo só quando a barra sai do zero para baixo
         afterDatasetsDraw(chart) {
           const c = chart.ctx;
           const meta = chart.getDatasetMeta(0);
 
           c.save();
-          c.font = `500 ${labelFontSize}px Montserrat`;
+          c.font = `500 ${labelSize(chart)}px Montserrat`;
           c.fillStyle = '#000';
           c.textAlign = 'center';
-          c.textBaseline = 'bottom';
 
           meta.data.forEach((bar, i) => {
             const { x, y, base } = bar.getProps(['x', 'y', 'base'], true);
             const texto = values[i].toFixed(2).replace('.', ',') + '%';
-            c.fillText(texto, x, Math.min(y, base) - 3);
+            const abaixo = values[i] < 0 && barras[i][0] === 0;
+
+            if (abaixo) {
+              c.textBaseline = 'top';
+              c.fillText(texto, x, Math.max(y, base) + 4);
+            } else {
+              c.textBaseline = 'bottom';
+              c.fillText(texto, x, Math.min(y, base) - 4);
+            }
           });
 
           c.restore();
@@ -1685,17 +1824,17 @@
             borderWidth: 0,
             borderRadius: 0,
             borderSkipped: false,
-            barPercentage: 0.75,
+            barPercentage: 0.9,
             categoryPercentage: 0.8,
             minBarLength: 2,
           }]
         },
-        plugins: [rotulosPlugin],
+        plugins: [cascataPlugin],
         options: {
           responsive: true,
           maintainAspectRatio: false,
           layout: {
-            padding: { top: labelFontSize + 10 }
+            padding: { top: (isMobileVertical ? 20 : 13) + 10 }
           },
           plugins: {
             legend: {
@@ -1707,33 +1846,19 @@
           },
           scales: {
             x: {
+              grid: { display: false },
+              border: { display: false },
               ticks: {
-                color: '#000',
+                color: '#333',
                 autoSkip: false,
                 maxRotation: 0,
-                font: {
-                  family: 'Montserrat',
-                  size: axisFontSize,
-                  weight: '300'
-                }
-              },
-              grid: {
-                display: false
+                font: tickFont
               }
             },
             y: {
-              beginAtZero: true,
-              ticks: {
-                color: '#000',
-                maxTicksLimit: 6,
-                font: {
-                  family: 'Montserrat',
-                  size: axisFontSize,
-                  weight: '300'
-                },
-                callback: (v) => (Number.isInteger(v) ? v : v.toFixed(1).replace('.', ',')) + '%'
-              },
-              grid: { color: "rgba(0,0,0,0.05)" }
+              display: false,
+              min: minimo < 0 ? minimo - folga : 0,
+              max: maximo
             }
           }
         }
