@@ -556,6 +556,29 @@
       color: #00000;
       margin-left: 12px;
     }
+
+    /* GRÁFICO DE VOLATILIDADE ANUALIZADA (JANELA MÓVEL MENSAL) */
+    .vol-chart-section {
+      margin-top: 30px;
+    }
+
+    .vol-chart-title {
+      font-size: 14px;
+      color: #000000;
+      margin: 0 0 15px 0;
+      text-align: center;
+      font-weight: 600;
+      font-family: "Montserrat", sans-serif;
+      letter-spacing: 0.5px;
+    }
+
+    .mobile-device .vol-chart-title {
+      font-size: 18px;
+    }
+
+    .mobile-landscape .vol-chart-title {
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
@@ -601,6 +624,16 @@
       <div class="loading" id="tableLoading">Carregando tabela...</div>
       <table class="data-table" id="dataTable" style="display: none;">
       </table>
+    </div>
+
+    <!-- Gráfico de Volatilidade Anualizada (janela móvel mensal) - colunas AV:AX -->
+    <div class="charts-main-container vol-chart-section">
+      <div class="main-chart-container" id="volChartContainer">
+        <h3 class="vol-chart-title">Volatilidade Anualizada – Janela Móvel Mensal</h3>
+        <div class="chart-container">
+          <canvas id="volatilidadeChart"></canvas>
+        </div>
+      </div>
     </div>
 
     <div id="deviceInfo"></div>
@@ -782,6 +815,7 @@
         createMainChart(allDates, morpheus, ibov);
         createSideCharts(rows);
         loadTableData(rows);
+        createVolatilidadeChart(rows);
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -1259,6 +1293,252 @@
         console.error("Erro ao criar tabela:", error);
         document.getElementById("tableLoading").textContent = `Erro na tabela: ${error.message}`;
         document.getElementById("tableLoading").className = "error";
+      }
+    }
+
+    // ===== GRÁFICO DE VOLATILIDADE ANUALIZADA (JANELA MÓVEL MENSAL) - COLUNAS AV:AX =====
+    // Mesmas características do gráfico principal; tooltip próprio ancorado no seu container.
+    let volTooltip = null;
+
+    function showVolTooltip(chart, tooltip) {
+      const chartContainer = document.getElementById('volChartContainer');
+
+      if (!volTooltip) {
+        volTooltip = document.createElement('div');
+        volTooltip.className = 'custom-tooltip';
+        chartContainer.appendChild(volTooltip);
+      }
+      const tooltipEl = volTooltip;
+
+      if (tooltip.opacity === 0) {
+        tooltipEl.classList.remove('visible');
+        return;
+      }
+
+      if (tooltip.body) {
+        const title = tooltip.title[0] || '';
+        let tooltipHTML = `<div class="tooltip-header">${title}</div>`;
+
+        tooltip.dataPoints.forEach((dataPoint) => {
+          const dataset = chart.data.datasets[dataPoint.datasetIndex];
+          const value = dataPoint.raw.y.toFixed(2).replace('.', ',') + '%';
+          const label = dataset.label || '';
+          const color = dataset.borderColor || '#164CAD';
+
+          tooltipHTML += `
+            <div class="tooltip-item">
+              <span class="tooltip-label">
+                <span class="tooltip-color" style="background-color: ${color}"></span>
+                ${label}
+              </span>
+              <span class="tooltip-value">${value}</span>
+            </div>
+          `;
+        });
+
+        tooltipEl.innerHTML = tooltipHTML;
+      }
+
+      const position = chart.canvas.getBoundingClientRect();
+      const containerRect = chartContainer.getBoundingClientRect();
+
+      let left = position.left + tooltip.caretX - containerRect.left;
+
+      const yScale = chart.scales.y;
+      const highestY = Math.min(...tooltip.dataPoints.map(dp => yScale.getPixelForValue(dp.raw.y)));
+      let top = position.top + highestY - containerRect.top;
+
+      const tooltipWidth = tooltipEl.offsetWidth;
+      const tooltipHeight = tooltipEl.offsetHeight;
+
+      const placement = 'top';
+      top -= tooltipHeight + 10;
+      left -= tooltipWidth / 2;
+
+      tooltipEl.style.left = left + 'px';
+      tooltipEl.style.top = top + 'px';
+      tooltipEl.className = `custom-tooltip ${placement} visible`;
+    }
+
+    function createVolatilidadeChart(rows) {
+      try {
+        const volDates = [];
+        const volMorpheus = [];
+        const volIbov = [];
+
+        // AV = índice 47 (Data), AW = 48 (Morpheus), AX = 49 (IBOV); valores já em % (ex.: "19.56%")
+        for (let i = 1; i < rows.length; i++) {
+          const cols = rows[i].split(",");
+          if (cols.length >= 50) {
+            const date = cols[47]?.trim();
+            const v1 = parseFloat(cols[48]);
+            const v2 = parseFloat(cols[49]);
+
+            if (date && !isNaN(v1) && !isNaN(v2)) {
+              volDates.push(date);
+              volMorpheus.push(v1);
+              volIbov.push(v2);
+            }
+          }
+        }
+
+        console.log("Dados Volatilidade - Datas:", volDates.length);
+
+        if (volDates.length === 0) {
+          throw new Error("Nenhum dado válido encontrado para o gráfico de volatilidade");
+        }
+
+        const morpheusData = volDates.map((date, i) => ({
+          x: date.split("/").reverse().join("-"),
+          y: volMorpheus[i]
+        }));
+
+        const ibovData = volDates.map((date, i) => ({
+          x: date.split("/").reverse().join("-"),
+          y: volIbov[i]
+        }));
+
+        const canvas = document.getElementById("volatilidadeChart");
+        const ctx = canvas.getContext("2d");
+
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+
+        const isMobileVertical = document.body.classList.contains('mobile-device') &&
+                            !document.body.classList.contains('mobile-landscape');
+
+        const axisFontSize = isMobileVertical ? 22 : 15;
+        const legendFontSize = isMobileVertical ? 20 : 12;
+
+        const createGradient = (ctx, chartArea) => {
+          const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+          gradient.addColorStop(0, "#F6F8FC");
+          gradient.addColorStop(0.5, "#8EA8D7");
+          gradient.addColorStop(1, "#164CAD");
+          return gradient;
+        };
+
+        window.chartInstances.volatilidadeChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            datasets: [
+              {
+                label: "Morpheus",
+                data: morpheusData,
+                borderColor: "#164CAD",
+                borderWidth: 1.5,
+                pointRadius: 0,
+                tension: 0.15,
+                fill: true,
+                backgroundColor: function(context) {
+                  const chart = context.chart;
+                  const {ctx, chartArea} = chart;
+                  if (!chartArea) {
+                    return null;
+                  }
+                  return createGradient(ctx, chartArea);
+                },
+                order: 2,
+              },
+              {
+                label: "IBOV",
+                data: ibovData,
+                borderColor: "#000000",
+                borderWidth: 1.5,
+                pointRadius: 0,
+                tension: 0.15,
+                fill: false,
+                order: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+              intersect: false,
+              mode: 'index',
+            },
+            plugins: {
+              legend: {
+                position: "top",
+                labels: {
+                  usePointStyle: true,
+                  pointStyle: "circle",
+                  color: "#000000",
+                  font: {
+                    family: "Montserrat",
+                    size: legendFontSize,
+                    weight: "300",
+                  },
+                },
+                reverse: true
+              },
+              tooltip: {
+                enabled: false,
+                external: (context) => {
+                  showVolTooltip(context.chart, context.tooltip);
+                }
+              },
+            },
+            scales: {
+              x: {
+                type: "time",
+                time: {
+                  unit: "month",
+                  displayFormats: {
+                    month: "MMM - yy"
+                  },
+                  tooltipFormat: "dd/MM/yyyy"
+                },
+                ticks: {
+                  color: "#000000",
+                  maxRotation: 45,
+                  minRotation: 45,
+                  font: {
+                    family: "Montserrat",
+                    size: axisFontSize,
+                    weight: "300",
+                  },
+                  callback: function(value) {
+                    const date = new Date(value);
+                    const month = date.getMonth();
+                    const year = date.getFullYear().toString().slice(-2);
+
+                    const mesesPortugues = [
+                      'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                      'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+                    ];
+
+                    return `${mesesPortugues[month]} - ${year}`;
+                  }
+                },
+                grid: { color: "rgba(0,0,0,0.05)" },
+              },
+              y: {
+                ticks: {
+                  color: "#000000",
+                  font: {
+                    family: "Montserrat",
+                    size: axisFontSize,
+                    weight: "300",
+                  },
+                  callback: (v) => `${v.toFixed(0)}%`,
+                  stepSize: 5
+                },
+                grid: { color: "rgba(0,0,0,0.05)" },
+              },
+            },
+          },
+        });
+
+        console.log("Gráfico de volatilidade criado com sucesso");
+
+      } catch (error) {
+        console.error("Erro ao criar gráfico de volatilidade:", error);
       }
     }
 
