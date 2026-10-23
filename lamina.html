@@ -558,8 +558,18 @@
     }
 
     /* GRÁFICO DE VOLATILIDADE ANUALIZADA (JANELA MÓVEL MENSAL) */
+    /* Distância visível topo→volatilidade igual à volatilidade→tabela:
+       a margem compensa a folga interna que os gráficos do topo têm embaixo (medido em PC, celular em pé e deitado) */
     .vol-chart-section {
-      margin-top: 30px;
+      margin-top: 21px;
+    }
+
+    .mobile-device .vol-chart-section {
+      margin-top: 3.2px;
+    }
+
+    .mobile-landscape .vol-chart-section {
+      margin-top: 6.5px;
     }
 
     .vol-chart-title {
@@ -669,12 +679,6 @@
       </div>
     </div>
     
-    <div class="data-table-container">
-      <div class="loading" id="tableLoading">Carregando tabela...</div>
-      <table class="data-table" id="dataTable" style="display: none;">
-      </table>
-    </div>
-
     <!-- Gráfico de Volatilidade Anualizada (janela móvel mensal) - colunas AV:AX -->
     <div class="charts-main-container vol-chart-section">
       <div class="main-chart-container" id="volChartContainer">
@@ -700,6 +704,12 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="data-table-container">
+      <div class="loading" id="tableLoading">Carregando tabela...</div>
+      <table class="data-table" id="dataTable" style="display: none;">
+      </table>
     </div>
 
     <div id="deviceInfo"></div>
