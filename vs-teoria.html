@@ -122,12 +122,12 @@
       background-color: #fff;
       padding: 10px;
       box-sizing: border-box;
-      height: 620px;
+      height: 480px;
     }
 
     canvas {
       width: 100%;
-      height: 620px !important;
+      height: 460px !important;
       display: block;
     }
 
@@ -276,11 +276,290 @@
     }
 
     .mobile-landscape .chart-container {
-      height: 520px;
+      height: 480px;
     }
 
     .mobile-landscape canvas {
-      height: 520px !important;
+      height: 460px !important;
+    }
+
+    /* ===== LAYOUT: GRÁFICO VS TEORIA (ESQUERDA, METADE DA LARGURA) + 2 GRÁFICOS DE TRACKING ERROR (DIREITA) ===== */
+    .teoria-layout {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .teoria-layout > .chart-main-container {
+      flex: 1 1 0;
+      min-width: 0;
+      width: auto;
+    }
+
+    .te-charts-container {
+      flex: 1 1 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .te-chart-block {
+      position: relative;
+    }
+
+    .te-chart-title {
+      font-size: 14px;
+      color: #000000;
+      margin: 0 0 10px 0;
+      text-align: center;
+      font-weight: 600;
+      font-family: "Montserrat", sans-serif;
+      letter-spacing: 0.5px;
+    }
+
+    /* Altura fixa: o gráfico é desenhado exatamente no tamanho exibido (sem achatar/borrar) */
+    .te-chart-container {
+      position: relative;
+      height: 202px;
+    }
+
+    .te-chart-container canvas {
+      height: 202px !important;
+    }
+
+    /* Celular em pé: tudo um embaixo do outro, largura total */
+    .mobile-device .teoria-layout {
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .mobile-device .teoria-layout > .chart-main-container,
+    .mobile-device .te-charts-container {
+      flex: none;
+      width: 100%;
+    }
+
+    .mobile-device .te-charts-container {
+      gap: 30px;
+    }
+
+    .mobile-device .te-chart-title {
+      font-size: 18px;
+    }
+
+    .mobile-device .te-chart-container {
+      height: 340px;
+    }
+
+    .mobile-device .te-chart-container canvas {
+      height: 340px !important;
+    }
+
+    /* Celular deitado: lado a lado, como no PC */
+    .mobile-landscape .teoria-layout {
+      flex-direction: row;
+      gap: 20px;
+    }
+
+    .mobile-landscape .teoria-layout > .chart-main-container,
+    .mobile-landscape .te-charts-container {
+      flex: 1 1 0;
+      width: auto;
+    }
+
+    .mobile-landscape .te-charts-container {
+      gap: 20px;
+    }
+
+    .mobile-landscape .te-chart-title {
+      font-size: 16px;
+    }
+
+    .mobile-landscape .te-chart-container {
+      height: 201px;
+    }
+
+    .mobile-landscape .te-chart-container canvas {
+      height: 201px !important;
+    }
+
+    /* ===== TABELA CLUBE VS TEORIA (BD2:BS8) - MESMO FORMATO DA TABELA DA LÂMINA ===== */
+    .data-table-container {
+      width: 95%;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 50px;
+      overflow: visible;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: "Montserrat", sans-serif;
+      margin-bottom: 20px;
+      border: none;
+      table-layout: fixed;
+    }
+
+    .data-table th {
+      background-color: #164CAD;
+      color: white;
+      padding: 8px 4px;
+      text-align: center;
+      font-weight: bold;
+      border: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 6px 4px;
+      text-align: center;
+      border: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .data-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .data-table tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .data-table .header-row {
+      background-color: #164CAD;
+      color: white;
+    }
+
+    .data-table .column-w {
+      background-color: #164CAD;
+      color: white;
+      font-weight: bold;
+    }
+
+    .data-table th:nth-last-child(3),
+    .data-table td:nth-last-child(3) {
+      border-right: 2px solid #a3a3a3;
+    }
+
+    .data-table .merged-cell {
+      vertical-align: middle;
+    }
+
+    .data-table th:nth-child(n+4),
+    .data-table td:nth-child(n+4) {
+      width: 50px;
+      min-width: 50px;
+      max-width: 50px;
+    }
+
+    .data-table th:nth-child(1),
+    .data-table td:nth-child(1) {
+      width: 80px;
+    }
+
+    .data-table th:nth-child(2),
+    .data-table td:nth-child(2) {
+      width: 70px;
+    }
+
+    .data-table th:nth-child(3),
+    .data-table td:nth-child(3) {
+      width: 60px;
+    }
+
+    .desktop-device .data-table {
+      font-size: 14px;
+    }
+
+    .desktop-device .data-table th,
+    .desktop-device .data-table td {
+      padding: 10px 6px;
+    }
+
+    .mobile-device .data-table-container {
+      width: 98%;
+      max-width: none;
+      padding: 0 10px;
+    }
+
+    .mobile-device .data-table {
+      font-size: 12px;
+      margin: 0 auto;
+    }
+
+    .mobile-device .data-table th,
+    .mobile-device .data-table td {
+      padding: 5px 3px;
+    }
+
+    .mobile-device .data-table th:nth-child(n+4),
+    .mobile-device .data-table td:nth-child(n+4) {
+      width: 45px;
+      min-width: 45px;
+      max-width: 45px;
+    }
+
+    .mobile-device .data-table th:nth-child(1),
+    .mobile-device .data-table td:nth-child(1) {
+      width: 70px;
+    }
+
+    .mobile-device .data-table th:nth-child(2),
+    .mobile-device .data-table td:nth-child(2) {
+      width: 60px;
+    }
+
+    .mobile-device .data-table th:nth-child(3),
+    .mobile-device .data-table td:nth-child(3) {
+      width: 50px;
+    }
+
+    .mobile-landscape .data-table-container {
+      width: 98%;
+      max-width: 1200px;
+      padding: 0;
+    }
+
+    .mobile-landscape .data-table {
+      font-size: 11px;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .mobile-landscape .data-table th,
+    .mobile-landscape .data-table td {
+      padding: 5px 3px;
+    }
+
+    .mobile-landscape .data-table th:nth-child(n+4),
+    .mobile-landscape .data-table td:nth-child(n+4) {
+      width: 40px;
+      min-width: 40px;
+      max-width: 40px;
+    }
+
+    .mobile-landscape .data-table th:nth-child(1),
+    .mobile-landscape .data-table td:nth-child(1) {
+      width: 60px;
+    }
+
+    .mobile-landscape .data-table th:nth-child(2),
+    .mobile-landscape .data-table td:nth-child(2) {
+      width: 50px;
+    }
+
+    .mobile-landscape .data-table th:nth-child(3),
+    .mobile-landscape .data-table td:nth-child(3) {
+      width: 45px;
     }
   </style>
 </head>
@@ -303,17 +582,46 @@
     </div>
     
     <div class="unified-chart-wrapper">
-      <div class="chart-main-container">
-        <div class="main-chart-container">
-          <div class="chart-container">
-            <canvas id="performanceChart"></canvas>
+      <div class="teoria-layout">
+        <div class="chart-main-container">
+          <div class="main-chart-container">
+            <div class="chart-container">
+              <canvas id="performanceChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tracking Error (colunas AZ:BB) -->
+        <div class="te-charts-container">
+          <div class="te-chart-block" id="teHistoricoBlock">
+            <h3 class="te-chart-title">Tracking Error Histórico Anualizado</h3>
+            <div class="te-chart-container">
+              <canvas id="teHistoricoChart"></canvas>
+            </div>
+          </div>
+
+          <div class="te-chart-block" id="teMensalBlock">
+            <h3 class="te-chart-title">Tracking Error Mensal Anualizado</h3>
+            <div class="te-chart-container">
+              <canvas id="teMensalChart"></canvas>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Tabela Clube vs Teoria mês a mês (BD2:BS8) - mesmo formato da tabela da Lâmina -->
+    <div class="data-table-container">
+      <div class="loading" id="tableLoading">Carregando tabela...</div>
+      <table class="data-table" id="dataTable" style="display: none;">
+      </table>
+    </div>
+
     <div id="deviceInfo"></div>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
@@ -578,8 +886,20 @@
       });
       ctx.restore();
 
-      const topStep = 5;
-      const bottomStep = 1;
+      // Passo dos rótulos do eixo: 5% em cima e 1% embaixo; no PC e no celular deitado (gráfico mais baixo),
+      // o passo aumenta (2, 5, 10...) só quando os rótulos ficariam apertados
+      const escolherPasso = (range, alturaPx, passoPadrao) => {
+        if (isMobileVertical) return passoPadrao;
+        const passos = [1, 2, 5, 10, 20, 25, 50, 100].filter(p => p >= passoPadrao);
+        const espacoMinimo = axisFontSize * 1.5;
+        for (const p of passos) {
+          if (alturaPx * p / (range.max - range.min) >= espacoMinimo) return p;
+        }
+        return passos[passos.length - 1];
+      };
+
+      const topStep = escolherPasso(topRange, upperBottom - upperTop, 5);
+      const bottomStep = escolherPasso(bottomRange, lowerBottom - lowerTop, 1);
 
       const topStart = Math.ceil(topRange.min / topStep) * topStep;
       const topEnd = Math.floor(topRange.max / topStep) * topStep;
@@ -899,6 +1219,284 @@
       };
     }
 
+    // ===== GRÁFICOS DE TRACKING ERROR (COLUNAS AZ:BB) =====
+    // AZ = índice 51 (Data), BA = 52 (TE Histórico Anualizado), BB = 53 (TE Mensal Anualizado); valores em % (ex.: "0.89%")
+    function readTrackingError(rows, col) {
+      const pontos = [];
+      for (let i = 1; i < rows.length; i++) {
+        const cols = rows[i].split(",");
+        const dateStr = cols[51]?.trim();
+        const ts = parseDateToTimestamp(dateStr);
+        const v = parseFloat(cols[col]);
+        if (dateStr && ts !== null && !Number.isNaN(v)) {
+          pontos.push({ x: ts, y: v });
+        }
+      }
+      return pontos;
+    }
+
+    function showTeTooltip(chart, tooltip, blockEl) {
+      let tooltipEl = blockEl.querySelector(".custom-tooltip");
+      if (!tooltipEl) {
+        tooltipEl = document.createElement("div");
+        tooltipEl.className = "custom-tooltip";
+        blockEl.appendChild(tooltipEl);
+      }
+
+      if (tooltip.opacity === 0) {
+        tooltipEl.classList.remove("visible");
+        return;
+      }
+
+      if (tooltip.body && tooltip.dataPoints.length) {
+        const dp = tooltip.dataPoints[0];
+        tooltipEl.innerHTML = `
+          <div class="tooltip-header">${formatDateBR(dp.raw.x)}</div>
+          <div class="tooltip-item">
+            <span class="tooltip-label">
+              <span class="tooltip-color" style="background-color:#164CAD"></span>
+              Tracking Error
+            </span>
+            <span class="tooltip-value">${formatPercent(dp.raw.y)}</span>
+          </div>
+        `;
+      }
+
+      const canvasRect = chart.canvas.getBoundingClientRect();
+      const blockRect = blockEl.getBoundingClientRect();
+      const pointY = chart.scales.y.getPixelForValue(tooltip.dataPoints[0].raw.y);
+
+      let left = canvasRect.left - blockRect.left + tooltip.caretX - tooltipEl.offsetWidth / 2;
+      let top = canvasRect.top - blockRect.top + pointY - tooltipEl.offsetHeight - 10;
+
+      tooltipEl.style.left = `${left}px`;
+      tooltipEl.style.top = `${top}px`;
+      tooltipEl.className = "custom-tooltip top visible";
+    }
+
+    function createTrackingErrorChart(canvasId, blockId, pontos) {
+      const canvas = document.getElementById(canvasId);
+      const blockEl = document.getElementById(blockId);
+
+      const isMobileVertical = document.body.classList.contains('mobile-device') &&
+                               !document.body.classList.contains('mobile-landscape');
+      const axisFontSize = isMobileVertical ? 20 : 13;
+
+      new Chart(canvas.getContext("2d"), {
+        type: "line",
+        data: {
+          datasets: [{
+            label: "Tracking Error",
+            data: pontos,
+            borderColor: "#164CAD",
+            borderWidth: 1.5,
+            pointRadius: 0,
+            tension: 0.15,
+            fill: false
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            intersect: false,
+            mode: "index"
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              enabled: false,
+              external: (context) => showTeTooltip(context.chart, context.tooltip, blockEl)
+            }
+          },
+          scales: {
+            x: {
+              type: "time",
+              time: {
+                unit: "month"
+              },
+              ticks: {
+                color: "#000000",
+                maxRotation: 45,
+                minRotation: 45,
+                font: {
+                  family: "Montserrat",
+                  size: axisFontSize,
+                  weight: "400"
+                },
+                callback: (value) => {
+                  const d = new Date(value);
+                  return `${monthsShortPT(d.getMonth())} - ${String(d.getFullYear()).slice(-2)}`;
+                }
+              },
+              grid: { color: "rgba(0,0,0,0.05)" }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: "#000000",
+                maxTicksLimit: 5,
+                font: {
+                  family: "Montserrat",
+                  size: axisFontSize,
+                  weight: "400"
+                },
+                callback: (v) => (Number.isInteger(v) ? v : v.toFixed(1).replace(".", ",")) + "%"
+              },
+              grid: { color: "rgba(0,0,0,0.05)" }
+            }
+          }
+        }
+      });
+    }
+
+    function createTrackingErrorCharts(rows) {
+      // Só desenha depois que a fonte Montserrat carregar, para os rótulos dos eixos não saírem cortados
+      const fontesProntas = (document.fonts && document.fonts.load)
+        ? document.fonts.load("400 16px Montserrat").catch(() => {})
+        : Promise.resolve();
+
+      fontesProntas.then(() => {
+        [
+          { canvasId: "teHistoricoChart", blockId: "teHistoricoBlock", col: 52 }, // BA
+          { canvasId: "teMensalChart",    blockId: "teMensalBlock",    col: 53 }  // BB
+        ].forEach(({ canvasId, blockId, col }) => {
+          try {
+            const pontos = readTrackingError(rows, col);
+            if (!pontos.length) throw new Error("Nenhum dado válido encontrado");
+            createTrackingErrorChart(canvasId, blockId, pontos);
+          } catch (error) {
+            console.error(`Erro ao criar gráfico de tracking error ${canvasId}:`, error);
+          }
+        });
+      });
+    }
+
+    // ===== TABELA CLUBE VS TEORIA (BD2:BS8) - MESMA LÓGICA DA TABELA DA LÂMINA (W2:AL8) =====
+    // Linha 2 = cabeçalho (Jan..Dez, Ano, Acum.); linhas 3-5 e 6-8 = dois anos, com a 3ª linha de cada ano
+    // calculada como (1ª linha - 2ª linha), ou seja, Clube - Teoria
+    function loadTableData(rows) {
+      const COL_INICIO = 55; // BD
+      const COL_FIM = 71;    // até BS (inclusive)
+
+      try {
+        if (rows.length < 9) {
+          throw new Error("Dados insuficientes para a tabela");
+        }
+
+        const headerRow = rows[1].split(",");
+        const dataRows = [
+          rows[2].split(","), // Linha 3 - 1º ano, Clube
+          rows[3].split(","), // Linha 4 - 1º ano, Teoria
+          rows[4].split(","), // Linha 5 - 1º ano, diferença
+          rows[5].split(","), // Linha 6 - 2º ano, Clube
+          rows[6].split(","), // Linha 7 - 2º ano, Teoria
+          rows[7].split(",")  // Linha 8 - 2º ano, diferença
+        ];
+
+        const tableHeaders = headerRow.slice(COL_INICIO, COL_FIM);
+
+        const table = document.getElementById("dataTable");
+        const tableLoading = document.getElementById("tableLoading");
+
+        table.innerHTML = "";
+
+        const headerRowElement = document.createElement("tr");
+        headerRowElement.className = "header-row";
+
+        tableHeaders.forEach((header, index) => {
+          const th = document.createElement("th");
+          th.textContent = header?.trim() || "";
+          if (index === 0) {
+            th.className = "column-w";
+          }
+          headerRowElement.appendChild(th);
+        });
+
+        table.appendChild(headerRowElement);
+
+        // Diferença Clube - Teoria
+        function calcularDiferenca(valClube, valTeoria) {
+          if (!valClube || !valTeoria) return "-";
+
+          const cClean = valClube.toString().replace('%', '').replace(',', '.').trim();
+          const tClean = valTeoria.toString().replace('%', '').replace(',', '.').trim();
+
+          if (cClean === "" || tClean === "" || cClean === "-" || tClean === "-") return "-";
+
+          const numC = parseFloat(cClean);
+          const numT = parseFloat(tClean);
+
+          if (isNaN(numC) || isNaN(numT)) return "-";
+
+          let res = (numC - numT).toFixed(2).replace('.', ',');
+          if (res === "-0,00") res = "0,00";
+          return res + "%";
+        }
+
+        // Dois grupos de três linhas (um por ano)
+        [0, 3].forEach((inicio) => {
+          for (let rowIndex = inicio; rowIndex < inicio + 3; rowIndex++) {
+            const rowCells = dataRows[rowIndex].slice(COL_INICIO, COL_FIM);
+            const dataRowElement = document.createElement("tr");
+
+            if (rowIndex === inicio) {
+              const mergedCell = document.createElement("td");
+              mergedCell.className = "merged-cell";
+              mergedCell.rowSpan = 3;
+              mergedCell.textContent = rowCells[0]?.trim() || "";
+              dataRowElement.appendChild(mergedCell);
+
+              rowCells.slice(1).forEach((cellData) => {
+                const td = document.createElement("td");
+                td.textContent = cellData?.trim() || "";
+                dataRowElement.appendChild(td);
+              });
+            } else if (rowIndex === inicio + 2) {
+              const clubeCells = dataRows[inicio].slice(COL_INICIO, COL_FIM);
+              const teoriaCells = dataRows[inicio + 1].slice(COL_INICIO, COL_FIM);
+
+              rowCells.slice(1).forEach((cellData, cellIndex) => {
+                const td = document.createElement("td");
+                if (cellIndex === 0) {
+                  td.textContent = cellData?.trim() || "p.p. Teoria";
+                } else {
+                  const c = clubeCells[cellIndex + 1];
+                  const t = teoriaCells[cellIndex + 1];
+
+                  // Se algum dos dados de origem for vazio ou "-", força "-"
+                  if (!c || !t || c.trim() === "-" || t.trim() === "-" || c.trim() === "" || t.trim() === "") {
+                    td.textContent = "-";
+                  } else {
+                    td.textContent = calcularDiferenca(c, t);
+                  }
+                }
+                dataRowElement.appendChild(td);
+              });
+            } else {
+              rowCells.slice(1).forEach((cellData) => {
+                const td = document.createElement("td");
+                td.textContent = cellData?.trim() || "";
+                dataRowElement.appendChild(td);
+              });
+            }
+
+            table.appendChild(dataRowElement);
+          }
+        });
+
+        table.style.display = "table";
+        tableLoading.style.display = "none";
+
+      } catch (error) {
+        console.error("Erro ao criar tabela:", error);
+        document.getElementById("tableLoading").textContent = `Erro na tabela: ${error.message}`;
+        document.getElementById("tableLoading").className = "error";
+      }
+    }
+
     async function loadData() {
       try {
         const response = await fetch(csvUrl);
@@ -922,9 +1520,13 @@
         document.getElementById("subtitle").textContent = chartState.data.lastDate || "";
         attachMouseEvents();
         drawChart();
+        createTrackingErrorCharts(rows);
+        loadTableData(rows);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         document.getElementById("subtitle").textContent = "Erro ao carregar dados";
+        document.getElementById("tableLoading").textContent = `Erro: ${error.message}`;
+        document.getElementById("tableLoading").className = "error";
       }
     }
 
