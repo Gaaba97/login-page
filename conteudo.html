@@ -376,6 +376,173 @@
         font-size: 13px;
       }
     }
+
+    /* =============================
+       VISIBILIDADE (SÓ PARA O MASTER)
+       ============================= */
+    .visib-bloco {
+      /* alinhado ao texto do card: thumb 200px + gap 18px */
+      margin: -6px 0 18px 218px;
+    }
+
+    .mobile-device .visib-bloco {
+      margin-left: 0;
+    }
+
+    .visib-barra {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+    }
+
+    .visib-resumo {
+      font-size: 13px;
+      color: #888;
+    }
+
+    .visib-resumo.parcial {
+      color: #164CAD;
+      font-weight: 700;
+    }
+
+    .visib-resumo.nenhum {
+      color: #c00;
+      font-weight: 700;
+    }
+
+    .visib-btn {
+      border: none;
+      border-radius: 6px;
+      padding: 7px 12px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+    }
+
+    .visib-btn-secundario {
+      background: #e9edf5;
+      color: #222;
+    }
+
+    .visib-btn-secundario:hover {
+      background: #dde3ee;
+    }
+
+    .visib-btn-primario {
+      background: #164CAD;
+      color: white;
+    }
+
+    .visib-btn-primario:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .visib-painel {
+      margin-top: 12px;
+    }
+
+    .visib-botoes {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .visib-lista {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .visib-cotista {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+
+    .visib-cotista:last-child {
+      border-bottom: none;
+    }
+
+    .visib-cotista input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .visib-nome {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .visib-email {
+      font-size: 13px;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .visib-rodape {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .visib-contador {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .visib-status {
+      font-size: 13px;
+    }
+
+    .visib-status.ok {
+      color: #1a7f37;
+    }
+
+    .visib-status.erro {
+      color: #c00;
+    }
+
+    .visib-aviso {
+      text-align: center;
+      color: #c00;
+      font-size: 14px;
+      margin: 0 0 10px 0;
+    }
+
+    .mobile-device .visib-resumo,
+    .mobile-device .visib-btn,
+    .mobile-device .visib-contador,
+    .mobile-device .visib-status {
+      font-size: 15px;
+    }
+
+    .mobile-device .visib-btn {
+      padding: 10px 14px;
+    }
+
+    .mobile-device .visib-nome {
+      font-size: 16px;
+    }
+
+    .mobile-device .visib-email {
+      font-size: 14px;
+    }
+
+    .mobile-device .visib-cotista input {
+      width: 22px;
+      height: 22px;
+    }
   </style>
 </head>
 <body>
@@ -426,6 +593,11 @@
       getFirestore,
       doc,
       getDoc,
+      collection,
+      getDocs,
+      writeBatch,
+      arrayUnion,
+      arrayRemove,
     } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -441,8 +613,14 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Conta master: vê todos os conteúdos e escolhe quais cotistas veem cada um.
+    // Para cada cotista, os ids dos vídeos ocultos ficam em usuarios/{uid}.conteudosOcultos
+    const EMAIL_MASTER = "gabrielssimon7@gmail.com";
+
     onAuthStateChanged(auth, async (user) => {
       if (user) {
+        let ocultos = null; // continua null se não der para ler o cadastro
+
         try {
           const docRef = doc(db, "usuarios", user.uid);
           const docSnap = await getDoc(docRef);
@@ -453,16 +631,70 @@
             const genero = (data.genero || "masculino").toLowerCase();
             const saudacao = genero === "feminino" ? "Bem-vinda" : "Bem-vindo";
             document.getElementById("welcomeUser").textContent = `${saudacao}, ${nome}`;
+            ocultos = Array.isArray(data.conteudosOcultos) ? data.conteudosOcultos : [];
           } else {
             document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
+            ocultos = [];
           }
         } catch (error) {
           document.getElementById("welcomeUser").textContent = "Bem-vindo(a), Usuário";
+        }
+
+        if (user.email === EMAIL_MASTER) {
+          window.definirAcessoConteudo(await montarAcessoMaster(user.uid));
+        } else if (ocultos === null) {
+          // Sem o cadastro não dá para saber o que está oculto para este cotista
+          window.falhaAcessoConteudo();
+        } else {
+          window.definirAcessoConteudo({ master: false, ocultos });
         }
       } else {
         window.location.href = "index.html";
       }
     });
+
+    // Lista de cotistas para o master marcar quem vê cada conteúdo
+    // (mesmos cadastros da página admin: os que têm e-mail; o master fica de fora porque sempre vê tudo)
+    async function montarAcessoMaster(uidMaster) {
+      try {
+        const snapshot = await getDocs(collection(db, "usuarios"));
+        const cotistas = [];
+
+        snapshot.forEach((docSnapshot) => {
+          const dados = docSnapshot.data();
+
+          if (!dados.email) return;
+          if (docSnapshot.id === uidMaster) return;
+
+          cotistas.push({
+            uid: docSnapshot.id,
+            nome: dados.nome || "Cotista",
+            email: dados.email,
+            ocultos: new Set(Array.isArray(dados.conteudosOcultos) ? dados.conteudosOcultos : []),
+          });
+        });
+
+        cotistas.sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+
+        return { master: true, cotistas, salvarVisibilidade };
+      } catch (error) {
+        console.error("Erro ao carregar cotistas:", error);
+        return { master: true, cotistas: null, salvarVisibilidade };
+      }
+    }
+
+    // mudancas: [{ uid, oculto }] — só os cotistas que mudaram para este vídeo
+    async function salvarVisibilidade(videoId, mudancas) {
+      const batch = writeBatch(db);
+
+      mudancas.forEach(({ uid, oculto }) => {
+        batch.update(doc(db, "usuarios", uid), {
+          conteudosOcultos: oculto ? arrayUnion(videoId) : arrayRemove(videoId),
+        });
+      });
+
+      await batch.commit();
+    }
   </script>
 
   <!-- SCRIPT DE BUSCA, RENDERIZAÇÃO E MODAL DOS VÍDEOS -->
@@ -528,6 +760,210 @@
       if (e.key === "Escape") fecharModal();
     });
 
+    /* ---- ACESSO ----
+       A lista só é exibida depois do login (script do Firebase acima):
+       - cotista: { master: false, ocultos: [ids] } → não vê os vídeos ocultos para ele
+       - master:  { master: true, cotistas, salvarVisibilidade } → vê tudo e edita quem vê */
+    let videosCarregados = null;
+    let acessoConteudo = null;
+
+    window.definirAcessoConteudo = function(acesso) {
+      acessoConteudo = acesso;
+      tentarRenderizar();
+    };
+
+    window.falhaAcessoConteudo = function() {
+      document.getElementById("conteudo-loading").style.display = "none";
+      document.getElementById("conteudo-erro").style.display = "block";
+    };
+
+    function tentarRenderizar() {
+      if (videosCarregados === null || acessoConteudo === null) return;
+
+      if (acessoConteudo.master) {
+        renderVideos(videosCarregados);
+      } else {
+        const ocultos = new Set(acessoConteudo.ocultos);
+        renderVideos(videosCarregados.filter(v => !ocultos.has(v.id)));
+      }
+    }
+
+    /* ---- VISIBILIDADE (SÓ PARA O MASTER) ---- */
+    function criarBlocoVisibilidade(video) {
+      const cotistas = acessoConteudo.cotistas;
+
+      const bloco = document.createElement("div");
+      bloco.className = "visib-bloco";
+
+      bloco.innerHTML = `
+        <div class="visib-barra">
+          <span class="visib-resumo"></span>
+          <button type="button" class="visib-btn visib-btn-secundario visib-editar" aria-expanded="false">Editar visibilidade</button>
+        </div>
+        <div class="visib-painel" hidden>
+          <div class="visib-botoes">
+            <button type="button" class="visib-btn visib-btn-secundario visib-todos">Marcar todos</button>
+            <button type="button" class="visib-btn visib-btn-secundario visib-nenhum">Desmarcar todos</button>
+          </div>
+          <div class="visib-lista"></div>
+          <div class="visib-rodape">
+            <button type="button" class="visib-btn visib-btn-primario visib-salvar">Salvar</button>
+            <span class="visib-contador"></span>
+            <span class="visib-status"></span>
+          </div>
+        </div>
+      `;
+
+      const resumo    = bloco.querySelector(".visib-resumo");
+      const btnEditar = bloco.querySelector(".visib-editar");
+      const painel    = bloco.querySelector(".visib-painel");
+      const listaEl   = bloco.querySelector(".visib-lista");
+      const btnSalvar = bloco.querySelector(".visib-salvar");
+      const contador  = bloco.querySelector(".visib-contador");
+      const statusEl  = bloco.querySelector(".visib-status");
+
+      function caixas() {
+        return Array.from(listaEl.querySelectorAll("input[type=checkbox]"));
+      }
+
+      // Resumo do que está salvo
+      function atualizarResumo() {
+        const total = cotistas.length;
+        const visiveis = cotistas.filter(c => !c.ocultos.has(video.id)).length;
+
+        resumo.className = "visib-resumo";
+
+        if (total === 0) {
+          resumo.textContent = "Nenhum cotista cadastrado";
+        } else if (visiveis === total) {
+          resumo.textContent = "Visível para todos os cotistas";
+        } else if (visiveis === 0) {
+          resumo.textContent = "Oculto para todos os cotistas";
+          resumo.classList.add("nenhum");
+        } else {
+          resumo.textContent = `Visível para ${visiveis} de ${total} cotistas`;
+          resumo.classList.add("parcial");
+        }
+      }
+
+      // Quantos estão marcados agora no painel (antes de salvar)
+      function atualizarContador() {
+        const marcadas = caixas().filter(cb => cb.checked).length;
+        contador.textContent = `${marcadas} de ${cotistas.length} marcados`;
+      }
+
+      function mostrarStatus(texto, tipo) {
+        statusEl.textContent = texto;
+        statusEl.className = tipo ? `visib-status ${tipo}` : "visib-status";
+      }
+
+      // Marcado = o cotista vê o conteúdo
+      function preencherLista() {
+        listaEl.innerHTML = "";
+
+        cotistas.forEach((cotista) => {
+          const linha = document.createElement("label");
+          linha.className = "visib-cotista";
+
+          const caixa = document.createElement("input");
+          caixa.type = "checkbox";
+          caixa.dataset.uid = cotista.uid;
+          caixa.checked = !cotista.ocultos.has(video.id);
+
+          const info = document.createElement("div");
+
+          const nome = document.createElement("div");
+          nome.className = "visib-nome";
+          nome.textContent = cotista.nome;
+
+          const email = document.createElement("div");
+          email.className = "visib-email";
+          email.textContent = cotista.email;
+
+          info.append(nome, email);
+          linha.append(caixa, info);
+          listaEl.appendChild(linha);
+        });
+
+        atualizarContador();
+      }
+
+      btnEditar.addEventListener("click", () => {
+        const abrir = painel.hidden;
+
+        if (abrir) {
+          preencherLista(); // descarta o que não foi salvo
+          mostrarStatus("", "");
+        }
+
+        painel.hidden = !abrir;
+        btnEditar.textContent = abrir ? "Fechar" : "Editar visibilidade";
+        btnEditar.setAttribute("aria-expanded", String(abrir));
+      });
+
+      bloco.querySelector(".visib-todos").addEventListener("click", () => {
+        caixas().forEach(cb => { cb.checked = true; });
+        atualizarContador();
+      });
+
+      bloco.querySelector(".visib-nenhum").addEventListener("click", () => {
+        caixas().forEach(cb => { cb.checked = false; });
+        atualizarContador();
+      });
+
+      listaEl.addEventListener("change", atualizarContador);
+
+      btnSalvar.addEventListener("click", async () => {
+        const porUid = new Map(cotistas.map(c => [c.uid, c]));
+        const mudancas = [];
+
+        caixas().forEach((cb) => {
+          const cotista = porUid.get(cb.dataset.uid);
+          const oculto = !cb.checked;
+
+          if (cotista && cotista.ocultos.has(video.id) !== oculto) {
+            mudancas.push({ uid: cotista.uid, oculto });
+          }
+        });
+
+        if (mudancas.length === 0) {
+          mostrarStatus("Nenhuma alteração para salvar.", "");
+          return;
+        }
+
+        btnSalvar.disabled = true;
+        btnSalvar.textContent = "Salvando...";
+        mostrarStatus("", "");
+
+        try {
+          await acessoConteudo.salvarVisibilidade(video.id, mudancas);
+
+          mudancas.forEach(({ uid, oculto }) => {
+            const cotista = porUid.get(uid);
+            if (oculto) cotista.ocultos.add(video.id);
+            else cotista.ocultos.delete(video.id);
+          });
+
+          atualizarResumo();
+          mostrarStatus("Salvo.", "ok");
+        } catch (err) {
+          console.error("Erro ao salvar visibilidade:", err);
+          mostrarStatus(
+            err && err.code === "permission-denied"
+              ? "Sem permissão para salvar. Confira as regras do Firestore."
+              : "Não foi possível salvar. Tente novamente.",
+            "erro"
+          );
+        } finally {
+          btnSalvar.disabled = false;
+          btnSalvar.textContent = "Salvar";
+        }
+      });
+
+      atualizarResumo();
+      return bloco;
+    }
+
     /* ---- RENDERIZAÇÃO ---- */
     function renderVideos(videos) {
       const lista = document.getElementById("conteudo-lista");
@@ -537,6 +973,16 @@
       if (!videos || videos.length === 0) {
         lista.innerHTML = '<p style="text-align:center;color:#888;padding:40px 0;">Nenhum conteúdo disponível.</p>';
         return;
+      }
+
+      const ehMaster = Boolean(acessoConteudo && acessoConteudo.master);
+      const editarVisibilidade = ehMaster && Array.isArray(acessoConteudo.cotistas);
+
+      if (ehMaster && !editarVisibilidade) {
+        const aviso = document.createElement("p");
+        aviso.className = "visib-aviso";
+        aviso.textContent = "Não foi possível carregar os cotistas para editar a visibilidade.";
+        lista.appendChild(aviso);
       }
 
       videos.forEach((video, index) => {
@@ -575,6 +1021,10 @@
 
         lista.appendChild(card);
 
+        if (editarVisibilidade) {
+          lista.appendChild(criarBlocoVisibilidade(video));
+        }
+
         // linha divisória fina entre os vídeos (não após o último)
         if (index < videos.length - 1) {
           const hr = document.createElement("hr");
@@ -598,7 +1048,8 @@
           .sort((a, b) => parseInt(b.name) - parseInt(a.name));
 
         if (jsonFiles.length === 0) {
-          renderVideos([]);
+          videosCarregados = [];
+          tentarRenderizar();
           return;
         }
 
@@ -617,7 +1068,8 @@
           .flatMap(r => Array.isArray(r) ? r : [r])
           .filter(v => v && v.id);
 
-        renderVideos(videos);
+        videosCarregados = videos;
+        tentarRenderizar();
 
       } catch (err) {
         console.error("Erro ao carregar vídeos:", err);
